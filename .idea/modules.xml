@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/InvitsPlugin.main.iml" filepath="$PROJECT_DIR$/.idea/modules/InvitsPlugin.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/InvitsPlugin.test.iml" filepath="$PROJECT_DIR$/.idea/modules/InvitsPlugin.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/SecureDoors.iml" filepath="$PROJECT_DIR$/.idea/SecureDoors.iml" />
     </modules>
   </component>

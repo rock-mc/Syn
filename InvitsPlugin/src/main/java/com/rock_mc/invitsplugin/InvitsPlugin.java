@@ -2,7 +2,7 @@ package com.rock_mc.invitsplugin;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class InvitsPlugin extends JavaPlugin {
+public class InvitsPlugin extends JavaPlugin {
 
     public static final String APP_NAME = "InvitSys";
 

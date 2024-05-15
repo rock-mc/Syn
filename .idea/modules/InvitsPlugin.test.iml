@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="4">
+  <component name="AdditionalModuleElements">
+    <content url="file://$MODULE_DIR$/../../InvitsPlugin/src/test" dumb="true">
+      <sourceFolder url="file://$MODULE_DIR$/../../InvitsPlugin/src/test/java" isTestSource="true" />
+    </content>
+  </component>
+  <component name="AppEngineStandardGradleModuleComponent">
+    <option name="gradleBuildDir" value="D:\dev\git\github\SecureDoors\InvitsPlugin\build" />
+    <option name="gradleModuleDir" value="D:\dev\git\github\SecureDoors\InvitsPlugin" />
+  </component>
+  <component name="FacetManager">
+    <facet type="minecraft" name="Minecraft">
+      <configuration>
+        <autoDetectTypes>
+          <platformType>PAPER</platformType>
+          <platformType>ADVENTURE</platformType>
+        </autoDetectTypes>
+        <projectReimportVersion>1</projectReimportVersion>
+      </configuration>
+    </facet>
+  </component>
+</module>
