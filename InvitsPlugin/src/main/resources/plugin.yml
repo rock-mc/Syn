@@ -1,0 +1,4 @@
+name: InvitsPlugin
+version: '${version}'
+main: com.rock_mc.invitsplugin.InvitsPlugin
+api-version: '1.20'
