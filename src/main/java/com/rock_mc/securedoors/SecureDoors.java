@@ -1,8 +1,8 @@
-package com.rock_mc.invitsplugin;
+package com.rock_mc.securedoors;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class InvitsPlugin extends JavaPlugin {
+public class SecureDoors extends JavaPlugin {
 
     public static final String APP_NAME = "InvitSys";
 

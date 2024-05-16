@@ -1,4 +1,4 @@
-package com.rock_mc.invitsplugin;
+package com.rock_mc.securedoors;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,9 +12,9 @@ public class EventListener implements Listener {
 
     @EventHandler
     public synchronized void onPlayerLogin(PlayerLoginEvent event) throws IOException {
-        final Player player = event.getPlayer();
-        final String name = player.getDisplayName();
-        final UUID uuid = player.getUniqueId();
+//        final Player player = event.getPlayer();
+//        final String name = player.getDisplayName();
+//        final UUID uuid = player.getUniqueId();
 
     }
 }

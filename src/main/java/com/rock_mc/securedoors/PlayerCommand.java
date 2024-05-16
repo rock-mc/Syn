@@ -1,4 +1,4 @@
-package com.rock_mc.invitsplugin;
+package com.rock_mc.securedoors;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

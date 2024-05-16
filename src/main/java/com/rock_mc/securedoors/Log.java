@@ -1,4 +1,4 @@
-package com.rock_mc.invitsplugin;
+package com.rock_mc.securedoors;
 
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 public class Log {
     public static Logger logger;
-    private static final String LOG_PREFIX = "[" + ChatColor.GOLD + InvitsPlugin.APP_NAME + ChatColor.WHITE + "] ";
+    private static final String LOG_PREFIX = "[" + ChatColor.GOLD + SecureDoors.APP_NAME + ChatColor.WHITE + "] ";
 
     static String arrayToString(String[] postfix_msg) {
         String result = "";

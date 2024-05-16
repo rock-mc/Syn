@@ -1,13 +1,13 @@
-name: InvitsPlugin
+name: SecureDoors
 version: '${version}'
-main: com.rock_mc.invitsplugin.InvitsPlugin
+main: com.rock_mc.securedoors.SecureDoors
 api-version: '1.20'
 description: A minecraft plugin for invitation only
 author: CodingMan
 prefix: InvitSys
 commands:
   invits:
-    description: Show help of InvitationSystem
+    description: Show help of SecureDoors
     usage: /invits
   invits verify:
     description: Input the invitation code to verify player

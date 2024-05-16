@@ -1,29 +1,25 @@
-package com.rock_mc.invitsplugin;
+package com.rock_mc.securedoors;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
-import org.bukkit.plugin.messaging.Messenger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-
-import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class PlayerCommandTest {
 
     private ServerMock server;
-    private InvitsPlugin plugin;
+//    private SecureDoors plugin;
 
     @BeforeEach
     void setUp() {
-        // Start the mock server
         server = MockBukkit.mock();
-        // Load your plugin
-        plugin = MockBukkit.load(InvitsPlugin.class);
+
+//        plugin = MockBukkit.load(SecureDoors.class);
     }
 
     @AfterEach
