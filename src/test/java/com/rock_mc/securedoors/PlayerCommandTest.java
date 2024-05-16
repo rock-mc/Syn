@@ -31,9 +31,9 @@ public class PlayerCommandTest {
     @Test
     void onCommand() {
         PlayerMock player = server.addPlayer();
-        player.performCommand("invits");
+        player.performCommand("sd");
 
-        assertTrue(player.nextMessage().contains("invits"));
+        assertTrue(player.nextMessage().contains("sd"));
 
     }
 }

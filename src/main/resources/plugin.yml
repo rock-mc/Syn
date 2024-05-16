@@ -2,37 +2,42 @@ name: SecureDoors
 version: '${version}'
 main: com.rock_mc.securedoors.SecureDoors
 api-version: '1.20'
-description: A minecraft plugin for invitation only
-author: CodingMan
-prefix: InvitSys
+description: A minecraft plugin for white list
+author: Rock Minecraft Server
+prefix: SD
 commands:
-  invits:
+  sd:
     description: Show help of SecureDoors
-    usage: /invits
-  invits verify:
-    description: Input the invitation code to verify player
-    usage: /invits verify <invitation code>
-  invits gencode:
-    description: Generate invitation code and reduce a quota of the player
-    usage: /invits gencode
-  invits info:
-    description: Show the the state of Invitation System to the player
-    usage: /invits info
-  invits give:
-    description: Give invitation code quota to the player
-    usage: /invits give
-  invits block:
+    usage: /sd
+  sd verify:
+    description: Input the verification code to verify player
+    usage: /sd verify <code>
+  sd gencode:
+    description: Generate verification code
+    usage: /sd gencode [number]
+  sd info:
+    description: Show the the state of SecureDoors System info
+    usage: /sd info
+  sd block:
     description: Block the player
-    usage: /invits block day hour min sec
-  invits unblock:
+    usage: /sd block player [day hour min sec]
+  sd unblock:
     description: Unblock the player
-    usage: /invits block
+    usage: /sd block player
 
 permissions:
-  invits.*:
+  sd.*:
     description: Gives access to all commands
     children:
-      invits.gencode: true
-  invits.gencode:
-    description: Allows you to generate invitation code
+      sd.gencode: true
+      sd.block: true
+      sd.unblock: true
+  sd.gencode:
+    description: Allows you to generate verification code
+    default: op
+  sd.block:
+    description: Allows you to block the player
+    default: op
+  sd.unblock:
+    description: Allows you to unblock the player
     default: op

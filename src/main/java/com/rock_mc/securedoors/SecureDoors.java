@@ -4,7 +4,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class SecureDoors extends JavaPlugin {
 
-    public static final String APP_NAME = "InvitSys";
+    public static final String APP_NAME = "SecureDoors";
 
     @Override
     public void onEnable() {
@@ -12,11 +12,8 @@ public class SecureDoors extends JavaPlugin {
 
         Log.logger = getLogger();
 
-        Log.server("Enable", "Active");
-
         getServer().getPluginManager().registerEvents(new EventListener(), this);
-        this.getCommand("invits").setExecutor(new PlayerCommand());
-
+        this.getCommand("sd").setExecutor(new PlayerCommand());
 
         Log.server("Enable", "Complete");
 
