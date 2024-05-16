@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 
 public class Log {
     public static Logger logger;
-    private static final String LOG_PREFIX = "[" + ChatColor.GOLD + SecureDoors.APP_NAME + ChatColor.WHITE + "] ";
+    public static final String LOG_PREFIX = "[" + ChatColor.GOLD + SecureDoors.APP_NAME + ChatColor.WHITE + "] ";
 
     static String arrayToString(String[] postfix_msg) {
         String result = "";
