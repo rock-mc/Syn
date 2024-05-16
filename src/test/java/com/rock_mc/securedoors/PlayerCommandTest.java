@@ -13,13 +13,13 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PlayerCommandTest {
 
     private ServerMock server;
-//    private SecureDoors plugin;
+    private SecureDoors plugin;
 
     @BeforeEach
     void setUp() {
         server = MockBukkit.mock();
 
-//        plugin = MockBukkit.load(SecureDoors.class);
+        plugin = MockBukkit.load(SecureDoors.class);
     }
 
     @AfterEach
