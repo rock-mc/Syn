@@ -38,7 +38,7 @@ public class SdDatabase {
         }
     }
 
-    public boolean playerExistsInWhiteList(Player player) throws SQLException {
+    public boolean isPlayerInWhiteList(Player player) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM whitelist WHERE uuid = ?")) {
             preparedStatement.setString(1, player.getUniqueId().toString());
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -49,7 +49,7 @@ public class SdDatabase {
     public void updatePlayerInvitationQuota(Player player, int invitationQuota) throws SQLException{
 
         //if the player doesn't exist, add them
-        if (!playerExistsInWhiteList(player)){
+        if (!isPlayerInWhiteList(player)){
             addPlayerToWhiteList(player);
         }
 
@@ -60,7 +60,7 @@ public class SdDatabase {
         }
     }
 
-    public int getPlayerInvitationQuota(Player player) throws SQLException {
+    public int findPlayerInvitationQuota(Player player) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT invitationQuota FROM whitelist WHERE uuid = ?")) {
             preparedStatement.setString(1, player.getUniqueId().toString());
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -71,4 +71,5 @@ public class SdDatabase {
             }
         }
     }
+
 }

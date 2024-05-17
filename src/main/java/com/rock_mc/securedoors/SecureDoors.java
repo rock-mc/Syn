@@ -4,11 +4,13 @@ import com.rock_mc.securedoors.database.SdDatabase;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.sql.SQLException;
 
 public class SecureDoors extends JavaPlugin {
 
     public static final String APP_NAME = "SecureDoors";
+    private static final String SQLite_FILE = "secureDoors.db";
 
     private SdDatabase db;
 
@@ -17,12 +19,11 @@ public class SecureDoors extends JavaPlugin {
         Log.logger = getLogger();
 
         try {
-            // Ensure the plugin's data folder exists
             if (!getDataFolder().exists()) {
                 getDataFolder().mkdirs();
             }
-
-            db = new SdDatabase(getDataFolder().getAbsolutePath() + "/secureDoors.db");
+            String dbFile = getDataFolder().getAbsolutePath() + File.separator + SQLite_FILE;
+            db = new SdDatabase(dbFile);
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Failed to connect to database! " + e.getMessage());
