@@ -17,16 +17,46 @@ public class Command implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String commandLabel, String[] args) {
 
-        if (sender instanceof Player player) {
+        Player player = null;
+        if (sender instanceof Player tempPlayer) {
+            player = tempPlayer;
+        }
 
-            if (args.length == 0 || "help".equals(args[0])) {
-                showDefaultCmd(player);
+        if (args.length == 0 || "help".equals(args[0])) {
+            showDefaultCmd(player);
+            return true;
+        }
+
+        if ("gencode".equals(args[0])) {
+
+            if (player != null && !player.hasPermission("sd.gencode")) {
+                Log.sendMessage(player, "You don't have permission to use this command.");
                 return true;
             }
 
-        } else {
-            showDefaultCmd(null);
+            String available_characters = this.plugin.getConfig().getString("door.available_characters");
+            int code_length = this.plugin.getConfig().getInt("door.code_length");
+
+            StringBuilder verification_code = new StringBuilder();
+            for (int i = 0; i < code_length; i++) {
+                int randomIndex = (int) (Math.random() * available_characters.length());
+                char randomChar = available_characters.charAt(randomIndex);
+
+                verification_code.append(randomChar);
+            }
+
+            String msg;
+            if (player == null) {
+                msg = verification_code.toString();
+            } else {
+                msg = "https://rock-mc.com/code/?text=" + verification_code.toString();
+            }
+
+            Log.sendMessage(player, msg);
+
+            return true;
         }
+
 
         return true;
     }
@@ -43,11 +73,12 @@ public class Command implements CommandExecutor {
 
         String allCommands = "Commands:\n" + gencode + "\n" + info + "\n" + verify + "\n" + ban + "\n" + unban + "\n" + open + "\n" + close;
 
+        String message;
         if (player == null) {
-            Log.logInfo(allCommands);
+            message = allCommands;
         } else {
 
-            String message = "Commands:";
+            message = "Commands:";
 
             if (player.hasPermission("sd.gencode")) {
                 message += "\n" + gencode;
@@ -61,19 +92,18 @@ public class Command implements CommandExecutor {
             if (player.hasPermission("sd.unban")) {
                 message += "\n" + unban;
             }
-            if (player.hasPermission("sd.door")){
+            if (player.hasPermission("sd.door")) {
                 message += "\n" + open + "\n" + close;
             }
             if (message.equals("Commands:")) {
                 message = "You don't have permission to use any command.";
             }
-
-            Log.sendMessage(player, message);
         }
+        Log.sendMessage(player, message);
     }
 
     private boolean isVerified(Player player) {
-        // TODO: see if the player in the white list from database
+        // TODO: check if the player in the white list from database
         return !"guest".equals(player.getName());
     }
 }

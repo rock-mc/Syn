@@ -11,11 +11,13 @@ public class Log {
 
 
     public static void sendMessage(Player player, String message) {
-        player.sendMessage(PREFIX_GAME + message);
-    }
 
-    public static void broadcast(String message) {
-        broadcast(message, null);
+        if (player == null) {
+            logInfo(message);
+            return;
+        }
+
+        player.sendMessage(PREFIX_GAME + message);
     }
 
     public static void broadcast(String message, ChatColor color) {
