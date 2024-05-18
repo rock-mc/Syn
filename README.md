@@ -4,11 +4,12 @@ SecureDoors is a Minecraft plugin designed to manage player whitelist verificati
 
 ## Features
 
-* Player Verification: Players need to input a verification code to enter the server
-* Generate Verification Codes: Administrators can generate verification codes for players to use
-* Ban Players: Administrators can ban specific players for a certain period of time
-* Unban Players: Administrators can unban players
-* View System Information: Administrators can view the status and information of the SecureDoors system
+* Player Verification: Players are required to input a verification code to enter the server when they first log in
+* Generate Verification Codes: OPs can generate verification codes for players to use
+* Ban Players: OPs can ban specific players for a certain period of time
+* Unban Players: OPs can unban players
+* View System Information: OPs can view the status and information of the SecureDoors system
+* Open/Close Server: OPs can open or close the server to control player access
 
 ## Installation
 
@@ -24,6 +25,8 @@ SecureDoors is a Minecraft plugin designed to manage player whitelist verificati
 * `/sd info` - Show the status and information of the SecureDoors system
 * `/sd block <player> [day hour min sec]` - Ban a specific player for a certain period of time
 * `/sd unblock <player>` - Unban a specific player
+* `/sd open` - Allow everyone to enter the server, except for players on the ban list
+* `/sd close` - Only allow players on the allowlist to enter the server
 
 ## Permissions
 
@@ -31,9 +34,11 @@ SecureDoors is a Minecraft plugin designed to manage player whitelist verificati
   * `sd.gencode` - Allows generating verification codes
   * `sd.block` - Allows banning players
   * `sd.unblock` - Allows unbanning players
+  * `sd.door` - Allows opening/closing the server
 * `sd.gencode` - Allows generating verification codes (default: OP)
 * `sd.block` - Allows banning players (default: OP)
 * `sd.unblock` - Allows unbanning players (default: OP)
+* `sd.door` - Allows opening/closing the server (default: OP)
 
 ## Configuration
 
