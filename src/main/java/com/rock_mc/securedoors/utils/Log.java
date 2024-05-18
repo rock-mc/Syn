@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 public class Log {
     public static final String PREFIX_GAME = "[" + ChatColor.GOLD + SecureDoors.APP_NAME + ChatColor.WHITE + "] ";
-    public static final String PREFIX_SERVER = "[SD] ";
+    public static final String PREFIX_SERVER = "[" + SecureDoors.APP_NAME + "] ";
 
 
     public static void sendMessage(Player player, String message) {

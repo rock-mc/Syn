@@ -4,6 +4,7 @@ import com.rock_mc.securedoors.commands.Command;
 import com.rock_mc.securedoors.listeners.EventListener;
 import com.rock_mc.securedoors.config.ConfigManager;
 import com.rock_mc.securedoors.utils.Log;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class SecureDoors extends JavaPlugin {
@@ -24,7 +25,14 @@ public class SecureDoors extends JavaPlugin {
 
         this.getCommand("sd").setExecutor(new Command(this));
 
-        Log.logInfo("Load success");
+        Bukkit.getLogger().info("███████╗███████╗ ██████╗██╗   ██╗██████╗ ███████╗    ██████╗  ██████╗  ██████╗ ██████╗ ███████╗");
+        Bukkit.getLogger().info("██╔════╝██╔════╝██╔════╝██║   ██║██╔══██╗██╔════╝    ██╔══██╗██╔═══██╗██╔═══██╗██╔══██╗██╔════╝");
+        Bukkit.getLogger().info("███████╗█████╗  ██║     ██║   ██║██████╔╝█████╗      ██║  ██║██║   ██║██║   ██║██████╔╝███████╗");
+        Bukkit.getLogger().info("╚════██║██╔══╝  ██║     ██║   ██║██╔══██╗██╔══╝      ██║  ██║██║   ██║██║   ██║██╔══██╗╚════██║");
+        Bukkit.getLogger().info("███████║███████╗╚██████╗╚██████╔╝██║  ██║███████╗    ██████╔╝╚██████╔╝╚██████╔╝██║  ██║███████║");
+        Bukkit.getLogger().info("╚══════╝╚══════╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝    ╚═════╝  ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝");
+
+        Bukkit.getLogger().info("SecureDoors v " + this.getDescription().getVersion() + " has been enabled!");
     }
 
     @Override
