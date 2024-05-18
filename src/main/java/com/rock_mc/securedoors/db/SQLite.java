@@ -87,6 +87,18 @@ public class SQLite extends Database {
         }
         return null;
     }
+    @Override
+    public boolean contains(String code) {
+        // Check if the code exists in the database
+        try (PreparedStatement statement = connection.prepareStatement("SELECT code FROM verification_codes WHERE code = ?")) {
+            statement.setString(1, code);
+            ResultSet resultSet = statement.executeQuery();
+            return resultSet.next();
+        } catch (SQLException e) {
+            Log.logWarning("Could not check if the code exists in the database: " + e.getMessage());
+        }
+        return false;
+    }
 
     @Override
     public void removeCode(String code) {

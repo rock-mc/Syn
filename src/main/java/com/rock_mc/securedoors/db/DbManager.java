@@ -36,6 +36,10 @@ public class DbManager {
     public String getCodeCreateDate(String code) {
         return this.database.getCodeCreateDate(code);
     }
+    public boolean contains(String code) {
+        return this.database.contains(code);
+    }
+
     public void removeCode(String code) {
         this.database.removeCode(code);
     }

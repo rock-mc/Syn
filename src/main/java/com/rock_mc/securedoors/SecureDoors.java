@@ -10,8 +10,8 @@ public class SecureDoors extends JavaPlugin {
 
     public static final String APP_NAME = "SecureDoors";
 
-    private ConfigManager configManager;
-    private DbManager dbManager;
+    public ConfigManager configManager;
+    public DbManager dbManager;
 
     @Override
     public void onEnable() {
@@ -51,9 +51,4 @@ public class SecureDoors extends JavaPlugin {
 
         Bukkit.getLogger().info("SecureDoors v " + this.getDescription().getVersion() + " has been disabled!");
     }
-
-    public ConfigManager getConfigManager() {
-        return this.configManager;
-    }
-
 }

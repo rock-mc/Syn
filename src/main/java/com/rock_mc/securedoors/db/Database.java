@@ -6,6 +6,8 @@ public abstract class Database {
 
     public abstract String getCodeCreateDate(String code);
 
+    public abstract boolean contains(String code);
+
     public abstract void removeCode(String code);
 
     public abstract void save();

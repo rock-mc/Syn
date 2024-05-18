@@ -43,14 +43,15 @@ public class Command implements CommandExecutor {
             String available_characters = this.plugin.getConfig().getString("door.available_characters");
             int code_length = this.plugin.getConfig().getInt("door.code_length");
 
-            StringBuilder verification_code = new StringBuilder();
-            for (int i = 0; i < code_length; i++) {
-                int randomIndex = (int) (Math.random() * available_characters.length());
-                char randomChar = available_characters.charAt(randomIndex);
+            // Generate a verification code
+            // Check the code is unique
 
-                verification_code.append(randomChar);
+            String code = Utils.generateCode(available_characters, code_length);
+
+            while (this.dbManager.contains(code)) {
+                code = Utils.generateCode(available_characters, code_length);
             }
-            String code = verification_code.toString();
+            this.dbManager.addCode(code);
 
             String msg;
             if (player == null) {
@@ -58,8 +59,6 @@ public class Command implements CommandExecutor {
             } else {
                 msg = "https://rock-mc.com/code/?text=" + code;
             }
-
-            this.dbManager.addCode(code);
 
             Log.sendMessage(player, msg);
 
