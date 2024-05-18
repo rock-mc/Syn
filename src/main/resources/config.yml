@@ -16,6 +16,7 @@ door:
 
   # The expiration time of the verification code
   # 0 means the verification code will never expire
+
   expire_day: 14
 
   # Database setting

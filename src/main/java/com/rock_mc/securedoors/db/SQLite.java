@@ -87,6 +87,7 @@ public class SQLite extends Database {
         }
         return null;
     }
+  
     @Override
     public boolean contains(String code) {
         // Check if the code exists in the database
