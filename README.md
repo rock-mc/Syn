@@ -48,6 +48,18 @@ The configuration file for the plugin is located at plugins/SecureDoors/config.y
 
 If you encounter any issues or have any suggestions while using SecureDoors, please submit them on GitHub Issues. We will respond and resolve the issues as soon as possible.
 
+## Contributing
+
+We welcome contributions from the community. If you would like to contribute to SecureDoors, please submit a pull request.
+
+### Testing
+
+1. Write test cases for the new feature or bug fix
+2. Run the test cases to ensure they pass
+3. Test on a local server to ensure the feature or bug fix works as expected
+4. Submit a pull request
+5. Wait for the pull request to be reviewed and merged
+
 ## License
 
 SecureDoors is licensed under the MIT License.
