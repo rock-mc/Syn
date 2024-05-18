@@ -8,13 +8,22 @@ import static org.junit.jupiter.api.Assertions.*;
 class ConfigManagerTest extends PluginTest {
 
     @Test
+    void checkNotExistValue() {
+        ConfigManager configManager = plugin.getConfigManager();
+
+        Object value = configManager.getConfig().get("door.notExist");
+
+        assertNull(value);
+    }
+
+    @Test
     void checkOpen() {
         ConfigManager configManager = plugin.getConfigManager();
 
-        assertFalse(configManager.getConfig().getBoolean("open"));
+        assertFalse(configManager.getConfig().getBoolean("door.open"));
 
-        configManager.getConfig().set("open", true);
+        configManager.getConfig().set("door.open", true);
 
-        assertTrue(configManager.getConfig().getBoolean("open"));
+        assertTrue(configManager.getConfig().getBoolean("door.open"));
     }
 }

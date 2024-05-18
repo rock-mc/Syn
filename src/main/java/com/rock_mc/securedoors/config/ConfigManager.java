@@ -10,8 +10,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class ConfigManager {
-    private final JavaPlugin plugin;
-    private FileConfiguration config;
+    private final JavaPlugin plugin ;
+    private FileConfiguration config = null;
 
     public ConfigManager(JavaPlugin plugin) {
         this.plugin = plugin;
