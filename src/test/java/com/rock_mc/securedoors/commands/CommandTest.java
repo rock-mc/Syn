@@ -11,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CommandTest extends PluginTest {
 
 
-
     @Test
     void onCommandByOp() {
         // 管理員
@@ -27,11 +26,16 @@ Usage: /sd info
 * block: Block the door
 Usage: /sd block
 * unblock: Unblock the door
-Usage: /sd unblock""";
+Usage: /sd unblock
+* open: Allow everyone to come into the server but the player in the block list
+Usage: /sd open
+* close: Allow the player in the allowlist to come into the server
+Usage: /sd close""";
 
         opPlayer.performCommand("sd");
 
         String commandOutput = opPlayer.nextMessage();
+        System.out.println(commandOutput);
         assertEquals(expected, commandOutput);
 
         opPlayer.performCommand("sd help");

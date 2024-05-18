@@ -38,8 +38,10 @@ public class Command implements CommandExecutor {
         String verify = "* verify: Verify the verification code\nUsage: /sd verify <verification code>";
         String block = "* block: Block the door\nUsage: /sd block";
         String unblock = "* unblock: Unblock the door\nUsage: /sd unblock";
+        String open = "* open: Allow everyone to come into the server but the player in the block list\nUsage: /sd open";
+        String close = "* close: Allow the player in the allowlist to come into the server\nUsage: /sd close";
 
-        String allCommands = "Commands:\n" + gencode + "\n" + info + "\n" + verify + "\n" + block + "\n" + unblock;
+        String allCommands = "Commands:\n" + gencode + "\n" + info + "\n" + verify + "\n" + block + "\n" + unblock + "\n" + open + "\n" + close;
 
         if (player == null) {
             Log.logInfo(allCommands);
@@ -58,6 +60,9 @@ public class Command implements CommandExecutor {
             }
             if (player.hasPermission("sd.unblock")) {
                 message += "\n" + unblock;
+            }
+            if (player.hasPermission("sd.door")){
+                message += "\n" + open + "\n" + close;
             }
             if (message.equals("Commands:")) {
                 message = "You don't have permission to use any command.";
