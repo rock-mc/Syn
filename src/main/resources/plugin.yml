@@ -18,12 +18,12 @@ commands:
   sd info:
     description: Show the the state of SecureDoors System info
     usage: /sd info
-  sd block:
-    description: Block the player
-    usage: /sd block player [day hour min sec]
-  sd unblock:
-    description: Unblock the player
-    usage: /sd block player
+  sd ban:
+    description: Ban the player
+    usage: /sd ban player [day hour min sec]
+  sd unban:
+    description: Unban the player
+    usage: /sd unban player
   sd open:
     description: Allow everyone to come into the server but the player in the block list.
     usage: /sd open
@@ -36,18 +36,18 @@ permissions:
     description: Gives access to all commands
     children:
       sd.gencode: true
-      sd.block: true
-      sd.unblock: true
+      sd.ban: true
+      sd.unban: true
       sd.info: true
       sd.door: true
   sd.gencode:
     description: Allows you to generate verification code
     default: op
-  sd.block:
-    description: Allows you to block the player
+  sd.ban:
+    description: Allows you to ban the player
     default: op
-  sd.unblock:
-    description: Allows you to unblock the player
+  sd.unban:
+    description: Allows you to unban the player
     default: op
   sd.info:
     description: Allows you to check the state of SecureDoors System info

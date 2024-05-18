@@ -36,12 +36,12 @@ public class Command implements CommandExecutor {
         String gencode = "* gencode: Generate a verification code\nUsage: /sd gencode";
         String info = "* info: Show the door information\nUsage: /sd info";
         String verify = "* verify: Verify the verification code\nUsage: /sd verify <verification code>";
-        String block = "* block: Block the door\nUsage: /sd block";
-        String unblock = "* unblock: Unblock the door\nUsage: /sd unblock";
-        String open = "* open: Allow everyone to come into the server but the player in the block list\nUsage: /sd open";
+        String ban = "* ban: Ban the player\nUsage: /sd ban <player>";
+        String unban = "* unban: Unban the door\nUsage: /sd unban <player>";
+        String open = "* open: Allow everyone to come into the server but the player in the ban list\nUsage: /sd open";
         String close = "* close: Allow the player in the allowlist to come into the server\nUsage: /sd close";
 
-        String allCommands = "Commands:\n" + gencode + "\n" + info + "\n" + verify + "\n" + block + "\n" + unblock + "\n" + open + "\n" + close;
+        String allCommands = "Commands:\n" + gencode + "\n" + info + "\n" + verify + "\n" + ban + "\n" + unban + "\n" + open + "\n" + close;
 
         if (player == null) {
             Log.logInfo(allCommands);
@@ -55,11 +55,11 @@ public class Command implements CommandExecutor {
             if (player.hasPermission("sd.info")) {
                 message += "\n" + info;
             }
-            if (player.hasPermission("sd.block")) {
-                message += "\n" + block;
+            if (player.hasPermission("sd.ban")) {
+                message += "\n" + ban;
             }
-            if (player.hasPermission("sd.unblock")) {
-                message += "\n" + unblock;
+            if (player.hasPermission("sd.unban")) {
+                message += "\n" + unban;
             }
             if (player.hasPermission("sd.door")){
                 message += "\n" + open + "\n" + close;
