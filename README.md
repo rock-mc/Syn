@@ -23,8 +23,8 @@ SecureDoors is a Minecraft plugin designed to manage player whitelist verificati
 * `/sd verify <code>` - Input the verification code to verify the player
 * `/sd gencode [number]` - Generate a specified number of verification codes
 * `/sd info` - Show the status and information of the SecureDoors system
-* `/sd block <player> [day hour min sec]` - Ban a specific player for a certain period of time
-* `/sd unblock <player>` - Unban a specific player
+* `/sd ban <player> [day hour min sec]` - Ban a specific player for a certain period of time
+* `/sd unban <player>` - Unban a specific player
 * `/sd open` - Allow everyone to enter the server, except for players on the ban list
 * `/sd close` - Allow the player in the allowlist to come into the server.
 
@@ -47,6 +47,18 @@ The configuration file for the plugin is located at plugins/SecureDoors/config.y
 ## Support and Reporting Issues
 
 If you encounter any issues or have any suggestions while using SecureDoors, please submit them on GitHub Issues. We will respond and resolve the issues as soon as possible.
+
+## Contributing
+
+We welcome contributions from the community. If you would like to contribute to SecureDoors, please submit a pull request.
+
+### Testing
+
+1. Write test cases for the new feature or bug fix
+2. Run the test cases to ensure they pass
+3. Test on a local server to ensure the feature or bug fix works as expected
+4. Submit a pull request
+5. Wait for the pull request to be reviewed and merged
 
 ## License
 

@@ -23,11 +23,11 @@ Commands:
 Usage: /sd gencode
 * info: Show the door information
 Usage: /sd info
-* block: Block the door
-Usage: /sd block
-* unblock: Unblock the door
-Usage: /sd unblock
-* open: Allow everyone to come into the server but the player in the block list
+* ban: Ban the player
+Usage: /sd ban <player>
+* unban: Unban the door
+Usage: /sd unban <player>
+* open: Allow everyone to come into the server but the player in the ban list
 Usage: /sd open
 * close: Allow the player in the allowlist to come into the server
 Usage: /sd close""";
