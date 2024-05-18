@@ -7,12 +7,15 @@ door:
   open: false
 
   # The available characters for the verification code
+  # The length requires to be 10 or more
   available_characters: "abcdefghijklmnopqrstuvwxyz0123456789"
 
   # The length of the verification code
+  # The length requires to be 4 or more
   code_length: 6
 
   # The expiration time of the verification code
+  # 0 means the verification code will never expire
   expire_day: 14
 
   # Database setting
