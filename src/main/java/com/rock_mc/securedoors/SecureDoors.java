@@ -13,8 +13,6 @@ public class SecureDoors extends JavaPlugin {
 
     private ConfigManager configManager;
 
-
-
     @Override
     public void onEnable() {
 
