@@ -104,12 +104,12 @@ public class Command implements CommandExecutor {
             }
 
 
-//            if (this.dbManager.contains(code)) {
-//                this.dbManager.removeCode(code);
-//                Log.sendMessage(player, "The verification code is correct.");
-//            } else {
-//                Log.sendMessage(player, "The verification code is incorrect.");
-//            }
+            if (this.dbManager.contains(code)) {
+                this.dbManager.removeCode(code);
+                Log.sendMessage(player, "The verification code is correct.");
+            } else {
+                Log.sendMessage(player, "The verification code is incorrect.");
+            }
 
             return true;
         }

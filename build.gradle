@@ -24,6 +24,7 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter:5.9.3"
     testImplementation 'com.github.MockBukkit:MockBukkit:v1.20-SNAPSHOT'
     testImplementation group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.6'
+    implementation group: 'org.xerial', name: 'sqlite-jdbc', version: '3.45.3.0'
 }
 
 def targetJavaVersion = 17

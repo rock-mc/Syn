@@ -39,4 +39,8 @@ public class DbManager {
     public void removeCode(String code) {
         this.database.removeCode(code);
     }
+
+    public boolean contains(String code)  {
+        return this.database.contains(code);
+    }
 }

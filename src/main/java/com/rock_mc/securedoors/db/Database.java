@@ -14,4 +14,5 @@ public abstract class Database {
 
     public abstract void addCode(String code);
 
+    public abstract boolean contains(String code);
 }

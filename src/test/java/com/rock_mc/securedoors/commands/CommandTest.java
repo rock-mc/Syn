@@ -41,4 +41,31 @@ Usage: /sd close""";
         opPlayer.performCommand("sd help");
         assertEquals(expected, opPlayer.nextMessage());
     }
+
+    @Test
+    void verify() {
+        // 管理員
+        PlayerMock opPlayer = server.addPlayer();
+        opPlayer.setOp(true);
+
+        String expected = "";
+
+        opPlayer.performCommand("sd gencode 3");
+
+        String msgUrl = "https://rock-mc.com/code/?text=";
+
+        String commandOutput = opPlayer.nextMessage();
+
+        assertNotNull(commandOutput);
+        assertTrue(commandOutput.contains(msgUrl));
+
+        String code = commandOutput.substring(commandOutput.indexOf(msgUrl) + msgUrl.length());
+
+        PlayerMock newPlayer = server.addPlayer();
+
+        newPlayer.performCommand("sd verify " + code);
+        commandOutput = newPlayer.nextMessage();
+
+        assertEquals(Log.PREFIX_GAME + "The verification code is correct.", commandOutput);
+    }
 }

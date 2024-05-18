@@ -118,4 +118,26 @@ public class SQLite extends Database {
             Log.logWarning("Could not close SQLite database connection: " + e.getMessage());
         }
     }
+
+    @Override
+    public boolean contains(String code) {
+        // Get the created time of the code
+        try (PreparedStatement statement = connection.prepareStatement("""
+            SELECT created_at FROM verification_codes WHERE code = ?
+            AND julianday('now') - julianday(created_at) <= ?;
+            """)) {
+            statement.setString(1, code);
+
+            int expireDay = this.plugin.getConfig().getInt("door.expire_day");
+            statement.setInt(2, expireDay);
+
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return true;
+            }
+        } catch (SQLException e) {
+            Log.logWarning("Could not get a valid code: " + e.getMessage());
+        }
+        return false;
+    }
 }
