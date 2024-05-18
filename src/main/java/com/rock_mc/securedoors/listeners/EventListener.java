@@ -1,12 +1,10 @@
-package com.rock_mc.securedoors;
+package com.rock_mc.securedoors.listeners;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 
 import java.io.IOException;
-import java.util.UUID;
 
 public class EventListener implements Listener {
 

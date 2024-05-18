@@ -65,5 +65,15 @@ sourceSets {
 }
 
 tasks.named('test', Test) {
+//    testLogging {
+//        showStandardStreams = true
+//    }
     useJUnitPlatform()
+}
+
+task testOnServer(type: Copy) {
+    dependsOn('jar')
+    from('build/libs/')
+    into('server/plugins/')
+    include('*.jar')
 }

@@ -1,28 +1,47 @@
 package com.rock_mc.securedoors;
 
+import com.rock_mc.securedoors.commands.Command;
+import com.rock_mc.securedoors.listeners.EventListener;
+import com.rock_mc.securedoors.config.ConfigManager;
+import com.rock_mc.securedoors.utils.Log;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class SecureDoors extends JavaPlugin {
 
     public static final String APP_NAME = "SecureDoors";
 
+    private ConfigManager configManager;
+
+
+
     @Override
     public void onEnable() {
-        // Plugin startup logic
 
-        Log.logger = getLogger();
+        this.configManager = new ConfigManager(this);
+        this.configManager.loadConfig();
 
         getServer().getPluginManager().registerEvents(new EventListener(), this);
-        this.getCommand("sd").setExecutor(new PlayerCommand());
 
-        Log.server("Enable", "Complete");
+        this.getCommand("sd").setExecutor(new Command(this));
 
+        Bukkit.getLogger().info("███████╗███████╗ ██████╗██╗   ██╗██████╗ ███████╗    ██████╗  ██████╗  ██████╗ ██████╗ ███████╗");
+        Bukkit.getLogger().info("██╔════╝██╔════╝██╔════╝██║   ██║██╔══██╗██╔════╝    ██╔══██╗██╔═══██╗██╔═══██╗██╔══██╗██╔════╝");
+        Bukkit.getLogger().info("███████╗█████╗  ██║     ██║   ██║██████╔╝█████╗      ██║  ██║██║   ██║██║   ██║██████╔╝███████╗");
+        Bukkit.getLogger().info("╚════██║██╔══╝  ██║     ██║   ██║██╔══██╗██╔══╝      ██║  ██║██║   ██║██║   ██║██╔══██╗╚════██║");
+        Bukkit.getLogger().info("███████║███████╗╚██████╗╚██████╔╝██║  ██║███████╗    ██████╔╝╚██████╔╝╚██████╔╝██║  ██║███████║");
+        Bukkit.getLogger().info("╚══════╝╚══════╝ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝    ╚═════╝  ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚══════╝");
+
+        Bukkit.getLogger().info("SecureDoors v " + this.getDescription().getVersion() + " has been enabled!");
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        saveConfig();
     }
 
+    public ConfigManager getConfigManager() {
+        return this.configManager;
+    }
 
 }

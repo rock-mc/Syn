@@ -4,7 +4,7 @@ main: com.rock_mc.securedoors.SecureDoors
 api-version: '1.20'
 description: A minecraft plugin for white list
 author: Rock Minecraft Server
-prefix: SD
+prefix: SecureDoors
 commands:
   sd:
     description: Show help of SecureDoors
@@ -31,7 +31,6 @@ commands:
     description: Allow the player in the allowlist to come into the server.
     usage: /sd close
 
-
 permissions:
   sd.*:
     description: Gives access to all commands
@@ -39,6 +38,7 @@ permissions:
       sd.gencode: true
       sd.block: true
       sd.unblock: true
+      sd.info: true
       sd.door: true
   sd.gencode:
     description: Allows you to generate verification code
@@ -48,6 +48,9 @@ permissions:
     default: op
   sd.unblock:
     description: Allows you to unblock the player
+    default: op
+  sd.info:
+    description: Allows you to check the state of SecureDoors System info
     default: op
   sd.door:
     description: Allows you to open/close the door
