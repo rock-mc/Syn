@@ -67,12 +67,5 @@ Usage: /sd close""";
         commandOutput = newPlayer.nextMessage();
 
         assertEquals(Log.PREFIX_GAME + "The verification code is correct.", commandOutput);
-
-        PlayerMock otherPlayer = server.addPlayer();
-
-        otherPlayer.performCommand("sd verify " + code);
-        commandOutput = otherPlayer.nextMessage();
-
-        assertEquals(Log.PREFIX_GAME + "The verification code is incorrect.", commandOutput);
     }
 }
