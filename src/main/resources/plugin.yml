@@ -32,6 +32,7 @@ permissions:
       sd.gencode: true
       sd.block: true
       sd.unblock: true
+      sd.info: true
   sd.gencode:
     description: Allows you to generate verification code
     default: op
@@ -40,4 +41,7 @@ permissions:
     default: op
   sd.unblock:
     description: Allows you to unblock the player
+    default: op
+  sd.info:
+    description: Allows you to check the state of SecureDoors System info
     default: op
