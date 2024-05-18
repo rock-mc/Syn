@@ -5,3 +5,17 @@ door:
   # if true, allow everyone to enter the server, except for players on the ban list
   # if false, allow the player in the allowlist to come into the server.
   open: false
+
+  # The available characters for the verification code
+  available_characters: "abcdefghijklmnopqrstuvwxyz0123456789"
+
+  # The length of the verification code
+  code_length: 6
+
+  # The expiration time of the verification code
+  expire_day: 14
+
+  # Database setting
+  database:
+      # The database type, currently only support sqlite
+      type: sqlite

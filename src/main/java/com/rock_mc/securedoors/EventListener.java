@@ -1,4 +1,4 @@
-package com.rock_mc.securedoors.listeners;
+package com.rock_mc.securedoors;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

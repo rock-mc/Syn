@@ -1,6 +1,5 @@
-package com.rock_mc.securedoors.utils;
+package com.rock_mc.securedoors;
 
-import com.rock_mc.securedoors.SecureDoors;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -11,11 +10,13 @@ public class Log {
 
 
     public static void sendMessage(Player player, String message) {
-        player.sendMessage(PREFIX_GAME + message);
-    }
 
-    public static void broadcast(String message) {
-        broadcast(message, null);
+        if (player == null) {
+            logInfo(message);
+            return;
+        }
+
+        player.sendMessage(PREFIX_GAME + message);
     }
 
     public static void broadcast(String message, ChatColor color) {
