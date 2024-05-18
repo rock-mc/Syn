@@ -6,6 +6,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 public class ConfigManager {
     private final JavaPlugin plugin ;
@@ -32,18 +33,60 @@ public class ConfigManager {
         if (config.get("door.open") == null) {
             valid = false;
         }
+        else {
+            if (!(config.get("door.open") instanceof Boolean)) {
+                valid = false;
+            }
+        }
+
         if (config.get("door.available_characters") == null) {
             valid = false;
         }
+        else {
+            if (!(config.get("door.available_characters") instanceof String)) {
+                valid = false;
+            }
+            if (Objects.requireNonNull(config.getString("door.available_characters")).length() < 10) {
+                valid = false;
+            }
+        }
+
         if (config.get("door.code_length") == null) {
             valid = false;
         }
+        else {
+            if (!(config.get("door.code_length") instanceof Integer)) {
+                valid = false;
+            }
+            if (config.getInt("door.code_length") < 4) {
+                valid = false;
+            }
+        }
+
         if (config.get("door.expire_day") == null) {
             valid = false;
         }
+        else {
+            if (!(config.get("door.expire_day") instanceof Integer)) {
+                valid = false;
+            }
+            if (config.getInt("door.expire_day") < 0) {
+                valid = false;
+            }
+        }
+
         if (config.get("door.database.type") == null) {
             valid = false;
         }
+        else {
+            if (!(config.get("door.database.type") instanceof String)) {
+                valid = false;
+            }
+            if (!"sqlite".equalsIgnoreCase(config.getString("door.database.type"))) {
+                valid = false;
+            }
+        }
+
         if (!valid) {
             plugin.saveResource("config.yml", true);
             config = YamlConfiguration.loadConfiguration(configFile);

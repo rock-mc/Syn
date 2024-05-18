@@ -1,8 +1,10 @@
 package com.rock_mc.securedoors.commands;
 
+import be.seeseemelk.mockbukkit.PermissionManagerMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import com.rock_mc.securedoors.Log;
 import com.rock_mc.securedoors.PluginTest;
+import com.rock_mc.securedoors.Utils;
 import org.junit.jupiter.api.Test;
 
 
@@ -12,7 +14,7 @@ public class CommandTest extends PluginTest {
 
 
     @Test
-    void onCommandByOp() {
+    void defaultCmd() {
         // 管理員
         PlayerMock opPlayer = server.addPlayer();
         opPlayer.setOp(true);
@@ -40,5 +42,26 @@ Usage: /sd close""";
 
         opPlayer.performCommand("sd help");
         assertEquals(expected, opPlayer.nextMessage());
+
+        // 玩家
+        PlayerMock player = server.addPlayer();
+        player.setOp(false);
+
+        expected = Log.PREFIX_GAME + "You don't have permission to use any command.";
+        player.performCommand("sd");
+
+        commandOutput = player.nextMessage();
+        System.out.println(commandOutput);
+        assertEquals(expected, commandOutput);
+
+        player.performCommand("sd help");
+
+        assertEquals(expected, player.nextMessage());
+    }
+
+    @Test
+    void gencodeCmd() {
+
+        // TODO: I don't know how to test this method.
     }
 }

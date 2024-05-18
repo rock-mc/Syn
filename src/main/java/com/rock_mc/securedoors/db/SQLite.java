@@ -27,7 +27,7 @@ public class SQLite extends Database {
             connection = DriverManager.getConnection("jdbc:sqlite:" + plugin.getDataFolder() + File.separator + "database.db");
             createTable();
 
-            Log.logInfo("Connected to SQLite database.");
+            Log.logInfo("Connected to SQLite");
         } catch (ClassNotFoundException | SQLException e) {
             Log.logWarning("Could not connect to SQLite database: " + e.getMessage());
         }
@@ -48,8 +48,6 @@ public class SQLite extends Database {
 
             // Create index on code column
             statement.execute("CREATE INDEX IF NOT EXISTS idx_verification_codes_code ON verification_codes (code)");
-
-            Log.logInfo("Created verification_codes table and index.");
         } catch (SQLException e) {
             Log.logWarning("Could not create verification_codes table or index: " + e.getMessage());
         }
@@ -88,6 +86,19 @@ public class SQLite extends Database {
             Log.logWarning("Could not get the created time of the code: " + e.getMessage());
         }
         return null;
+    }
+  
+    @Override
+    public boolean contains(String code) {
+        // Check if the code exists in the database
+        try (PreparedStatement statement = connection.prepareStatement("SELECT code FROM verification_codes WHERE code = ?")) {
+            statement.setString(1, code);
+            ResultSet resultSet = statement.executeQuery();
+            return resultSet.next();
+        } catch (SQLException e) {
+            Log.logWarning("Could not check if the code exists in the database: " + e.getMessage());
+        }
+        return false;
     }
 
     @Override
