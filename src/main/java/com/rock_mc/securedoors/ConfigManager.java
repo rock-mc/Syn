@@ -1,13 +1,10 @@
-package com.rock_mc.securedoors.config;
+package com.rock_mc.securedoors;
 
-import com.rock_mc.securedoors.utils.Log;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class ConfigManager {
@@ -22,7 +19,7 @@ public class ConfigManager {
         return config;
     }
 
-    public void loadConfig() {
+    public void load() {
         File configFile = new File(plugin.getDataFolder(), "config.yml");
         if (!configFile.exists()) {
             plugin.saveResource("config.yml", false);
@@ -39,6 +36,12 @@ public class ConfigManager {
             valid = false;
         }
         if (config.get("door.code_length") == null) {
+            valid = false;
+        }
+        if (config.get("door.expire_day") == null) {
+            valid = false;
+        }
+        if (config.get("door.database.type") == null) {
             valid = false;
         }
         if (!valid) {

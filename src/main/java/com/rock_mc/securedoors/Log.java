@@ -1,6 +1,5 @@
-package com.rock_mc.securedoors.utils;
+package com.rock_mc.securedoors;
 
-import com.rock_mc.securedoors.SecureDoors;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

@@ -11,3 +11,11 @@ door:
 
   # The length of the verification code
   code_length: 6
+
+  # The expiration time of the verification code
+  expire_day: 14
+
+  # Database setting
+  database:
+      # The database type, currently only support sqlite
+      type: sqlite

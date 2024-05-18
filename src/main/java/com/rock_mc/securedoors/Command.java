@@ -1,17 +1,23 @@
-package com.rock_mc.securedoors.commands;
+package com.rock_mc.securedoors;
 
-import com.rock_mc.securedoors.utils.Log;
+import com.rock_mc.securedoors.db.DbManager;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class Command implements CommandExecutor {
 
-    private JavaPlugin plugin;
+    private final JavaPlugin plugin;
+    private DbManager dbManager;
 
-    public Command(JavaPlugin plugin) {
+    public Command(JavaPlugin plugin, DbManager dbManager) {
         this.plugin = plugin;
+        this.dbManager = dbManager;
     }
 
     @Override
@@ -44,19 +50,69 @@ public class Command implements CommandExecutor {
 
                 verification_code.append(randomChar);
             }
+            String code = verification_code.toString();
 
             String msg;
             if (player == null) {
-                msg = verification_code.toString();
+                msg = code;
             } else {
-                msg = "https://rock-mc.com/code/?text=" + verification_code.toString();
+                msg = "https://rock-mc.com/code/?text=" + code;
             }
+
+            this.dbManager.addCode(code);
 
             Log.sendMessage(player, msg);
 
             return true;
         }
+        if ("verify".equals(args[0])) {
 
+            if (player == null) {
+                Log.sendMessage(player, "You must be a player to use this command.");
+                return true;
+            }
+
+            if (args.length != 2) {
+                Log.sendMessage(player, "Usage: /sd verify <verification code>");
+                return true;
+            }
+
+            String code = args[1];
+
+            String codeCreateDate = this.dbManager.getCodeCreateDate(code);
+            if (codeCreateDate == null) {
+                Log.sendMessage(player, "The verification code is incorrect.");
+                return true;
+            }
+            // check if the code is expired
+            int expireDay = this.plugin.getConfig().getInt("door.expire_day");
+
+            // codeCreateDate = "2024-05-18 13:19:32";
+             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            try {
+                Date CodeCreatedDate = sdf.parse(codeCreateDate);
+
+                long currentTime = System.currentTimeMillis();
+
+                if (currentTime - CodeCreatedDate.getTime() > (long) expireDay * 24 * 60 * 60 * 1000) {
+                    Log.sendMessage(player, "The verification code is expired.");
+                    return true;
+                }
+
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+
+
+//            if (this.dbManager.contains(code)) {
+//                this.dbManager.removeCode(code);
+//                Log.sendMessage(player, "The verification code is correct.");
+//            } else {
+//                Log.sendMessage(player, "The verification code is incorrect.");
+//            }
+
+            return true;
+        }
 
         return true;
     }
@@ -71,7 +127,7 @@ public class Command implements CommandExecutor {
         String open = "* open: Allow everyone to come into the server but the player in the ban list\nUsage: /sd open";
         String close = "* close: Allow the player in the allowlist to come into the server\nUsage: /sd close";
 
-        String allCommands = "Commands:\n" + gencode + "\n" + info + "\n" + verify + "\n" + ban + "\n" + unban + "\n" + open + "\n" + close;
+        String allCommands = "Commands:\n" + gencode + "\n" + info + "\n" + ban + "\n" + unban + "\n" + open + "\n" + close;
 
         String message;
         if (player == null) {

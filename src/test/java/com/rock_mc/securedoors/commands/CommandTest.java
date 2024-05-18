@@ -1,7 +1,7 @@
 package com.rock_mc.securedoors.commands;
 
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
-import com.rock_mc.securedoors.utils.Log;
+import com.rock_mc.securedoors.Log;
 import com.rock_mc.securedoors.PluginTest;
 import org.junit.jupiter.api.Test;
 
