@@ -26,7 +26,7 @@ SecureDoors is a Minecraft plugin designed to manage player whitelist verificati
 * `/sd block <player> [day hour min sec]` - Ban a specific player for a certain period of time
 * `/sd unblock <player>` - Unban a specific player
 * `/sd open` - Allow everyone to enter the server, except for players on the ban list
-* `/sd close` - Only allow players on the allowlist to enter the server
+* `/sd close` - Allow the player in the allowlist to come into the server.
 
 ## Permissions
 
