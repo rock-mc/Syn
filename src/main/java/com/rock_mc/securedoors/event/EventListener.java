@@ -2,12 +2,15 @@ package com.rock_mc.securedoors.event;
 
 import com.rock_mc.securedoors.Log;
 import com.rock_mc.securedoors.SecureDoors;
+import com.rock_mc.securedoors.Utils;
+import com.rock_mc.securedoors.config.Config;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -17,8 +20,6 @@ import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.io.IOException;
 
-import com.rock_mc.securedoors.Utils;
-
 public class EventListener implements Listener {
     private final SecureDoors plugin;
 
@@ -26,11 +27,14 @@ public class EventListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerLogin(PlayerLoginEvent event) throws IOException {
         final Player player = event.getPlayer();
         final String name = player.getDisplayName();
         final String uuid = player.getUniqueId().toString();
+
+        // 進來就建立玩家資料
+        plugin.dbManager.addPlayerInfo(uuid, name);
 
         if (plugin.dbManager.isPlayerAllowed(uuid)) {
             return;
@@ -57,8 +61,7 @@ public class EventListener implements Listener {
         String kickMsg;
         if (banedSecs == 0) {
             kickMsg = "抱歉！你是永久黑名單。";
-        }
-        else {
+        } else {
             kickMsg = "抱歉！你被列為黑名單！\n刑期尚有 ";
             long expiryTime = banedSecs + bannedCreateAtSecs;
             expiryTime -= now;
@@ -75,19 +78,21 @@ public class EventListener implements Listener {
         final String name = player.getDisplayName();
         final String uuid = player.getUniqueId().toString();
 
-        // 進來就建立玩家資料
-        plugin.dbManager.addPlayerInfo(uuid, name);
-
         if (plugin.dbManager.isPlayerAllowed(uuid)) {
-            Log.logSevere("玩家 " + ChatColor.BOLD + name + ChatColor.WHITE + " 通過驗證。");
+            if (player.isOp()) {
+                Log.broadcast("管理員 " + ChatColor.BOLD + "" + ChatColor.GOLD + name + ChatColor.WHITE + " 通過驗證。");
+            } else {
+                Log.broadcast("玩家 " + ChatColor.BOLD + name + ChatColor.WHITE + " 通過驗證。");
+            }
             return;
         }
 
         if (player.isOp()) {
             plugin.dbManager.addAllowedPlayer(uuid);
+            Log.broadcast("管理員 " + ChatColor.BOLD + "" + ChatColor.GOLD + name + ChatColor.WHITE + " 通過驗證。");
             return;
         }
-        Log.logSevere("玩家 " + name + " 未通過驗證，凍結玩家。");
+        Log.logInfo("玩家 " + name + " 未通過驗證，凍結玩家。");
 
         Location location = player.getLocation();
         plugin.freezePlayerMap.put(player.getUniqueId(), location);
@@ -98,16 +103,13 @@ public class EventListener implements Listener {
     @EventHandler
     public void onSDJoin(JoinEvent event) {
         Log.broadcast(event.getMessage());
+        plugin.freezePlayerMap.remove(event.getPlayer().getUniqueId());
     }
 
     @EventHandler
     public void onSDKick(KickEvent event) {
         Player player = event.getPlayer();
-        Bukkit.getScheduler().runTask(plugin, new Runnable() {
-            public void run() {
-                player.kickPlayer(event.getMessage());
-            }
-        });
+        Bukkit.getScheduler().runTask(plugin, () -> player.kickPlayer(event.getMessage()));
     }
 
     @EventHandler
@@ -117,7 +119,7 @@ public class EventListener implements Listener {
             return;
         }
         LivingEntity livingEntity = player;
-        if(!livingEntity.isOnGround()){
+        if (!livingEntity.isOnGround()) {
             return;
         }
         event.setCancelled(true);

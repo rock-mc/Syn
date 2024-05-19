@@ -32,12 +32,12 @@ SecureDoors is a Minecraft plugin designed to manage player whitelist verificati
 
 * `sd.*` - Grants access to all SecureDoors-related permissions
   * `sd.gencode` - Allows generating verification codes
-  * `sd.block` - Allows banning players
-  * `sd.unblock` - Allows unbanning players
+  * `sd.ban` - Allows banning players
+  * `sd.unban` - Allows unbanning players
   * `sd.door` - Allows opening/closing the server
 * `sd.gencode` - Allows generating verification codes (default: OP)
-* `sd.block` - Allows banning players (default: OP)
-* `sd.unblock` - Allows unbanning players (default: OP)
+* `sd.ban` - Allows banning players (default: OP)
+* `sd.unban` - Allows unbanning players (default: OP)
 * `sd.door` - Allows opening/closing the server (default: OP)
 
 ## Configuration
