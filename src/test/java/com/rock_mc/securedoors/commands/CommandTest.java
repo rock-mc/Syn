@@ -5,14 +5,13 @@ import com.rock_mc.securedoors.Log;
 import com.rock_mc.securedoors.PluginTest;
 import org.junit.jupiter.api.Test;
 
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CommandTest extends PluginTest {
 
 
     @Test
-    void onCommandByOp() {
+    void defaultCmd() {
         // 管理員
         PlayerMock opPlayer = server.addPlayer();
         opPlayer.setOp(true);
@@ -40,10 +39,25 @@ Usage: /sd close""";
 
         opPlayer.performCommand("sd help");
         assertEquals(expected, opPlayer.nextMessage());
+
+        // 玩家
+        PlayerMock player = server.addPlayer();
+        player.setOp(false);
+
+        expected = Log.PREFIX_GAME + "You don't have permission to use any command.";
+        player.performCommand("sd");
+
+        commandOutput = player.nextMessage();
+        System.out.println(commandOutput);
+        assertEquals(expected, commandOutput);
+
+        player.performCommand("sd help");
+
+        assertEquals(expected, player.nextMessage());
     }
 
     @Test
-    void verify() {
+    void gencodeCmd() {
         // 管理員
         PlayerMock opPlayer = server.addPlayer();
         opPlayer.setOp(true);
@@ -67,5 +81,12 @@ Usage: /sd close""";
         commandOutput = newPlayer.nextMessage();
 
         assertEquals(Log.PREFIX_GAME + "The verification code is correct.", commandOutput);
+
+        PlayerMock otherPlayer = server.addPlayer();
+
+        otherPlayer.performCommand("sd verify " + code);
+        commandOutput = otherPlayer.nextMessage();
+
+        assertEquals(Log.PREFIX_GAME + "The verification code is incorrect.", commandOutput);
     }
 }

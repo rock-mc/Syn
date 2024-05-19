@@ -27,7 +27,7 @@ public class SQLite extends Database {
             connection = DriverManager.getConnection("jdbc:sqlite:" + plugin.getDataFolder() + File.separator + "database.db");
             createTable();
 
-            Log.logInfo("Connected to SQLite database.");
+            Log.logInfo("Connected to SQLite");
         } catch (ClassNotFoundException | SQLException e) {
             Log.logWarning("Could not connect to SQLite database: " + e.getMessage());
         }
@@ -48,8 +48,6 @@ public class SQLite extends Database {
 
             // Create index on code column
             statement.execute("CREATE INDEX IF NOT EXISTS idx_verification_codes_code ON verification_codes (code)");
-
-            Log.logInfo("Created verification_codes table and index.");
         } catch (SQLException e) {
             Log.logWarning("Could not create verification_codes table or index: " + e.getMessage());
         }
@@ -89,6 +87,25 @@ public class SQLite extends Database {
         }
         return null;
     }
+    @Override
+    public boolean contains(String code) {
+        // Check if the code exists in the database
+        try (PreparedStatement statement = connection.prepareStatement("""
+            SELECT code FROM verification_codes WHERE code = ?
+            AND julianday('now') - julianday(created_at) <= ? 
+            """)) {
+            statement.setString(1, code);
+
+            int expireDay = this.plugin.getConfig().getInt("door.expire_day");
+            statement.setInt(2, expireDay);
+
+            ResultSet resultSet = statement.executeQuery();
+            return resultSet.next();
+        } catch (SQLException e) {
+            Log.logWarning("Could not check if the code exists in the database: " + e.getMessage());
+        }
+        return false;
+    }
 
     @Override
     public void removeCode(String code) {
@@ -117,27 +134,5 @@ public class SQLite extends Database {
         } catch (SQLException e) {
             Log.logWarning("Could not close SQLite database connection: " + e.getMessage());
         }
-    }
-
-    @Override
-    public boolean contains(String code) {
-        // Get the created time of the code
-        try (PreparedStatement statement = connection.prepareStatement("""
-            SELECT created_at FROM verification_codes WHERE code = ?
-            AND julianday('now') - julianday(created_at) <= ?;
-            """)) {
-            statement.setString(1, code);
-
-            int expireDay = this.plugin.getConfig().getInt("door.expire_day");
-            statement.setInt(2, expireDay);
-
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                return true;
-            }
-        } catch (SQLException e) {
-            Log.logWarning("Could not get a valid code: " + e.getMessage());
-        }
-        return false;
     }
 }

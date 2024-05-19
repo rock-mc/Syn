@@ -10,7 +10,7 @@ class ConfigManagerTest extends PluginTest {
 
     @Test
     void checkNotExistValue() {
-        ConfigManager configManager = plugin.getConfigManager();
+        ConfigManager configManager = plugin.configManager;
 
         Object value = configManager.getConfig().get("door.notExist");
 
@@ -19,7 +19,7 @@ class ConfigManagerTest extends PluginTest {
 
     @Test
     void checkOpen() {
-        ConfigManager configManager = plugin.getConfigManager();
+        ConfigManager configManager = plugin.configManager;
 
         assertFalse(configManager.getConfig().getBoolean("door.open"));
 
