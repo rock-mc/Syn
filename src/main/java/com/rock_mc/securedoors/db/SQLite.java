@@ -183,19 +183,6 @@ public class SQLite extends Database {
     }
 
     @Override
-    public boolean contains(String code) {
-        // Check if the code exists in the database
-        try (PreparedStatement statement = connection.prepareStatement("SELECT code FROM verification_codes WHERE code = ?")) {
-            statement.setString(1, code);
-            ResultSet resultSet = statement.executeQuery();
-            return resultSet.next();
-        } catch (SQLException e) {
-            Log.logWarning("Could not check if the code exists in the database: " + e.getMessage());
-        }
-        return false;
-    }
-
-    @Override
     public void markCode(String code, boolean used) {
         // Mark the code as used or not used
         try (PreparedStatement statement = connection.prepareStatement("INSERT INTO verification_codes (code, used) VALUES (?, ?) ON CONFLICT(code) DO UPDATE SET used = ?")) {
