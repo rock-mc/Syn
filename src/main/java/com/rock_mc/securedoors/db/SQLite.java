@@ -91,7 +91,7 @@ public class SQLite extends Database {
             """)) {
             statement.setString(1, code);
 
-            int expireDay = this.plugin.getConfig().getInt("door.expire_day");
+            int expireDay = this.plugin.getConfig().getInt("door.expire_days");
             statement.setInt(2, expireDay);
 
             ResultSet resultSet = statement.executeQuery();
