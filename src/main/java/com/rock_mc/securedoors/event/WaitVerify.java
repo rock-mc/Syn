@@ -24,7 +24,7 @@ public class WaitVerify extends Thread {
     }
 
     public void run() {
-        Log.sendMessage(player, "請在 " + MAX_WAIT_INPUT_CODE_SECONDS + " 秒內輸入邀請碼");
+        Log.sendMessage(player, "請在 " + MAX_WAIT_INPUT_CODE_SECONDS + " 秒內輸入驗證碼");
 
         int failTime = plugin.dbManager.getFailedAttempts(player.getUniqueId().toString());
         Log.sendMessage(player, "您有 " + (MAX_INPUT_CODE_TIMES - (failTime - 1)) + " 次輸入機會");
@@ -48,7 +48,7 @@ public class WaitVerify extends Thread {
 
         String eventMessage;
         if (!plugin.dbManager.isPlayerAllowed(player.getUniqueId().toString())) {
-            eventMessage = "抱歉未通過認證，請取得邀請碼後，參考官網教學輸入邀請碼";
+            eventMessage = "未通過認證，請取得驗證碼後，參考官網教學輸入驗證碼";
             Event event = new KickEvent(true, player, eventMessage);
 
             failTime = plugin.dbManager.getFailedAttempts(player.getUniqueId().toString());
