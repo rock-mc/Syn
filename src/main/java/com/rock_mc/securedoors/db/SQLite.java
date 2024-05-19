@@ -1,6 +1,7 @@
 package com.rock_mc.securedoors.db;
 
 import com.rock_mc.securedoors.Log;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -25,7 +26,7 @@ public class SQLite extends Database {
             Connection connection = getConnection();
             createTable(connection);
 
-            Log.logInfo("Connected to SQLite");
+            Bukkit.getLogger().info("Connected to SQLite");
         } catch (ClassNotFoundException | SQLException e) {
             Log.logWarning("Could not connect to SQLite database: " + e.getMessage());
         }

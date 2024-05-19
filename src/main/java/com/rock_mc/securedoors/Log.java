@@ -33,7 +33,7 @@ public class Log {
     }
 
     public static void logInfo(String message) {
-        Bukkit.getLogger().info(PREFIX_SERVER + message);
+        Bukkit.getConsoleSender().sendMessage(PREFIX_SERVER + message);
     }
 
     public static void logWarning(String message) {

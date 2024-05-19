@@ -1,11 +1,13 @@
 package com.rock_mc.securedoors.commands;
 
+import be.seeseemelk.mockbukkit.command.ConsoleCommandSenderMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import com.rock_mc.securedoors.Log;
 import com.rock_mc.securedoors.PluginTest;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CommandTest extends PluginTest {
 
@@ -88,5 +90,15 @@ Usage: /sd close""";
         commandOutput = otherPlayer.nextMessage();
 
 //        assertEquals(Log.PREFIX_GAME + "The verification code is incorrect.", commandOutput);
+    }
+
+
+    @Test
+    void console() {
+        ConsoleCommandSenderMock consoleSender = server.getConsoleSender();
+        server.dispatchCommand(consoleSender, "sd");
+
+        assertTrue(consoleSender.nextMessage().contains(Log.PREFIX_SERVER + "Commands:"));
+
     }
 }
