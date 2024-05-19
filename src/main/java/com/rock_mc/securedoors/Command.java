@@ -8,6 +8,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 public class Command implements CommandExecutor {
@@ -84,31 +87,21 @@ public class Command implements CommandExecutor {
                 return true;
             }
             // check if the code is expired
-            int expireDay = this.plugin.getConfig().getInt("door.expire_day");
+            int expireDays = this.plugin.getConfig().getInt("door.expire_days");
 
-            // codeCreateDate = "2024-05-18 13:19:32";
-             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            try {
-                Date CodeCreatedDate = sdf.parse(codeCreateDate);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime codeCreatedDateTime = LocalDateTime.parse(codeCreateDate, formatter);
 
-                long currentTime = System.currentTimeMillis();
+            LocalDateTime currentDateTime = LocalDateTime.now();
 
-                if (currentTime - CodeCreatedDate.getTime() > (long) expireDay * 24 * 60 * 60 * 1000) {
-                    Log.sendMessage(player, "The verification code is expired.");
-                    return true;
-                }
+            long daysBetween = ChronoUnit.DAYS.between(codeCreatedDateTime, currentDateTime);
 
-            } catch (ParseException e) {
-                throw new RuntimeException(e);
+            if (daysBetween > expireDays) {
+                Log.sendMessage(player, "The verification code is expired.");
+                return true;
             }
 
-
-//            if (this.dbManager.contains(code)) {
-//                this.dbManager.removeCode(code);
-//                Log.sendMessage(player, "The verification code is correct.");
-//            } else {
-//                Log.sendMessage(player, "The verification code is incorrect.");
-//            }
+            // work in progress
 
             return true;
         }
@@ -155,10 +148,5 @@ public class Command implements CommandExecutor {
             }
         }
         Log.sendMessage(player, message);
-    }
-
-    private boolean isVerified(Player player) {
-        // TODO: check if the player in the white list from database
-        return !"guest".equals(player.getName());
     }
 }

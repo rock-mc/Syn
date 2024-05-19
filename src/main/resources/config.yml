@@ -8,7 +8,7 @@ door:
 
   # The available characters for the verification code
   # The length requires to be 10 or more
-  available_characters: "abcdefghijklmnopqrstuvwxyz0123456789"
+  available_characters: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
   # The length of the verification code
   # The length requires to be 4 or more
@@ -16,7 +16,12 @@ door:
 
   # The expiration time of the verification code
   # 0 means the verification code will never expire
-  expire_day: 14
+  expire_days: 14
+
+  # The clear time of the expired verification code
+  # 0 means the verification code will never clear
+  # It make sure the verification code will not be repeated in clear_days.
+  clear_days: 365
 
   # Database setting
   database:

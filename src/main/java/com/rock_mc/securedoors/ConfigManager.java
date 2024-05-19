@@ -63,14 +63,25 @@ public class ConfigManager {
             }
         }
 
-        if (config.get("door.expire_day") == null) {
+        if (config.get("door.expire_days") == null) {
             valid = false;
         }
         else {
-            if (!(config.get("door.expire_day") instanceof Integer)) {
+            if (!(config.get("door.expire_days") instanceof Integer)) {
                 valid = false;
             }
-            if (config.getInt("door.expire_day") < 0) {
+            if (config.getInt("door.expire_days") < 0) {
+                valid = false;
+            }
+        }
+        if (config.get("door.clear_days") == null) {
+            valid = false;
+        }
+        else {
+            if (!(config.get("door.clear_days") instanceof Integer)) {
+                valid = false;
+            }
+            if (config.getInt("door.clear_days") < 0) {
                 valid = false;
             }
         }

@@ -4,12 +4,7 @@ import com.rock_mc.securedoors.Log;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class SQLite extends Database {
     private Connection connection;
