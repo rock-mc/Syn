@@ -1,23 +1,27 @@
 package com.rock_mc.securedoors;
 
+import com.rock_mc.securedoors.config.Config;
 import com.rock_mc.securedoors.db.DbManager;
+import com.rock_mc.securedoors.event.KickEvent;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 public class Command implements CommandExecutor {
 
-    private final JavaPlugin plugin;
-    private DbManager dbManager;
+    private final SecureDoors plugin;
 
-    public Command(JavaPlugin plugin, DbManager dbManager) {
+    public Command(SecureDoors plugin) {
         this.plugin = plugin;
-        this.dbManager = dbManager;
     }
 
     @Override
@@ -35,29 +39,30 @@ public class Command implements CommandExecutor {
 
         if ("gencode".equals(args[0])) {
 
-            if (player != null && !player.hasPermission("sd.gencode")) {
+            if (player != null && !player.hasPermission(Permission.GENCODE)) {
                 Log.sendMessage(player, "You don't have permission to use this command.");
                 return true;
             }
 
-            String available_characters = this.plugin.getConfig().getString("door.available_characters");
-            int code_length = this.plugin.getConfig().getInt("door.code_length");
+            String available_characters = this.plugin.getConfig().getString(Config.AVAILABLE_CHARS);
+            int code_length = this.plugin.getConfig().getInt(Config.CODE_LENGTH);
 
             // Generate a verification code
             // Check the code is unique
 
             String code = Utils.generateCode(available_characters, code_length);
 
-            while (this.dbManager.contains(code)) {
+            while (plugin.dbManager.contains(code)) {
                 code = Utils.generateCode(available_characters, code_length);
             }
-            this.dbManager.addCode(code);
+            plugin.dbManager.addCode(code);
 
             String msg;
             if (player == null) {
                 msg = code;
             } else {
-                msg = "https://rock-mc.com/code/?text=" + code;
+                String showCodeUrl = this.plugin.getConfig().getString(Config.SHOW_CODE_URL);
+                msg = showCodeUrl + code;
             }
 
             Log.sendMessage(player, msg);
@@ -76,39 +81,61 @@ public class Command implements CommandExecutor {
                 return true;
             }
 
-            String code = args[1];
+            int maxInputCodeTimes = this.plugin.getConfig().getInt(Config.MAX_INPUT_CODE_TIMES);
+            int failTime = plugin.dbManager.getFailedAttempts(player.getUniqueId().toString());
 
-            String codeCreateDate = this.dbManager.getCodeCreateDate(code);
+            Log.logInfo("failTime: " + failTime + ", maxInputCodeTimes: " + maxInputCodeTimes);
+            if (failTime >= maxInputCodeTimes) {
+
+                int banDays = plugin.getConfig().getInt(Config.INPUT_CODE_BAN_DAYS);
+                String message = "請勿亂猜驗證碼，冷靜個 " + banDays + " 天再來吧";
+                String banReason = "try code too much times";
+
+                long banedSec = (long) banDays * 24 * 60 * 60;
+
+                plugin.dbManager.addBanedPlayer(player.getUniqueId().toString(), banReason, banedSec);
+                plugin.dbManager.updateFailedAttempts(player.getUniqueId().toString(), 1);
+
+                Event event = new KickEvent(false, player, message);
+                Bukkit.getPluginManager().callEvent(event);
+                return true;
+            } else {
+                plugin.dbManager.updateFailedAttempts(player.getUniqueId().toString(), failTime + 1);
+            }
+
+            String code = args[1];
+            if (!Utils.isValidCode(this.plugin.getConfig().getString(Config.AVAILABLE_CHARS), this.plugin.getConfig().getInt(Config.CODE_LENGTH), code)) {
+                Log.sendMessage(player, ChatColor.RED + "驗證碼錯誤。");
+                return true;
+            }
+
+            String codeCreateDate = plugin.dbManager.getCodeCreateDate(code);
             if (codeCreateDate == null) {
-                Log.sendMessage(player, "The verification code is incorrect.");
+                // The verification code is not existed
+                Log.sendMessage(player, ChatColor.RED + "驗證碼錯誤。");
                 return true;
             }
             // check if the code is expired
-            int expireDay = this.plugin.getConfig().getInt("door.expire_day");
+            int expireDays = this.plugin.getConfig().getInt(Config.EXPIRE_DAYS);
 
-            // codeCreateDate = "2024-05-18 13:19:32";
-             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            try {
-                Date CodeCreatedDate = sdf.parse(codeCreateDate);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime codeCreatedDateTime = LocalDateTime.parse(codeCreateDate, formatter);
 
-                long currentTime = System.currentTimeMillis();
+            LocalDateTime currentDateTime = LocalDateTime.now();
 
-                if (currentTime - CodeCreatedDate.getTime() > (long) expireDay * 24 * 60 * 60 * 1000) {
-                    Log.sendMessage(player, "The verification code is expired.");
-                    return true;
-                }
+            long minesBetween = ChronoUnit.MINUTES.between(codeCreatedDateTime, currentDateTime);
 
-            } catch (ParseException e) {
-                throw new RuntimeException(e);
+            if (minesBetween > (long) expireDays * 24 * 60) {
+                // The verification code is expired
+                Log.sendMessage(player, ChatColor.RED + "驗證碼過期。");
+                return true;
             }
+            // The verification code is exited and not expired
+            // Add the player to the allow list
+            plugin.dbManager.addAllowedPlayer(player.getUniqueId().toString());
 
-
-//            if (this.dbManager.contains(code)) {
-//                this.dbManager.removeCode(code);
-//                Log.sendMessage(player, "The verification code is correct.");
-//            } else {
-//                Log.sendMessage(player, "The verification code is incorrect.");
-//            }
+            // Mark the verification code as used
+            plugin.dbManager.markCode(code, true);
 
             return true;
         }
@@ -135,19 +162,19 @@ public class Command implements CommandExecutor {
 
             message = "Commands:";
 
-            if (player.hasPermission("sd.gencode")) {
+            if (player.hasPermission(Permission.GENCODE)) {
                 message += "\n" + gencode;
             }
-            if (player.hasPermission("sd.info")) {
+            if (player.hasPermission(Permission.INFO)) {
                 message += "\n" + info;
             }
-            if (player.hasPermission("sd.ban")) {
+            if (player.hasPermission(Permission.BAN)) {
                 message += "\n" + ban;
             }
-            if (player.hasPermission("sd.unban")) {
+            if (player.hasPermission(Permission.UNBAN)) {
                 message += "\n" + unban;
             }
-            if (player.hasPermission("sd.door")) {
+            if (player.hasPermission(Permission.DOOR)) {
                 message += "\n" + open + "\n" + close;
             }
             if (message.equals("Commands:")) {
@@ -157,8 +184,4 @@ public class Command implements CommandExecutor {
         Log.sendMessage(player, message);
     }
 
-    private boolean isVerified(Player player) {
-        // TODO: check if the player in the white list from database
-        return !"guest".equals(player.getName());
-    }
 }

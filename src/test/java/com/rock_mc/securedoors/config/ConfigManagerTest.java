@@ -1,6 +1,5 @@
 package com.rock_mc.securedoors.config;
 
-import com.rock_mc.securedoors.ConfigManager;
 import com.rock_mc.securedoors.PluginTest;
 import org.junit.jupiter.api.Test;
 

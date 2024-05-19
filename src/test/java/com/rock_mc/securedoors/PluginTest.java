@@ -20,7 +20,7 @@ public class PluginTest {
 
         plugin = MockBukkit.load(SecureDoors.class);
 
-        dbManager = new DbManager(plugin, plugin.configManager);
+        dbManager = new DbManager(plugin);
     }
 
     @AfterEach

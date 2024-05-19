@@ -7,7 +7,7 @@ import com.rock_mc.securedoors.PluginTest;
 import com.rock_mc.securedoors.Utils;
 import org.junit.jupiter.api.Test;
 
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CommandTest extends PluginTest {
@@ -61,7 +61,35 @@ Usage: /sd close""";
 
     @Test
     void gencodeCmd() {
+        // 管理員
+        PlayerMock opPlayer = server.addPlayer();
+        opPlayer.setOp(true);
 
-        // TODO: I don't know how to test this method.
+        String expected = "";
+
+        opPlayer.performCommand("sd gencode 3");
+
+        String msgUrl = "https://rock-mc.com/code/?text=";
+
+        String commandOutput = opPlayer.nextMessage();
+
+        assertNotNull(commandOutput);
+        assertTrue(commandOutput.contains(msgUrl));
+
+        String code = commandOutput.substring(commandOutput.indexOf(msgUrl) + msgUrl.length());
+
+        PlayerMock newPlayer = server.addPlayer();
+
+        newPlayer.performCommand("sd verify " + code);
+        commandOutput = newPlayer.nextMessage();
+
+        assertEquals(Log.PREFIX_GAME + "The verification code is correct.", commandOutput);
+
+        PlayerMock otherPlayer = server.addPlayer();
+
+        otherPlayer.performCommand("sd verify " + code);
+        commandOutput = otherPlayer.nextMessage();
+
+        assertEquals(Log.PREFIX_GAME + "The verification code is incorrect.", commandOutput);
     }
 }

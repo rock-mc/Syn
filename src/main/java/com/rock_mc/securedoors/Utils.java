@@ -13,4 +13,70 @@ public class Utils {
 
         return verification_code.toString();
     }
+
+    public static boolean isValidCode(String available_characters, int code_length, String code) {
+        if (code.length() != code_length) {
+            return false;
+        }
+
+        for (int i = 0; i < code.length(); i++) {
+            if (!available_characters.contains(String.valueOf(code.charAt(i)))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    static final int SEC = 1;
+    static final int MIN = 60 * SEC;
+    static final int HOUR = 60 * MIN;
+    static final int DAY = 24 * HOUR;
+
+    public static String timeToStr(long expiryTime){
+        long day = expiryTime / DAY;
+        expiryTime %= DAY;
+        long hour = expiryTime / HOUR;
+        expiryTime %= HOUR;
+        long min = expiryTime / MIN;
+        expiryTime %= MIN;
+        long sec = expiryTime;
+
+        return timeToStr(day, hour, min, sec);
+    }
+
+    static String timeToStr(long day, long hour, long min, long sec){
+        String result = null;
+        if(day > 0){
+            result = day + " 天";
+        }
+        if(hour > 0){
+            if (result == null){
+                result = hour + " 小時";
+            }
+            else {
+                result += " " + hour + " 小時";
+            }
+        }
+        if(min > 0){
+            if(result == null){
+                result = min + " 分鐘";
+            }
+            else{
+                result += " " + min + " 分鐘";
+            }
+        }
+        if(sec > 0){
+            if (result == null){
+                result = sec + " 秒";
+            }
+            else{
+                result += " " + sec + " 秒";
+            }
+        }
+        if (result == null){
+            result = "∞";
+        }
+        return result;
+    }
 }
