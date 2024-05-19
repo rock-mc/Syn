@@ -4,19 +4,22 @@ import be.seeseemelk.mockbukkit.command.ConsoleCommandSenderMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import com.rock_mc.securedoors.Log;
 import com.rock_mc.securedoors.PluginTest;
+import org.bukkit.ChatColor;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CommandTest extends PluginTest {
 
 
     @Test
     void defaultCmd() {
-        // 管理員
+        PlayerJoinEvent.getHandlerList().unregister(plugin);
+
         PlayerMock opPlayer = server.addPlayer();
         opPlayer.setOp(true);
+        opPlayer.setName("opPlayer");
 
         String expected = Log.PREFIX_GAME + """
 Commands:
@@ -35,36 +38,31 @@ Usage: /sd close""";
 
         opPlayer.performCommand("sd");
 
-        String commandOutput = opPlayer.nextMessage();
-        System.out.println(commandOutput);
-//        assertEquals(expected, commandOutput);
+        assertEquals(expected, opPlayer.nextMessage());
 
         opPlayer.performCommand("sd help");
-//        assertEquals(expected, opPlayer.nextMessage());
+        assertEquals(expected, opPlayer.nextMessage());
 
-        // 玩家
         PlayerMock player = server.addPlayer();
         player.setOp(false);
 
         expected = Log.PREFIX_GAME + "You don't have permission to use any command.";
         player.performCommand("sd");
 
-        commandOutput = player.nextMessage();
-        System.out.println(commandOutput);
-//        assertEquals(expected, commandOutput);
+        assertEquals(expected, player.nextMessage());
 
         player.performCommand("sd help");
 
-//        assertEquals(expected, player.nextMessage());
+        assertEquals(expected, player.nextMessage());
     }
 
     @Test
     void gencodeCmd() {
-        // 管理員
+        PlayerJoinEvent.getHandlerList().unregister(plugin);
+
         PlayerMock opPlayer = server.addPlayer();
         opPlayer.setOp(true);
 
-        String expected = "";
 
         opPlayer.performCommand("sd gencode 3");
 
@@ -73,23 +71,23 @@ Usage: /sd close""";
         String commandOutput = opPlayer.nextMessage();
 
         assertNotNull(commandOutput);
-//        assertTrue(commandOutput.contains(msgUrl));
+        assertTrue(commandOutput.contains(msgUrl));
 
-        String code = commandOutput.substring(commandOutput.indexOf(msgUrl) + msgUrl.length());
+        String code = commandOutput.substring(commandOutput.lastIndexOf(msgUrl) + msgUrl.length());
 
         PlayerMock newPlayer = server.addPlayer();
 
         newPlayer.performCommand("sd verify " + code);
         commandOutput = newPlayer.nextMessage();
 
-//        assertEquals(Log.PREFIX_GAME + "The verification code is correct.", commandOutput);
+        assertTrue(commandOutput.contains("歡迎"));
 
         PlayerMock otherPlayer = server.addPlayer();
 
         otherPlayer.performCommand("sd verify " + code);
         commandOutput = otherPlayer.nextMessage();
 
-//        assertEquals(Log.PREFIX_GAME + "The verification code is incorrect.", commandOutput);
+        assertEquals(Log.PREFIX_GAME + ChatColor.RED + "驗證碼已經使用過", commandOutput);
     }
 
 
