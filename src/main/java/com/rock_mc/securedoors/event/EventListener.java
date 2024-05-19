@@ -80,7 +80,7 @@ public class EventListener implements Listener {
 
         if (plugin.dbManager.isPlayerAllowed(uuid)) {
             if (player.isOp()) {
-                Log.broadcast("管理員 " + ChatColor.BOLD + "" + ChatColor.GOLD + name + ChatColor.WHITE + " 通過驗證。");
+                Log.broadcast("管理員 " + ChatColor.GOLD + "" + ChatColor.BOLD + name + ChatColor.WHITE + " 通過驗證。");
             } else {
                 Log.broadcast("玩家 " + ChatColor.BOLD + name + ChatColor.WHITE + " 通過驗證。");
             }
@@ -89,7 +89,7 @@ public class EventListener implements Listener {
 
         if (player.isOp()) {
             plugin.dbManager.addAllowedPlayer(uuid);
-            Log.broadcast("管理員 " + ChatColor.BOLD + "" + ChatColor.GOLD + name + ChatColor.WHITE + " 通過驗證。");
+            Log.broadcast("管理員 " + ChatColor.GOLD + "" + ChatColor.BOLD + name + ChatColor.WHITE + " 通過驗證。");
             return;
         }
         Log.logInfo("玩家 " + name + " 未通過驗證，凍結玩家。");
