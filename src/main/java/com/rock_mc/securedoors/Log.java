@@ -28,6 +28,10 @@ public class Log {
         Bukkit.broadcastMessage(formattedMessage);
     }
 
+    public static void broadcast(String message) {
+        Bukkit.broadcastMessage(message);
+    }
+
     public static void logInfo(String message) {
         Bukkit.getLogger().info(PREFIX_SERVER + message);
     }
