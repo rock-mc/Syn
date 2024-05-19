@@ -29,7 +29,7 @@ public class Log {
     }
 
     public static void broadcast(String message) {
-        Bukkit.broadcastMessage(message);
+        Bukkit.broadcastMessage(PREFIX_GAME + message);
     }
 
     public static void logInfo(String message) {

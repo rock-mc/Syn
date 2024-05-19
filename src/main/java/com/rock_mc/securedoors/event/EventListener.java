@@ -32,6 +32,9 @@ public class EventListener implements Listener {
         final String name = player.getDisplayName();
         final String uuid = player.getUniqueId().toString();
 
+        // 進來就建立玩家資料
+        plugin.dbManager.addPlayerInfo(uuid, name);
+
         if (plugin.dbManager.isPlayerAllowed(uuid)) {
             return;
         }
@@ -57,8 +60,7 @@ public class EventListener implements Listener {
         String kickMsg;
         if (banedSecs == 0) {
             kickMsg = "抱歉！你是永久黑名單。";
-        }
-        else {
+        } else {
             kickMsg = "抱歉！你被列為黑名單！\n刑期尚有 ";
             long expiryTime = banedSecs + bannedCreateAtSecs;
             expiryTime -= now;
@@ -75,16 +77,18 @@ public class EventListener implements Listener {
         final String name = player.getDisplayName();
         final String uuid = player.getUniqueId().toString();
 
-        // 進來就建立玩家資料
-        plugin.dbManager.addPlayerInfo(uuid, name);
-
         if (plugin.dbManager.isPlayerAllowed(uuid)) {
-            Log.logSevere("玩家 " + ChatColor.BOLD + name + ChatColor.WHITE + " 通過驗證。");
+            if (player.isOp()) {
+                Log.broadcast("管理員 " + ChatColor.BOLD + "" + ChatColor.GOLD + name + ChatColor.WHITE + " 通過驗證。");
+            } else {
+                Log.broadcast("玩家 " + ChatColor.BOLD + name + ChatColor.WHITE + " 通過驗證。");
+            }
             return;
         }
 
         if (player.isOp()) {
             plugin.dbManager.addAllowedPlayer(uuid);
+            Log.broadcast("管理員 " + ChatColor.BOLD + "" + ChatColor.GOLD + name + ChatColor.WHITE + " 通過驗證。");
             return;
         }
         Log.logSevere("玩家 " + name + " 未通過驗證，凍結玩家。");
@@ -117,7 +121,7 @@ public class EventListener implements Listener {
             return;
         }
         LivingEntity livingEntity = player;
-        if(!livingEntity.isOnGround()){
+        if (!livingEntity.isOnGround()) {
             return;
         }
         event.setCancelled(true);
