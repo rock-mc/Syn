@@ -46,24 +46,17 @@ public class WaitVerify extends Thread {
             }
         }
 
-        Event event;
         String eventMessage;
-        if (plugin.dbManager.isPlayerAllowed(player.getUniqueId().toString())) {
-
-            eventMessage = "歡迎 " + ChatColor.YELLOW + player.getDisplayName() + ChatColor.WHITE + " 全新加入!";
-            event = new JoinEvent(true, player, eventMessage);
-            
-            this.plugin.freezePlayerMap.remove(player.getUniqueId());
-        } else {
+        if (!plugin.dbManager.isPlayerAllowed(player.getUniqueId().toString())) {
             eventMessage = "抱歉未通過認證，請取得邀請碼後，參考官網教學輸入邀請碼";
-            event = new KickEvent(true, player, eventMessage);
+            Event event = new KickEvent(true, player, eventMessage);
 
             failTime = plugin.dbManager.getFailedAttempts(player.getUniqueId().toString());
             plugin.dbManager.updateFailedAttempts(player.getUniqueId().toString(), failTime + 1);
 
             Log.broadcast(player.getDisplayName() + " 沒有通過驗證，被請出伺服器了...");
+            Bukkit.getPluginManager().callEvent(event);
         }
-        Bukkit.getPluginManager().callEvent(event);
     }
 }
 
