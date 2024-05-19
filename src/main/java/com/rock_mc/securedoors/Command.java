@@ -1,7 +1,6 @@
 package com.rock_mc.securedoors;
 
 import com.rock_mc.securedoors.config.Config;
-import com.rock_mc.securedoors.db.DbManager;
 import com.rock_mc.securedoors.event.KickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -9,10 +8,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 

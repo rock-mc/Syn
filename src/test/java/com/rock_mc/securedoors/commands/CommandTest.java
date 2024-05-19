@@ -1,14 +1,11 @@
 package com.rock_mc.securedoors.commands;
 
-import be.seeseemelk.mockbukkit.PermissionManagerMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import com.rock_mc.securedoors.Log;
 import com.rock_mc.securedoors.PluginTest;
-import com.rock_mc.securedoors.Utils;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class CommandTest extends PluginTest {
 
