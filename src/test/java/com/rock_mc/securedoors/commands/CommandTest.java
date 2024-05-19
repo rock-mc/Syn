@@ -5,6 +5,7 @@ import com.rock_mc.securedoors.Log;
 import com.rock_mc.securedoors.PluginTest;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CommandTest extends PluginTest {

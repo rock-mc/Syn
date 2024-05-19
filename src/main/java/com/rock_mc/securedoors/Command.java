@@ -74,12 +74,37 @@ public class Command implements CommandExecutor {
 
             String code = args[1];
 
-            if (this.dbManager.contains(code)) {
-                this.dbManager.removeCode(code);
-                Log.sendMessage(player, "The verification code is correct.");
-            } else {
+            String codeCreateDate = this.dbManager.getCodeCreateDate(code);
+            if (codeCreateDate == null) {
                 Log.sendMessage(player, "The verification code is incorrect.");
+                return true;
             }
+            // check if the code is expired
+            int expireDay = this.plugin.getConfig().getInt("door.expire_day");
+
+            // codeCreateDate = "2024-05-18 13:19:32";
+             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            try {
+                Date CodeCreatedDate = sdf.parse(codeCreateDate);
+
+                long currentTime = System.currentTimeMillis();
+
+                if (currentTime - CodeCreatedDate.getTime() > (long) expireDay * 24 * 60 * 60 * 1000) {
+                    Log.sendMessage(player, "The verification code is expired.");
+                    return true;
+                }
+
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+
+
+//            if (this.dbManager.contains(code)) {
+//                this.dbManager.removeCode(code);
+//                Log.sendMessage(player, "The verification code is correct.");
+//            } else {
+//                Log.sendMessage(player, "The verification code is incorrect.");
+//            }
 
             return true;
         }
