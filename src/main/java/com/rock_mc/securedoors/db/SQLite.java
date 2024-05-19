@@ -385,4 +385,17 @@ public class SQLite extends Database {
         // Close the database connection
         // No need to implement this method for SQLite
     }
+
+    @Override
+    public void addPlayerInfo(String playerUUID, String playerName) {
+        // Add or update player info in the database
+        try (PreparedStatement statement = connection.prepareStatement("INSERT INTO player_info (player_uuid, player_name) VALUES (?, ?) ON CONFLICT(player_uuid) DO UPDATE SET player_name = ?")) {
+            statement.setString(1, playerUUID);
+            statement.setString(2, playerName);
+            statement.setString(3, playerName);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            Log.logWarning("Could not add or update player info in the database: " + e.getMessage());
+        }
+    }
 }

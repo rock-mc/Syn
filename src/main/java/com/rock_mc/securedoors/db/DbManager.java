@@ -48,7 +48,6 @@ public class DbManager {
             return this.database.getCodeCreateDate(code);
         }
     }
-
     public boolean contains(String code) {
         synchronized (lock) {
             return this.database.contains(code);
@@ -77,6 +76,19 @@ public class DbManager {
         synchronized (lock) {
             return this.database.isPlayerAllowed(playerUUID);
         }
+    }
+    public void markCode(String code, boolean used) {
+        this.database.markCode(code, used);
+    }
+    public void addAllowedPlayer(String playerUUID) {
+        this.database.addAllowedPlayer(playerUUID);
+    }
+    public void removeAllowedPlayer(String playerUUID) {
+        this.database.removeAllowedPlayer(playerUUID);
+    }
+
+    public boolean isPlayerAllowed(String playerUUID) {
+        return this.database.isPlayerAllowed(playerUUID);
     }
 
     public void removeCode(String code) {

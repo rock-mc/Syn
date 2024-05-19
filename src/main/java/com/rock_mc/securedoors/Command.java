@@ -140,6 +140,9 @@ public class Command implements CommandExecutor {
                 return true;
             }
 
+            // The verification code is exited and not expired
+            // Add the player to the allow list
+            plugin.dbManager.addAllowedPlayer(player.getUniqueId().toString());
             // check if the code is expired or not
             int expireDays = this.plugin.getConfig().getInt(Config.EXPIRE_DAYS);
 
