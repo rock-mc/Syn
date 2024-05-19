@@ -1,7 +1,7 @@
 package com.rock_mc.securedoors;
 
 import com.rock_mc.securedoors.config.Config;
-import com.rock_mc.securedoors.db.DbManager;
+import com.rock_mc.securedoors.event.JoinEvent;
 import com.rock_mc.securedoors.event.KickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -9,10 +9,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
@@ -43,27 +41,48 @@ public class Command implements CommandExecutor {
                 Log.sendMessage(player, "You don't have permission to use this command.");
                 return true;
             }
+            // args[1] = codeNum
+            int codeNum = 1;
+            if (args.length == 2) {
+                try {
+                    codeNum = Integer.parseInt(args[1]);
+                } catch (NumberFormatException e) {
+                    Log.sendMessage(player, "Usage: /sd gencode [codeNum]");
+                    return true;
+                }
+                if (codeNum < 1) {
+                    Log.sendMessage(player, "The codeNum must be greater than 0.");
+                    return true;
+                }
+                if (codeNum > 1000) {
+                    Log.sendMessage(player, "The codeNum must be less than 1000.");
+                    return true;
+                }
+            }
 
             String available_characters = this.plugin.getConfig().getString(Config.AVAILABLE_CHARS);
             int code_length = this.plugin.getConfig().getInt(Config.CODE_LENGTH);
 
             // Generate a verification code
             // Check the code is unique
+            String msg = "";
+            for (int i = 0; i < codeNum; i++) {
 
-            String code = Utils.generateCode(available_characters, code_length);
+                String code = Utils.generateCode(available_characters, code_length);
+                while (plugin.dbManager.contains(code)) {
+                    code = Utils.generateCode(available_characters, code_length);
+                }
+                plugin.dbManager.addCode(code);
 
-            while (plugin.dbManager.contains(code)) {
-                code = Utils.generateCode(available_characters, code_length);
+
+                if (player == null) {
+                    msg += "\n" + code;
+                } else {
+                    String showCodeUrl = this.plugin.getConfig().getString(Config.SHOW_CODE_URL);
+                    msg += "\n" + showCodeUrl + code;
+                }
             }
-            plugin.dbManager.addCode(code);
-
-            String msg;
-            if (player == null) {
-                msg = code;
-            } else {
-                String showCodeUrl = this.plugin.getConfig().getString(Config.SHOW_CODE_URL);
-                msg = showCodeUrl + code;
-            }
+            msg = msg.trim();
 
             Log.sendMessage(player, msg);
 
@@ -105,17 +124,23 @@ public class Command implements CommandExecutor {
 
             String code = args[1];
             if (!Utils.isValidCode(this.plugin.getConfig().getString(Config.AVAILABLE_CHARS), this.plugin.getConfig().getInt(Config.CODE_LENGTH), code)) {
-                Log.sendMessage(player, ChatColor.RED + "驗證碼錯誤。");
+                Log.sendMessage(player, ChatColor.RED + "驗證碼錯誤");
                 return true;
             }
 
             String codeCreateDate = plugin.dbManager.getCodeCreateDate(code);
             if (codeCreateDate == null) {
                 // The verification code is not existed
-                Log.sendMessage(player, ChatColor.RED + "驗證碼錯誤。");
+                Log.sendMessage(player, ChatColor.RED + "驗證碼錯誤");
                 return true;
             }
-            // check if the code is expired
+            // check if the code is used or not
+            if (plugin.dbManager.isCodeUsed(code)) {
+                Log.sendMessage(player, ChatColor.RED + "驗證碼已經使用過");
+                return true;
+            }
+
+            // check if the code is expired or not
             int expireDays = this.plugin.getConfig().getInt(Config.EXPIRE_DAYS);
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -136,6 +161,9 @@ public class Command implements CommandExecutor {
 
             // Mark the verification code as used
             plugin.dbManager.markCode(code, true);
+
+            Event event = new JoinEvent(false, player, "歡迎 " + ChatColor.YELLOW + player.getDisplayName() + ChatColor.WHITE + " 全新加入!");
+            Bukkit.getPluginManager().callEvent(event);
 
             return true;
         }

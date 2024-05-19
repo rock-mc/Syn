@@ -150,12 +150,4 @@ public class ConfigManager {
             Log.logInfo("The configuration is not set correctly. The default configuration has been restored.");
         }
     }
-
-    public void saveConfig() {
-        try {
-            config.save(new File(plugin.getDataFolder(), "config.yml"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

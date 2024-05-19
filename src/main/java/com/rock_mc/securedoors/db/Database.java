@@ -30,6 +30,8 @@ public abstract class Database {
 
     public abstract String getBannedCreateAt(String playerUUID);
 
+    public abstract boolean isCodeUsed(String code);
+
     public abstract void save();
 
     public abstract void close();

@@ -1,88 +1,141 @@
 package com.rock_mc.securedoors.db;
 
 import com.rock_mc.securedoors.SecureDoors;
+import com.rock_mc.securedoors.config.Config;
 
 public class DbManager {
 
     private final SecureDoors plugin;
-    private Database database;
+    private final Database database;
+    private final Object lock = new Object();
 
     public DbManager(SecureDoors plugin) {
         this.plugin = plugin;
 
-        if ("sqlite".equalsIgnoreCase(plugin.configManager.getConfig().getString("door.database.type"))) {
+        if ("sqlite".equalsIgnoreCase(plugin.configManager.getConfig().getString(Config.DATABASE_TYPE))) {
             this.database = new SQLite(this.plugin);
+        } else {
+            throw new IllegalArgumentException("Unsupported database type: " + plugin.configManager.getConfig().getString(Config.DATABASE_TYPE));
         }
     }
 
     public void load() {
-        this.database.load();
+        synchronized (lock) {
+            this.database.load();
+        }
     }
 
     public void save() {
-        this.database.save();
+        synchronized (lock) {
+            this.database.save();
+        }
     }
 
     public void close() {
-        this.database.close();
+        synchronized (lock) {
+            this.database.close();
+        }
     }
 
     public void addCode(String code) {
-        this.database.addCode(code);
+        synchronized (lock) {
+            this.database.addCode(code);
+        }
     }
+
     public String getCodeCreateDate(String code) {
-        return this.database.getCodeCreateDate(code);
+        synchronized (lock) {
+            return this.database.getCodeCreateDate(code);
+        }
     }
+
     public boolean contains(String code) {
-        return this.database.contains(code);
+        synchronized (lock) {
+            return this.database.contains(code);
+        }
     }
+
     public void markCode(String code, boolean used) {
-        this.database.markCode(code, used);
+        synchronized (lock) {
+            this.database.markCode(code, used);
+        }
     }
+
     public void addAllowedPlayer(String playerUUID) {
-        this.database.addAllowedPlayer(playerUUID);
+        synchronized (lock) {
+            this.database.addAllowedPlayer(playerUUID);
+        }
     }
+
     public void removeAllowedPlayer(String playerUUID) {
-        this.database.removeAllowedPlayer(playerUUID);
+        synchronized (lock) {
+            this.database.removeAllowedPlayer(playerUUID);
+        }
     }
 
     public boolean isPlayerAllowed(String playerUUID) {
-        return this.database.isPlayerAllowed(playerUUID);
+        synchronized (lock) {
+            return this.database.isPlayerAllowed(playerUUID);
+        }
     }
 
     public void removeCode(String code) {
-        this.database.removeCode(code);
+        synchronized (lock) {
+            this.database.removeCode(code);
+        }
     }
 
     public int getFailedAttempts(String playerUUID) {
-        return this.database.getFailedAttempts(playerUUID);
+        synchronized (lock) {
+            return this.database.getFailedAttempts(playerUUID);
+        }
     }
 
     public void updateFailedAttempts(String playerUUID, int failedAttempts) {
-        this.database.updateFailedAttempts(playerUUID, failedAttempts);
+        synchronized (lock) {
+            this.database.updateFailedAttempts(playerUUID, failedAttempts);
+        }
     }
 
     public long getBannedExpireTime(String playerUUID) {
-        return this.database.getBannedExpireTime(playerUUID);
+        synchronized (lock) {
+            return this.database.getBannedExpireTime(playerUUID);
+        }
     }
 
     public String getBannedReason(String playerUUID) {
-        return this.database.getBannedReason(playerUUID);
+        synchronized (lock) {
+            return this.database.getBannedReason(playerUUID);
+        }
     }
 
     public String getBannedCreateAt(String playerUUID) {
-        return this.database.getBannedCreateAt(playerUUID);
+        synchronized (lock) {
+            return this.database.getBannedCreateAt(playerUUID);
+        }
     }
 
     public void addPlayerInfo(String playerUUID, String playerName) {
-        this.database.addPlayerInfo(playerUUID, playerName);
+        synchronized (lock) {
+            this.database.addPlayerInfo(playerUUID, playerName);
+        }
     }
 
     public void addBanedPlayer(String playerUUID, String reason, long time) {
-        this.database.addBanedPlayer(playerUUID, reason, time);
+        synchronized (lock) {
+            this.database.addBanedPlayer(playerUUID, reason, time);
+        }
     }
 
     public void removeBanedPlayer(String playerUUID) {
-        this.database.removeBanedPlayer(playerUUID);
+        synchronized (lock) {
+            this.database.removeBanedPlayer(playerUUID);
+        }
+    }
+
+    public boolean isCodeUsed(String code) {
+        synchronized (lock) {
+            return this.database.isCodeUsed(code);
+        }
     }
 }
