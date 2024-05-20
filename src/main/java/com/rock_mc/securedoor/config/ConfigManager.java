@@ -1,12 +1,11 @@
-package com.rock_mc.securedoors.config;
+package com.rock_mc.securedoor.config;
 
-import com.rock_mc.securedoors.Log;
+import com.rock_mc.securedoor.Log;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Objects;
 
 public class ConfigManager {
