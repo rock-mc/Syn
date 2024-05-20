@@ -1,6 +1,6 @@
-package com.rock_mc.securedoors.config;
+package com.rock_mc.securedoor.config;
 
-import com.rock_mc.securedoors.PluginTest;
+import com.rock_mc.securedoor.PluginTest;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -9,9 +9,8 @@ class ConfigManagerTest extends PluginTest {
 
     @Test
     void checkNotExistValue() {
-        ConfigManager configManager = plugin.configManager;
 
-        Object value = configManager.getConfig().get("door.notExist");
+        Object value = plugin.configManager.getConfig().get("door.notExist");
 
         assertNull(value);
     }

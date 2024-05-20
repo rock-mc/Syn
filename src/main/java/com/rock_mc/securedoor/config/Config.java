@@ -1,4 +1,4 @@
-package com.rock_mc.securedoors.config;
+package com.rock_mc.securedoor.config;
 
 public class Config {
     public static final String OPEN = "door.open";

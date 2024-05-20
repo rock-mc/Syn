@@ -1,9 +1,8 @@
-package com.rock_mc.securedoors.event;
+package com.rock_mc.securedoor.event;
 
-import com.rock_mc.securedoors.Log;
-import com.rock_mc.securedoors.SecureDoors;
-import com.rock_mc.securedoors.Utils;
-import com.rock_mc.securedoors.config.Config;
+import com.rock_mc.securedoor.Log;
+import com.rock_mc.securedoor.SecureDoor;
+import com.rock_mc.securedoor.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -21,9 +20,9 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import java.io.IOException;
 
 public class EventListener implements Listener {
-    private final SecureDoors plugin;
+    private final SecureDoor plugin;
 
-    public EventListener(SecureDoors plugin) {
+    public EventListener(SecureDoor plugin) {
         this.plugin = plugin;
     }
 

@@ -1,6 +1,6 @@
-package com.rock_mc.securedoors.db;
+package com.rock_mc.securedoor.db;
 
-import com.rock_mc.securedoors.Log;
+import com.rock_mc.securedoor.Log;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -176,7 +176,7 @@ public class SQLite extends Database {
         }
         return null;
     }
-  
+
     @Override
     public boolean contains(String code) {
         // Check if the code exists in the database
