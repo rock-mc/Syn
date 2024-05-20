@@ -1,56 +1,54 @@
-# SecureDoors
+# Syn
 
-SecureDoors is a Minecraft plugin designed to manage player whitelist verification and banning functionality.
-
-## Features
-
-* Player Verification: Players are required to input a verification code to enter the server when they first log in
-* Generate Verification Codes: OPs can generate verification codes for players to use
-* Ban Players: OPs can ban specific players for a certain period of time
-* Unban Players: OPs can unban players
-* View System Information: OPs can view the status and information of the SecureDoors system
-* Open/Close Server: OPs can open or close the server to control player access
+**Syn** is a Minecraft plugin designed to manage player access to the server.  
+Before each new player logs in for the first time, they need to obtain a verification code and enter it in the game to
+be added to the allowlist.  
+It has a guest mode that allows unverified players to enter the server, except for players on the banlist.
 
 ## Installation
 
-1. Download the latest version of SecureDoors plugin
+1. Download the latest version of Syn plugin
 2. Place the plugin file in `plugins` folder of your server
 3. Restart your server
 
 ## Usage
 
-* `/sd` - Show help information for SecureDoors
-* `/sd verify <code>` - Input the verification code to verify the player
-* `/sd gencode [number]` - Generate a specified number of verification codes
-* `/sd info` - Show the status and information of the SecureDoors system
-* `/sd ban <player> [day hour min sec]` - Ban a specific player for a certain period of time
-* `/sd unban <player>` - Unban a specific player
-* `/sd open` - Allow everyone to enter the server, except for players on the ban list
-* `/sd close` - Allow the player in the allowlist to come into the server.
+* `/syn` - Show help information for Syn
+* `/syn verify <code>` - Input the verification code to verify the player
+* `/syn gencode [number]` - Generate a specified number of verification codes
+* `/syn info [player]` - Show the status and information of Syn system or the player
+* `/syn ban <player> [day hour min sec]` - Ban the player
+* `/syn unban <player>` - Unban the player
+* `/syn guest` - If on, it allows everyone to enter the server, except for players on the ban list.
+                 If off, it only allows the player in the allowlist to come into the server.
 
 ## Permissions
 
-* `sd.*` - Grants access to all SecureDoors-related permissions
-  * `sd.gencode` - Allows generating verification codes
-  * `sd.ban` - Allows banning players
-  * `sd.unban` - Allows unbanning players
-  * `sd.door` - Allows opening/closing the server
-* `sd.gencode` - Allows generating verification codes (default: OP)
-* `sd.ban` - Allows banning players (default: OP)
-* `sd.unban` - Allows unbanning players (default: OP)
-* `sd.door` - Allows opening/closing the server (default: OP)
+* `syn.*` - Grants access to all Syn-related permissions
+    * `syn.gencode` - Allows generating verification codes
+    * `syn.ban` - Allows banning players
+    * `syn.unban` - Allows unbanning players
+    * `syn.guest` - Allows opening/closing the server
+* `syn.gencode` - Allows generating verification codes (default: OP)
+* `syn.ban` - Allows banning players (default: OP)
+* `syn.unban` - Allows unbanning players (default: OP)
+* `syn.guest` - Allows opening/closing the server (default: OP)
+* `syn.info` - Allows checking the info of Syn system or the player
 
 ## Configuration
 
-The configuration file for the plugin is located at plugins/SecureDoors/config.yml. You can modify it according to your needs.
+The configuration file for the plugin is located at `plugins/Syn/config.yml`. You can modify it according to your
+needs.
 
 ## Support and Reporting Issues
 
-If you encounter any issues or have any suggestions while using SecureDoors, please submit them on GitHub Issues. We will respond and resolve the issues as soon as possible.
+If you encounter any issues or have any suggestions while using Syn, please submit them on GitHub Issues. We will
+respond and resolve the issues as soon as possible.
 
 ## Contributing
 
-We welcome contributions from the community. If you would like to contribute to SecureDoors, please submit a pull request.
+We welcome contributions from the community. If you would like to contribute to Syn, please submit a pull
+request.
 
 ### Testing
 
@@ -62,8 +60,8 @@ We welcome contributions from the community. If you would like to contribute to 
 
 ## License
 
-SecureDoors is licensed under the MIT License.
+Syn is licensed under the MIT License.
 
 ## Acknowledgements
 
-Thank you to all the developers and users who have contributed to SecureDoors.
+Thank you to all the developers and users who have contributed to Syn.

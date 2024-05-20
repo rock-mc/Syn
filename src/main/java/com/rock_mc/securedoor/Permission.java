@@ -1,4 +1,4 @@
-package com.rock_mc.securedoors;
+package com.rock_mc.securedoor;
 
 public class Permission {
     public static String GENCODE = "sd.gencode";

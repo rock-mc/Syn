@@ -1,8 +1,8 @@
-package com.rock_mc.securedoors;
+package com.rock_mc.securedoor;
 
-import com.rock_mc.securedoors.config.Config;
-import com.rock_mc.securedoors.event.JoinEvent;
-import com.rock_mc.securedoors.event.KickEvent;
+import com.rock_mc.securedoor.config.Config;
+import com.rock_mc.securedoor.event.JoinEvent;
+import com.rock_mc.securedoor.event.KickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
@@ -16,9 +16,9 @@ import java.time.temporal.ChronoUnit;
 
 public class Command implements CommandExecutor {
 
-    private final SecureDoors plugin;
+    private final SecureDoor plugin;
 
-    public Command(SecureDoors plugin) {
+    public Command(SecureDoor plugin) {
         this.plugin = plugin;
     }
 
