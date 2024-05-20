@@ -1,4 +1,4 @@
-package com.rock_mc.securedoors;
+package com.rock_mc.securedoor;
 
 public class Utils {
 
