@@ -2,10 +2,13 @@ package com.rock_mc.securedoors;
 
 import be.seeseemelk.mockbukkit.command.ConsoleCommandSenderMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import com.google.common.collect.Lists;
 import com.rock_mc.securedoors.event.WaitVerify;
 import org.bukkit.ChatColor;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -131,6 +134,28 @@ public class CommandTest extends PluginTest {
 
         assert commandOutput != null;
         assertTrue(commandOutput.contains(Log.PREFIX_SERVER + "Commands:"));
+
+    }
+
+    @Test
+    void tabComplete() {
+        PlayerJoinEvent.getHandlerList().unregister(plugin);
+
+        List<String> tabList = Lists.newArrayList();
+
+        PlayerMock opPlayer = server.addPlayer();
+        opPlayer.setOp(true);
+
+        tabList = server.getCommandTabComplete(opPlayer, "sd ");
+        assertEquals("[info, help, gencode, ban, unban, open, close]", tabList.toString());
+
+        tabList = server.getCommandTabComplete(opPlayer, "sd g");
+        assertEquals("[gencode]", tabList.toString());
+
+        PlayerMock player = server.addPlayer();
+
+        tabList = server.getCommandTabComplete(player, "sd ");
+        assertEquals("[info, help, verify]", tabList.toString());
 
     }
 }

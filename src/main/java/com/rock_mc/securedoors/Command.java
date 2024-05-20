@@ -7,14 +7,18 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public class Command implements CommandExecutor {
+public class Command implements CommandExecutor, TabCompleter {
 
     private final SecureDoors plugin;
 
@@ -215,4 +219,20 @@ public class Command implements CommandExecutor {
         Log.sendMessage(player, message);
     }
 
+    @Override
+    public List<String> onTabComplete(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
+        List<String> tab = new ArrayList<>(List.of("info", "help", "verify"));
+
+        if (sender.isOp()) {
+            tab = new ArrayList<>(List.of("info", "help", "gencode", "ban", "unban", "open", "close"));
+        }
+
+        if (args.length == 0) {
+            return tab;
+        } else if (args.length == 1) {
+            return tab.stream().filter(completion -> completion.startsWith(args[args.length - 1])).collect(Collectors.toList());
+        }
+
+        return tab;
+    }
 }
