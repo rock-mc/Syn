@@ -4,7 +4,6 @@ import com.rock_mc.securedoors.Log;
 import com.rock_mc.securedoors.SecureDoors;
 import com.rock_mc.securedoors.config.Config;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
@@ -23,6 +22,7 @@ public class WaitVerify extends Thread {
         this.MAX_INPUT_CODE_TIMES = plugin.getConfig().getInt(Config.MAX_INPUT_CODE_TIMES);
     }
 
+    @Override
     public void run() {
         Log.sendMessage(player, "請在 " + MAX_WAIT_INPUT_CODE_SECONDS + " 秒內輸入驗證碼");
 

@@ -1,9 +1,8 @@
-package com.rock_mc.securedoors.commands;
+package com.rock_mc.securedoors;
 
 import be.seeseemelk.mockbukkit.command.ConsoleCommandSenderMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
-import com.rock_mc.securedoors.Log;
-import com.rock_mc.securedoors.PluginTest;
+import com.rock_mc.securedoors.event.WaitVerify;
 import org.bukkit.ChatColor;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.junit.jupiter.api.Test;
@@ -19,22 +18,18 @@ public class CommandTest extends PluginTest {
 
         PlayerMock opPlayer = server.addPlayer();
         opPlayer.setOp(true);
-        opPlayer.setName("opPlayer");
 
-        String expected = Log.PREFIX_GAME + """
-Commands:
-* gencode: Generate a verification code
-Usage: /sd gencode
-* info: Show the door information
-Usage: /sd info
-* ban: Ban the player
-Usage: /sd ban <player>
-* unban: Unban the door
-Usage: /sd unban <player>
-* open: Allow everyone to come into the server but the player in the ban list
-Usage: /sd open
-* close: Allow the player in the allowlist to come into the server
-Usage: /sd close""";
+        String expected = Log.PREFIX_GAME;
+
+        String gencode = "* gencode: Generate a verification code\nUsage: /sd gencode";
+        String info = "* info: Show the door information\nUsage: /sd info";
+        String verify = "* verify: Verify the verification code\nUsage: /sd verify <verification code>";
+        String ban = "* ban: Ban the player\nUsage: /sd ban <player>";
+        String unban = "* unban: Unban the door\nUsage: /sd unban <player>";
+        String open = "* open: Allow everyone to come into the server but the player in the ban list\nUsage: /sd open";
+        String close = "* close: Allow the player in the allowlist to come into the server\nUsage: /sd close";
+
+        expected += "Commands:\n" + gencode + "\n" + info + "\n" + ban + "\n" + unban + "\n" + open + "\n" + close;
 
         opPlayer.performCommand("sd");
 
@@ -80,6 +75,8 @@ Usage: /sd close""";
         newPlayer.performCommand("sd verify " + code);
         commandOutput = newPlayer.nextMessage();
 
+
+        assert commandOutput != null;
         assertTrue(commandOutput.contains("歡迎"));
 
         PlayerMock otherPlayer = server.addPlayer();
@@ -90,13 +87,50 @@ Usage: /sd close""";
         assertEquals(Log.PREFIX_GAME + ChatColor.RED + "驗證碼已經使用過", commandOutput);
     }
 
+    @Test
+    void verifyCmd() throws InterruptedException {
+        PlayerJoinEvent.getHandlerList().unregister(plugin);
+
+        int timeoutSeconds = 10;
+
+        String commandOutput = null;
+
+        PlayerMock player = server.addPlayer();
+
+        new WaitVerify(plugin, player).start();
+
+        // 等待 WaitVerify 執行
+        while ((commandOutput = player.nextMessage()) == null && timeoutSeconds > 0) {
+            Thread.sleep(1000);
+            timeoutSeconds--;
+        }
+        assertEquals(Log.PREFIX_GAME + "請在 60 秒內輸入驗證碼", commandOutput);
+
+        // 等待使用者輸入
+        timeoutSeconds = 10;
+        while ((commandOutput = player.nextMessage()) != null && timeoutSeconds > 0) {
+            Thread.sleep(1000);
+            timeoutSeconds--;
+        }
+
+        String code = "123";
+
+        player.performCommand("sd verify " + code);
+
+        commandOutput = player.nextMessage();
+
+        assertEquals(Log.PREFIX_GAME + ChatColor.RED + "驗證碼錯誤", commandOutput);
+    }
 
     @Test
     void console() {
         ConsoleCommandSenderMock consoleSender = server.getConsoleSender();
         server.dispatchCommand(consoleSender, "sd");
 
-        assertTrue(consoleSender.nextMessage().contains(Log.PREFIX_SERVER + "Commands:"));
+        String commandOutput = consoleSender.nextMessage();
+
+        assert commandOutput != null;
+        assertTrue(commandOutput.contains(Log.PREFIX_SERVER + "Commands:"));
 
     }
 }
