@@ -1,8 +1,8 @@
-package com.rock_mc.securedoor.commands;
+package com.rock_mc.syn.commands;
 
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
-import com.rock_mc.securedoor.Log;
-import com.rock_mc.securedoor.PluginTest;
+import com.rock_mc.syn.Log;
+import com.rock_mc.syn.PluginTest;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;

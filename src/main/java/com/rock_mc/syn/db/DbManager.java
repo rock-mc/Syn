@@ -1,15 +1,15 @@
-package com.rock_mc.securedoor.db;
+package com.rock_mc.syn.db;
 
-import com.rock_mc.securedoor.SecureDoor;
-import com.rock_mc.securedoor.config.Config;
+import com.rock_mc.syn.Syn;
+import com.rock_mc.syn.config.Config;
 
 public class DbManager {
 
-    private final SecureDoor plugin;
+    private final Syn plugin;
     private final Database database;
     private final Object lock = new Object();
 
-    public DbManager(SecureDoor plugin) {
+    public DbManager(Syn plugin) {
         this.plugin = plugin;
 
         if ("sqlite".equalsIgnoreCase(plugin.configManager.getConfig().getString(Config.DATABASE_TYPE))) {

@@ -22,7 +22,7 @@ It has a guest mode that allows unverified players to enter the server, except f
 * `/syn unban <player>` - Unban the player
 * `/syn guest` - If on, it allows everyone to enter the server, except for players on the ban list.
   If off, it only allows the player in the allowlist to come into the server.
-* `/syn log [time] [page]` - Show the log since the specified time or the last time the server was opened
+* `/syn log [time] [player] [page]` - Show the log since the specified time or the last time the server was opened
 
 ## Permissions
 

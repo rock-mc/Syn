@@ -1,6 +1,6 @@
-package com.rock_mc.securedoor.config;
+package com.rock_mc.syn.config;
 
-import com.rock_mc.securedoor.Log;
+import com.rock_mc.syn.Log;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;

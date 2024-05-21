@@ -1,4 +1,4 @@
-package com.rock_mc.securedoor.db;
+package com.rock_mc.syn.db;
 
 public abstract class Database {
 

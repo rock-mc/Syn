@@ -1,8 +1,8 @@
-package com.rock_mc.securedoor;
+package com.rock_mc.syn;
 
-import com.rock_mc.securedoor.config.Config;
-import com.rock_mc.securedoor.event.JoinEvent;
-import com.rock_mc.securedoor.event.KickEvent;
+import com.rock_mc.syn.config.Config;
+import com.rock_mc.syn.event.JoinEvent;
+import com.rock_mc.syn.event.KickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
@@ -16,9 +16,9 @@ import java.time.temporal.ChronoUnit;
 
 public class Command implements CommandExecutor {
 
-    private final SecureDoor plugin;
+    private final Syn plugin;
 
-    public Command(SecureDoor plugin) {
+    public Command(Syn plugin) {
         this.plugin = plugin;
     }
 
@@ -205,7 +205,7 @@ public class Command implements CommandExecutor {
             if (player.hasPermission(Permission.UNBAN)) {
                 message += "\n" + unban;
             }
-            if (player.hasPermission(Permission.DOOR)) {
+            if (player.hasPermission(Permission.GUEST)) {
                 message += "\n" + open + "\n" + close;
             }
             if (message.equals("Commands:")) {

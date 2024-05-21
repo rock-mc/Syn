@@ -1,17 +1,17 @@
-package com.rock_mc.securedoor.event;
+package com.rock_mc.syn.event;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-public class JoinEvent extends Event {
+public class KickEvent extends Event {
 
     private Player player;
     private String msg;
 
-    public JoinEvent(boolean isAsync, Player joinPlayer, String display_msg) {
+    public KickEvent(boolean isAsync, Player kickPlayer, String display_msg) {
         super(isAsync);
-        player = joinPlayer;
+        player = kickPlayer;
         msg = display_msg;
     }
 

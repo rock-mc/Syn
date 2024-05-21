@@ -1,20 +1,20 @@
-package com.rock_mc.securedoor.event;
+package com.rock_mc.syn.event;
 
-import com.rock_mc.securedoor.Log;
-import com.rock_mc.securedoor.SecureDoor;
-import com.rock_mc.securedoor.config.Config;
+import com.rock_mc.syn.Log;
+import com.rock_mc.syn.Syn;
+import com.rock_mc.syn.config.Config;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
 public class WaitVerify extends Thread {
-    private final SecureDoor plugin;
+    private final Syn plugin;
     private final Player player;
     private final float CHECK_TIME = 0.1F;
     private int MAX_WAIT_INPUT_CODE_SECONDS = 0;
     private int MAX_INPUT_CODE_TIMES = 0;
 
-    public WaitVerify(SecureDoor plugin, Player newPlayer) {
+    public WaitVerify(Syn plugin, Player newPlayer) {
         this.plugin = plugin;
         this.player = newPlayer;
 

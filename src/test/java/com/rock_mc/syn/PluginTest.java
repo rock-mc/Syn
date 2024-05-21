@@ -1,8 +1,8 @@
-package com.rock_mc.securedoor;
+package com.rock_mc.syn;
 
 import be.seeseemelk.mockbukkit.MockBukkit;
 import be.seeseemelk.mockbukkit.ServerMock;
-import com.rock_mc.securedoor.db.DbManager;
+import com.rock_mc.syn.db.DbManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -10,7 +10,7 @@ public class PluginTest {
 
     protected ServerMock server;
 
-    protected SecureDoor plugin;
+    protected Syn plugin;
 
     protected DbManager dbManager;
 
@@ -18,7 +18,7 @@ public class PluginTest {
     void setUp() {
         server = MockBukkit.mock();
 
-        plugin = MockBukkit.load(SecureDoor.class);
+        plugin = MockBukkit.load(Syn.class);
 
         dbManager = new DbManager(plugin);
     }

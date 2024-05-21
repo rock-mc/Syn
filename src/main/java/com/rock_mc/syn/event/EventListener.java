@@ -1,8 +1,8 @@
-package com.rock_mc.securedoor.event;
+package com.rock_mc.syn.event;
 
-import com.rock_mc.securedoor.Log;
-import com.rock_mc.securedoor.SecureDoor;
-import com.rock_mc.securedoor.Utils;
+import com.rock_mc.syn.Log;
+import com.rock_mc.syn.Syn;
+import com.rock_mc.syn.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -20,9 +20,9 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import java.io.IOException;
 
 public class EventListener implements Listener {
-    private final SecureDoor plugin;
+    private final Syn plugin;
 
-    public EventListener(SecureDoor plugin) {
+    public EventListener(Syn plugin) {
         this.plugin = plugin;
     }
 
