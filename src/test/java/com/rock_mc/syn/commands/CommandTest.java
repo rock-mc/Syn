@@ -1,16 +1,9 @@
-<<<<<<<< HEAD:src/test/java/com/rock_mc/syn/commands/CommandTest.java
+
 package com.rock_mc.syn.commands;
 
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import com.rock_mc.syn.Log;
 import com.rock_mc.syn.PluginTest;
-========
-package com.rock_mc.securedoor.commands;
-
-import be.seeseemelk.mockbukkit.entity.PlayerMock;
-import com.rock_mc.securedoor.Log;
-import com.rock_mc.securedoor.PluginTest;
->>>>>>>> main:src/test/java/com/rock_mc/securedoor/commands/CommandTest.java
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
