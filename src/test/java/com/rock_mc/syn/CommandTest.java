@@ -1,8 +1,8 @@
-package com.rock_mc.securedoors;
+package com.rock_mc.syn;
 
 import be.seeseemelk.mockbukkit.command.ConsoleCommandSenderMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
-import com.rock_mc.securedoors.event.WaitVerify;
+import com.rock_mc.syn.event.WaitVerify;
 import org.bukkit.ChatColor;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ public class CommandTest extends PluginTest {
 
         String gencode = "* gencode: Generate a verification code\nUsage: /sd gencode";
         String info = "* info: Show the door information\nUsage: /sd info";
-        String verify = "* verify: Verify the verification code\nUsage: /sd verify <verification code>";
+//        String verify = "* verify: Verify the verification code\nUsage: /sd verify <verification code>";
         String ban = "* ban: Ban the player\nUsage: /sd ban <player>";
         String unban = "* unban: Unban the door\nUsage: /sd unban <player>";
         String open = "* open: Allow everyone to come into the server but the player in the ban list\nUsage: /sd open";
@@ -93,7 +93,7 @@ public class CommandTest extends PluginTest {
 
         int timeoutSeconds = 10;
 
-        String commandOutput = null;
+        String commandOutput;
 
         PlayerMock player = server.addPlayer();
 
@@ -108,7 +108,7 @@ public class CommandTest extends PluginTest {
 
         // 等待使用者輸入
         timeoutSeconds = 10;
-        while ((commandOutput = player.nextMessage()) != null && timeoutSeconds > 0) {
+        while ((player.nextMessage()) != null && timeoutSeconds > 0) {
             Thread.sleep(1000);
             timeoutSeconds--;
         }
