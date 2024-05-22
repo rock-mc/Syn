@@ -69,7 +69,7 @@ public class Command implements CommandExecutor {
             for (int i = 0; i < codeNum; i++) {
 
                 String code = Utils.generateCode(available_characters, code_length);
-                while (plugin.dbManager.contains(code)) {
+                while (plugin.dbManager.containsCode(code)) {
                     code = Utils.generateCode(available_characters, code_length);
                 }
                 plugin.dbManager.addCode(code);
@@ -99,7 +99,7 @@ public class Command implements CommandExecutor {
                 return true;
             }
 
-            if (plugin.dbManager.isPlayerAllowed(player.getUniqueId().toString())) {
+            if (plugin.dbManager.isPlayerInAllowList(player.getUniqueId().toString())) {
                 Log.sendMessage(player, "你已經通過驗證了。");
                 return true;
             }
@@ -115,7 +115,7 @@ public class Command implements CommandExecutor {
 
                 long banedSec = (long) banDays * 24 * 60 * 60;
 
-                plugin.dbManager.addBanedPlayer(player.getUniqueId().toString(), banReason, banedSec);
+                plugin.dbManager.addPlayerToBannedList(player.getUniqueId().toString(), banReason, banedSec);
                 plugin.dbManager.updateFailedAttempts(player.getUniqueId().toString(), 1);
 
                 Event event = new KickEvent(false, player, message);
@@ -145,7 +145,7 @@ public class Command implements CommandExecutor {
 
             // The verification code is exited and not expired
             // Add the player to the allow list
-            plugin.dbManager.addAllowedPlayer(player.getUniqueId().toString());
+            plugin.dbManager.addPlayerToAllowList(player.getUniqueId().toString());
             // check if the code is expired or not
             int expireDays = this.plugin.getConfig().getInt(Config.EXPIRE_DAYS);
 
@@ -163,7 +163,7 @@ public class Command implements CommandExecutor {
             }
             // The verification code is exited and not expired
             // Add the player to the allow list
-            plugin.dbManager.addAllowedPlayer(player.getUniqueId().toString());
+            plugin.dbManager.addPlayerToAllowList(player.getUniqueId().toString());
 
             // Mark the verification code as used
             plugin.dbManager.markCode(code, true);
@@ -171,6 +171,30 @@ public class Command implements CommandExecutor {
 
             Event event = new JoinEvent(false, player, "歡迎 " + ChatColor.YELLOW + player.getDisplayName() + ChatColor.WHITE + " 全新加入!");
             Bukkit.getPluginManager().callEvent(event);
+
+            return true;
+        }
+        if ("guest".equals(args[0])) {
+
+            if (player != null && !player.hasPermission(Permission.GUEST)) {
+                Log.sendMessage(player, "You don't have permission to use this command.");
+                return true;
+            }
+
+            if (args.length != 1) {
+                Log.sendMessage(player, "Usage: /syn guest");
+                return true;
+            }
+
+            boolean isGuest = plugin.configManager.getConfig().getBoolean(Config.GUEST);
+            isGuest = !isGuest;
+
+            plugin.configManager.getConfig().set(Config.GUEST, isGuest);
+
+            plugin.saveConfig();
+
+            Log.sendMessage(player, "訪客模式已經設定為: " + (isGuest ? ChatColor.GREEN + "On" : ChatColor.RED + "Off"));
+            Log.sendMessage(player, isGuest ? "所有玩家除了禁止名單都可以進入伺服器。" : "只有在允許名單的玩家可以進入伺服器。");
 
             return true;
         }

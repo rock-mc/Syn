@@ -52,7 +52,7 @@ public class WaitVerify extends Thread {
 
         if (player.isOnline()) {
             String eventMessage;
-            if (!plugin.dbManager.isPlayerAllowed(player.getUniqueId().toString())) {
+            if (!plugin.dbManager.isPlayerInAllowList(player.getUniqueId().toString())) {
                 eventMessage = "未通過認證，請取得驗證碼後，參考官網教學輸入驗證碼";
                 Event event = new KickEvent(true, player, eventMessage);
 
