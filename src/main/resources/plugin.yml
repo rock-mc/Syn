@@ -1,57 +1,63 @@
-name: SecureDoor
+name: Syn
 version: '${version}'
-main: com.rock_mc.securedoor.SecureDoor
+main: com.rock_mc.syn.Syn
 api-version: '1.20'
 description: A minecraft plugin for white list
 author: Rock Minecraft Server
-prefix: SecureDoor
+prefix: Syn
 commands:
-  sd:
-    description: Show help of SecureDoor
-    usage: /sd
-  sd verify:
+  syn:
+    description: Show help of Syn
+    usage: /syn
+  syn verify:
     description: Input the verification code to verify player
-    usage: /sd verify <code>
-  sd gencode:
+    usage: /syn verify <code>
+  syn gencode:
     description: Generate verification code
-    usage: /sd gencode [number]
-  sd info:
-    description: Show the the state of SecureDoor System info
-    usage: /sd info
-  sd ban:
+    usage: /syn gencode [number]
+  syn info:
+    description: Show the the state of Syn System info
+    usage: /syn info
+  syn ban:
     description: Ban the player
-    usage: /sd ban player [day hour min sec]
-  sd unban:
+    usage: /syn ban player [day hour min sec]
+  syn unban:
     description: Unban the player
-    usage: /sd unban player
-  sd open:
-    description: Allow everyone to come into the server but the player in the block list.
-    usage: /sd open
-  sd close:
+    usage: /syn unban player
+  syn close:
     description: Allow the player in the allowlist to come into the server.
-    usage: /sd close
+    usage: /syn close
+  syn guest:
+    description: Allow the player in the allowlist to come into the server.
+    usage: /syn guest
+  syn log:
+    description: Show the log of the player
+    usage: /syn log [time] [player] [page]
 
 permissions:
-  sd.*:
+  syn.*:
     description: Gives access to all commands
     children:
-      sd.gencode: true
-      sd.ban: true
-      sd.unban: true
-      sd.info: true
-      sd.door: true
-  sd.gencode:
+      syn.gencode: true
+      syn.ban: true
+      syn.unban: true
+      syn.info: true
+      syn.guest: true
+  syn.gencode:
     description: Allows you to generate verification code
     default: op
-  sd.ban:
+  syn.ban:
     description: Allows you to ban the player
     default: op
-  sd.unban:
+  syn.unban:
     description: Allows you to unban the player
     default: op
-  sd.info:
+  syn.info:
     description: Allows you to check the state of SecureDoor System info
     default: op
-  sd.door:
+  syn.guest:
     description: Allows you to open/close the door
+    default: op
+  syn.log:
+    description: Allows you to check the log of the player
     default: op

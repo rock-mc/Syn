@@ -1,6 +1,6 @@
-package com.rock_mc.securedoor.db;
+package com.rock_mc.syn.db;
 
-import com.rock_mc.securedoor.Log;
+import com.rock_mc.syn.Log;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;

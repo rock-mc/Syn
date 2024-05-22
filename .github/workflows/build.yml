@@ -25,5 +25,5 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SecureDoor
-          path: build/libs/SecureDoor*.jar
+          name: Syn
+          path: build/libs/*.jar

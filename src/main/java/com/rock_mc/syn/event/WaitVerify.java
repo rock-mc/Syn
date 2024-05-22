@@ -1,20 +1,24 @@
-package com.rock_mc.securedoor.event;
 
-import com.rock_mc.securedoor.Log;
-import com.rock_mc.securedoor.SecureDoor;
-import com.rock_mc.securedoor.config.Config;
+package com.rock_mc.syn.event;
+
+import com.rock_mc.syn.Log;
+import com.rock_mc.syn.Syn;
+import com.rock_mc.syn.config.Config;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
 public class WaitVerify extends Thread {
-    private final SecureDoor plugin;
+
+    private final Syn plugin;
+
     private final Player player;
     private final float CHECK_TIME = 0.1F;
     private int MAX_WAIT_INPUT_CODE_SECONDS = 0;
     private int MAX_INPUT_CODE_TIMES = 0;
 
-    public WaitVerify(SecureDoor plugin, Player newPlayer) {
+    public WaitVerify(Syn plugin, Player newPlayer) {
         this.plugin = plugin;
         this.player = newPlayer;
 
@@ -42,21 +46,24 @@ public class WaitVerify extends Thread {
             }
 
             if (!player.isOnline()) {
-                return;
+                break;
             }
         }
 
-        String eventMessage;
-        if (!plugin.dbManager.isPlayerAllowed(player.getUniqueId().toString())) {
-            eventMessage = "未通過認證，請取得驗證碼後，參考官網教學輸入驗證碼";
-            Event event = new KickEvent(true, player, eventMessage);
+        if (player.isOnline()) {
+            String eventMessage;
+            if (!plugin.dbManager.isPlayerAllowed(player.getUniqueId().toString())) {
+                eventMessage = "未通過認證，請取得驗證碼後，參考官網教學輸入驗證碼";
+                Event event = new KickEvent(true, player, eventMessage);
 
-            failTime = plugin.dbManager.getFailedAttempts(player.getUniqueId().toString());
-            plugin.dbManager.updateFailedAttempts(player.getUniqueId().toString(), failTime + 1);
+                failTime = plugin.dbManager.getFailedAttempts(player.getUniqueId().toString());
+                plugin.dbManager.updateFailedAttempts(player.getUniqueId().toString(), failTime + 1);
 
-            Log.broadcast(player.getDisplayName() + " 沒有通過驗證，被請出伺服器了...");
-            Bukkit.getPluginManager().callEvent(event);
+                Log.broadcast(player.getDisplayName() + " 沒有通過驗證，被請出伺服器了...");
+                Bukkit.getPluginManager().callEvent(event);
+            }
         }
+        plugin.freezePlayerMap.remove(player.getUniqueId());
     }
 }
 
