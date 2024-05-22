@@ -13,6 +13,8 @@ public class Log {
     public static void sendMessage(Player player, String message) {
 
         if (player == null) {
+            // remove color codes
+            message = ChatColor.stripColor(message);
             logInfo(message);
             return;
         }

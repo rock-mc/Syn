@@ -193,7 +193,7 @@ public class Command implements CommandExecutor {
 
             plugin.saveConfig();
 
-            Log.sendMessage(player, "訪客模式已經設定為: " + (isGuest ? ChatColor.GREEN + "on" : ChatColor.RED + "off"));
+            Log.sendMessage(player, "訪客模式已經設定為: " + (isGuest ? ChatColor.GREEN + "On" : ChatColor.RED + "Off"));
             Log.sendMessage(player, isGuest ? "所有玩家除了禁止名單都可以進入伺服器。" : "只有在允許名單的玩家可以進入伺服器。");
 
             return true;
