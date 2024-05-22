@@ -30,11 +30,11 @@ public class ConfigManager {
 
         // Check if the configuration is valid
         boolean valid = true;
-        if (config.get(Config.OPEN) == null) {
+        if (config.get(Config.GUEST) == null) {
             valid = false;
         }
         else {
-            if (!(config.get(Config.OPEN) instanceof Boolean)) {
+            if (!(config.get(Config.GUEST) instanceof Boolean)) {
                 valid = false;
             }
         }
