@@ -47,7 +47,7 @@ public class Command implements CommandExecutor {
                 try {
                     codeNum = Integer.parseInt(args[1]);
                 } catch (NumberFormatException e) {
-                    Log.sendMessage(player, "Usage: /sd gencode [codeNum]");
+                    Log.sendMessage(player, "Usage: /syn gencode [codeNum]");
                     return true;
                 }
                 if (codeNum < 1) {
@@ -95,7 +95,7 @@ public class Command implements CommandExecutor {
             }
 
             if (args.length != 2) {
-                Log.sendMessage(player, "Usage: /sd verify <verification code>");
+                Log.sendMessage(player, "Usage: /syn verify <verification code>");
                 return true;
             }
 
@@ -180,13 +180,13 @@ public class Command implements CommandExecutor {
 
     private void showDefaultCmd(Player player) {
 
-        String gencode = "* gencode: Generate a verification code\nUsage: /sd gencode";
-        String info = "* info: Show the door information\nUsage: /sd info";
-        String verify = "* verify: Verify the verification code\nUsage: /sd verify <verification code>";
-        String ban = "* ban: Ban the player\nUsage: /sd ban <player>";
-        String unban = "* unban: Unban the door\nUsage: /sd unban <player>";
-        String open = "* open: Allow everyone to come into the server but the player in the ban list\nUsage: /sd open";
-        String close = "* close: Allow the player in the allowlist to come into the server\nUsage: /sd close";
+        String gencode = "* gencode: Generate a verification code\nUsage: /syn gencode";
+        String info = "* info: Show the door information\nUsage: /syn info";
+        String verify = "* verify: Verify the verification code\nUsage: /syn verify <verification code>";
+        String ban = "* ban: Ban the player\nUsage: /syn ban <player>";
+        String unban = "* unban: Unban the door\nUsage: /syn unban <player>";
+        String open = "* open: Allow everyone to come into the server but the player in the ban list\nUsage: /syn open";
+        String close = "* close: Allow the player in the allowlist to come into the server\nUsage: /syn close";
 
         String allCommands = "Commands:\n" + gencode + "\n" + info + "\n" + ban + "\n" + unban + "\n" + open + "\n" + close;
 

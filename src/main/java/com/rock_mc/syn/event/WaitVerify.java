@@ -26,6 +26,7 @@ public class WaitVerify extends Thread {
         this.MAX_INPUT_CODE_TIMES = plugin.getConfig().getInt(Config.MAX_INPUT_CODE_TIMES);
     }
 
+    @Override
     public void run() {
         Log.sendMessage(player, "請在 " + MAX_WAIT_INPUT_CODE_SECONDS + " 秒內輸入驗證碼");
 

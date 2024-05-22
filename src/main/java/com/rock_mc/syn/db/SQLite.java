@@ -25,7 +25,7 @@ public class SQLite extends Database {
             Connection connection = getConnection();
             createTable(connection);
 
-            Log.logInfo("Connected to SQLite");
+            Log.logSevere("Connected to SQLite");
         } catch (ClassNotFoundException | SQLException e) {
             Log.logWarning("Could not connect to SQLite database: " + e.getMessage());
         }
@@ -286,7 +286,7 @@ public class SQLite extends Database {
 
     @Override
     public long getBannedExpireTime(String playerUUID) {
-        // Get the expire time of the player
+        // Get the expiry time of the player
         try (Connection connection = getConnection()) {
             PreparedStatement statement = connection.prepareStatement("SELECT expire_time FROM baned_players WHERE player_uuid = ?");
             statement.setString(1, playerUUID);

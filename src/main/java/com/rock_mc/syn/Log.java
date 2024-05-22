@@ -1,7 +1,7 @@
 
 package com.rock_mc.syn;
 
-import net.md_5.bungee.api.ChatColor;
+import org.bukkit.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -34,7 +34,7 @@ public class Log {
     }
 
     public static void logInfo(String message) {
-        Bukkit.getLogger().info(PREFIX_SERVER + message);
+        Bukkit.getConsoleSender().sendMessage(PREFIX_SERVER + message);
     }
 
     public static void logWarning(String message) {
