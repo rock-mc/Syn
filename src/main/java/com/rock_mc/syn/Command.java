@@ -1,5 +1,3 @@
-package com.rock_mc.securedoor;
-
 package com.rock_mc.syn;
 
 import com.rock_mc.syn.config.Config;

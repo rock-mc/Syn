@@ -2,9 +2,8 @@ package com.rock_mc.syn;
 
 import be.seeseemelk.mockbukkit.command.ConsoleCommandSenderMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
-import com.rock_mc.syn.event.WaitVerify;
 import com.google.common.collect.Lists;
-import com.rock_mc.securedoors.event.WaitVerify;
+import com.rock_mc.syn.event.WaitVerify;
 import org.bukkit.ChatColor;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.junit.jupiter.api.Test;
@@ -25,7 +24,7 @@ public class CommandTest extends PluginTest {
 
         String expected = Log.PREFIX_GAME;
 
-        String gencode = "* gencode: Generate a verification code\nUsage: /sd gencode";
+        String gencode = "* gencode: Generate a verification code\nUsage: /syn gencode";
         String info = "* info: Show the door information\nUsage: /syn info";
 //        String verify = "* verify: Verify the verification code\nUsage: /syn verify <verification code>";
         String ban = "* ban: Ban the player\nUsage: /syn ban <player>";
@@ -41,7 +40,6 @@ public class CommandTest extends PluginTest {
 
         opPlayer.performCommand("syn help");
         assertEquals(expected, opPlayer.nextMessage());
-
 
         PlayerMock player = server.addPlayer();
         player.setOp(false);
@@ -148,15 +146,15 @@ public class CommandTest extends PluginTest {
         PlayerMock opPlayer = server.addPlayer();
         opPlayer.setOp(true);
 
-        tabList = server.getCommandTabComplete(opPlayer, "sd ");
+        tabList = server.getCommandTabComplete(opPlayer, "syn ");
         assertEquals("[info, help, gencode, ban, unban, open, close]", tabList.toString());
 
-        tabList = server.getCommandTabComplete(opPlayer, "sd g");
+        tabList = server.getCommandTabComplete(opPlayer, "syn g");
         assertEquals("[gencode]", tabList.toString());
 
         PlayerMock player = server.addPlayer();
 
-        tabList = server.getCommandTabComplete(player, "sd ");
+        tabList = server.getCommandTabComplete(player, "syn ");
         assertEquals("[info, help, verify]", tabList.toString());
 
     }
