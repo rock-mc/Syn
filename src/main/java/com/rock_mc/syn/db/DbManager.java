@@ -1,3 +1,4 @@
+
 package com.rock_mc.syn.db;
 
 import com.rock_mc.syn.Syn;

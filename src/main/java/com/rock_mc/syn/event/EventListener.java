@@ -3,6 +3,7 @@ package com.rock_mc.syn.event;
 import com.rock_mc.syn.Log;
 import com.rock_mc.syn.Syn;
 import com.rock_mc.syn.Utils;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;

@@ -1,3 +1,4 @@
+
 package com.rock_mc.syn;
 
 import net.md_5.bungee.api.ChatColor;

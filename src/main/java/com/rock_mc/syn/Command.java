@@ -1,3 +1,4 @@
+
 package com.rock_mc.syn;
 
 import com.rock_mc.syn.config.Config;
@@ -15,7 +16,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 public class Command implements CommandExecutor {
-
     private final Syn plugin;
 
     public Command(Syn plugin) {
@@ -107,7 +107,6 @@ public class Command implements CommandExecutor {
             int maxInputCodeTimes = this.plugin.getConfig().getInt(Config.MAX_INPUT_CODE_TIMES);
             int failTime = plugin.dbManager.getFailedAttempts(player.getUniqueId().toString());
 
-            Log.logInfo("failTime: " + failTime + ", maxInputCodeTimes: " + maxInputCodeTimes);
             if (failTime >= maxInputCodeTimes) {
 
                 int banDays = plugin.getConfig().getInt(Config.INPUT_CODE_BAN_DAYS);

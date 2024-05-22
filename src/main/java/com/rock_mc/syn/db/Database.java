@@ -1,5 +1,6 @@
 package com.rock_mc.syn.db;
 
+
 public abstract class Database {
 
     public abstract void load();
