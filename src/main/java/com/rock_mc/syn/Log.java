@@ -1,17 +1,21 @@
 package com.rock_mc.securedoor;
 
+package com.rock_mc.syn;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class Log {
-    public static final String PREFIX_GAME = "[" + ChatColor.GOLD + SecureDoor.APP_NAME + ChatColor.WHITE + "] ";
-    public static final String PREFIX_SERVER = "[" + SecureDoor.APP_NAME + "] ";
+    public static final String PREFIX_GAME = "[" + ChatColor.GOLD + Syn.APP_NAME + ChatColor.WHITE + "] ";
+    public static final String PREFIX_SERVER = "[" + Syn.APP_NAME + "] ";
 
 
     public static void sendMessage(Player player, String message) {
 
         if (player == null) {
+            // remove color codes
+            message = ChatColor.stripColor(message);
             logInfo(message);
             return;
         }

@@ -1,6 +1,8 @@
-package com.rock_mc.securedoor.config;
 
-import com.rock_mc.securedoor.PluginTest;
+package com.rock_mc.syn.config;
+
+import com.rock_mc.syn.PluginTest;
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

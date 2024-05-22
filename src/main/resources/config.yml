@@ -1,11 +1,10 @@
 # This is the configuration file for the plugin.
-door:
+syn:
 
-  # Door open setting
   # if true, allow everyone to enter the server, except for players on the ban list
   # if false, allow the player in the allowlist to come into the server.
   # The default value is false
-  open: false
+  guest: false
 
   # The available characters for the verification code
   # The length requires to be 10 or more
@@ -14,11 +13,10 @@ door:
   # The default value is "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
   available_characters: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
-  show_code:
-    # The website to show the verification code in game chat
-    # If you don't want to show the verification code, you can set it to ""
-    # The default value is "https://rock-mc.com/code/?text="
-    url: "https://rock-mc.com/code/?text="
+  # The website to show the verification code in game chat
+  # If you don't want to show the verification code, you can set it to ""
+  # The default value is "https://rock-mc.com/code/?text="
+  show_code_url: "https://rock-mc.com/code/?text="
 
   # The length of the verification code
   # The length requires to be 4 or more

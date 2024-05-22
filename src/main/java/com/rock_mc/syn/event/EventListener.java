@@ -1,8 +1,10 @@
-package com.rock_mc.securedoor.event;
+package com.rock_mc.syn.event;
 
-import com.rock_mc.securedoor.Log;
-import com.rock_mc.securedoor.SecureDoor;
-import com.rock_mc.securedoor.Utils;
+import com.rock_mc.syn.Log;
+import com.rock_mc.syn.Syn;
+import com.rock_mc.syn.Utils;
+
+import com.rock_mc.syn.config.Config;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -13,16 +15,18 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.io.IOException;
+import java.util.UUID;
 
 public class EventListener implements Listener {
-    private final SecureDoor plugin;
+    private final Syn plugin;
 
-    public EventListener(SecureDoor plugin) {
+    public EventListener(Syn plugin) {
         this.plugin = plugin;
     }
 
@@ -35,7 +39,7 @@ public class EventListener implements Listener {
         // 進來就建立玩家資料
         plugin.dbManager.addPlayerInfo(uuid, name);
 
-        if (plugin.dbManager.isPlayerAllowed(uuid)) {
+        if (plugin.dbManager.isPlayerInAllowList(uuid)) {
             return;
         }
 
@@ -43,6 +47,7 @@ public class EventListener implements Listener {
         long banedSecs = plugin.dbManager.getBannedExpireTime(uuid);
         if (banedSecs == -1) {
             // Player is not banned
+            // Guest
             return;
         }
 
@@ -53,7 +58,7 @@ public class EventListener implements Listener {
 
         long now = java.time.Instant.now().getEpochSecond();
         if (now > banedSecs + bannedCreateAtSecs) {
-            plugin.dbManager.removeBanedPlayer(uuid);
+            plugin.dbManager.removePlayerBannedList(uuid);
             return;
         }
 
@@ -77,36 +82,43 @@ public class EventListener implements Listener {
         final String name = player.getDisplayName();
         final String uuid = player.getUniqueId().toString();
 
-        if (plugin.dbManager.isPlayerAllowed(uuid)) {
+        String opWelcomeMsg = "管理員 " + ChatColor.GOLD + "" + ChatColor.BOLD + name + ChatColor.WHITE + " 取得女神 " + ChatColor.RED + Syn.APP_NAME + ChatColor.WHITE + " 的允許進入伺服器並得到了女神祝福";
+        if (plugin.dbManager.isPlayerInAllowList(uuid)) {
             if (player.isOp()) {
-                Log.broadcast("管理員 " + ChatColor.GOLD + "" + ChatColor.BOLD + name + ChatColor.WHITE + " 通過驗證。");
+                Log.broadcast(opWelcomeMsg);
             } else {
-                Log.broadcast("玩家 " + ChatColor.BOLD + name + ChatColor.WHITE + " 通過驗證。");
+                Log.broadcast("玩家 " + ChatColor.BOLD + name + ChatColor.WHITE + " 取得女神 " + ChatColor.RED + Syn.APP_NAME + ChatColor.WHITE + " 的允許進入伺服器。");
             }
             return;
         }
-
-        if (player.isOp()) {
-            plugin.dbManager.addAllowedPlayer(uuid);
-            Log.broadcast("管理員 " + ChatColor.GOLD + "" + ChatColor.BOLD + name + ChatColor.WHITE + " 通過驗證。");
+        else if (player.isOp()) {
+            plugin.dbManager.addPlayerToAllowList(uuid);
+            Log.broadcast(opWelcomeMsg);
             return;
         }
-        Log.logInfo("玩家 " + name + " 未通過驗證，凍結玩家。");
 
-        Location location = player.getLocation();
-        plugin.freezePlayerMap.put(player.getUniqueId(), location);
+        if (plugin.configManager.getConfig().getBoolean(Config.GUEST)) {
+            Log.logInfo("Guest mode is enabled");
+            Log.broadcast("訪客玩家 " + ChatColor.BOLD + name + ChatColor.WHITE + " 取得女神 " + ChatColor.RED + Syn.APP_NAME + ChatColor.WHITE + " 的暫時允許進入伺服器。");
+        }
+        else {
+            Log.logInfo("Player " + name + " is not verified, freeze player.");
 
-        new WaitVerify(plugin, player).start();
+            Location location = player.getLocation();
+            plugin.freezePlayerMap.put(player.getUniqueId(), location);
+
+            new WaitVerify(plugin, player).start();
+        }
     }
 
     @EventHandler
-    public void onSDJoin(JoinEvent event) {
+    public void onPluginJoin(JoinEvent event) {
         Log.broadcast(event.getMessage());
         plugin.freezePlayerMap.remove(event.getPlayer().getUniqueId());
     }
 
     @EventHandler
-    public void onSDKick(KickEvent event) {
+    public void onPluginKick(KickEvent event) {
         Player player = event.getPlayer();
         Bukkit.getScheduler().runTask(plugin, () -> player.kickPlayer(event.getMessage()));
     }
@@ -142,5 +154,18 @@ public class EventListener implements Listener {
             }
             e.setCancelled(true);
         }
+    }
+
+    @EventHandler
+    public void onPlayerChat(AsyncPlayerChatEvent event) {
+        final Player player = event.getPlayer();
+
+        if (!plugin.freezePlayerMap.containsKey(player.getUniqueId())) {
+            return;
+        }
+
+        // 凍結狀態，取消對話
+        event.setCancelled(true);
+        Log.sendMessage(player, "因為您尚未通過驗證，因此訊息並未送出");
     }
 }

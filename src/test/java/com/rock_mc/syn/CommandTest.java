@@ -1,7 +1,8 @@
-package com.rock_mc.securedoors;
+package com.rock_mc.syn;
 
 import be.seeseemelk.mockbukkit.command.ConsoleCommandSenderMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import com.rock_mc.syn.event.WaitVerify;
 import com.google.common.collect.Lists;
 import com.rock_mc.securedoors.event.WaitVerify;
 import org.bukkit.ChatColor;
@@ -25,31 +26,32 @@ public class CommandTest extends PluginTest {
         String expected = Log.PREFIX_GAME;
 
         String gencode = "* gencode: Generate a verification code\nUsage: /sd gencode";
-        String info = "* info: Show the door information\nUsage: /sd info";
-        String verify = "* verify: Verify the verification code\nUsage: /sd verify <verification code>";
-        String ban = "* ban: Ban the player\nUsage: /sd ban <player>";
-        String unban = "* unban: Unban the door\nUsage: /sd unban <player>";
-        String open = "* open: Allow everyone to come into the server but the player in the ban list\nUsage: /sd open";
-        String close = "* close: Allow the player in the allowlist to come into the server\nUsage: /sd close";
+        String info = "* info: Show the door information\nUsage: /syn info";
+//        String verify = "* verify: Verify the verification code\nUsage: /syn verify <verification code>";
+        String ban = "* ban: Ban the player\nUsage: /syn ban <player>";
+        String unban = "* unban: Unban the door\nUsage: /syn unban <player>";
+        String open = "* open: Allow everyone to come into the server but the player in the ban list\nUsage: /syn open";
+        String close = "* close: Allow the player in the allowlist to come into the server\nUsage: /syn close";
 
         expected += "Commands:\n" + gencode + "\n" + info + "\n" + ban + "\n" + unban + "\n" + open + "\n" + close;
 
-        opPlayer.performCommand("sd");
+        opPlayer.performCommand("syn");
 
         assertEquals(expected, opPlayer.nextMessage());
 
-        opPlayer.performCommand("sd help");
+        opPlayer.performCommand("syn help");
         assertEquals(expected, opPlayer.nextMessage());
+
 
         PlayerMock player = server.addPlayer();
         player.setOp(false);
 
         expected = Log.PREFIX_GAME + "You don't have permission to use any command.";
-        player.performCommand("sd");
+        player.performCommand("syn");
 
         assertEquals(expected, player.nextMessage());
 
-        player.performCommand("sd help");
+        player.performCommand("syn help");
 
         assertEquals(expected, player.nextMessage());
     }
@@ -62,7 +64,7 @@ public class CommandTest extends PluginTest {
         opPlayer.setOp(true);
 
 
-        opPlayer.performCommand("sd gencode 3");
+        opPlayer.performCommand("syn gencode 3");
 
         String msgUrl = "https://rock-mc.com/code/?text=";
 
@@ -75,7 +77,7 @@ public class CommandTest extends PluginTest {
 
         PlayerMock newPlayer = server.addPlayer();
 
-        newPlayer.performCommand("sd verify " + code);
+        newPlayer.performCommand("syn verify " + code);
         commandOutput = newPlayer.nextMessage();
 
 
@@ -84,7 +86,7 @@ public class CommandTest extends PluginTest {
 
         PlayerMock otherPlayer = server.addPlayer();
 
-        otherPlayer.performCommand("sd verify " + code);
+        otherPlayer.performCommand("syn verify " + code);
         commandOutput = otherPlayer.nextMessage();
 
         assertEquals(Log.PREFIX_GAME + ChatColor.RED + "驗證碼已經使用過", commandOutput);
@@ -96,7 +98,7 @@ public class CommandTest extends PluginTest {
 
         int timeoutSeconds = 10;
 
-        String commandOutput = null;
+        String commandOutput;
 
         PlayerMock player = server.addPlayer();
 
@@ -111,14 +113,14 @@ public class CommandTest extends PluginTest {
 
         // 等待使用者輸入
         timeoutSeconds = 10;
-        while ((commandOutput = player.nextMessage()) != null && timeoutSeconds > 0) {
+        while ((player.nextMessage()) != null && timeoutSeconds > 0) {
             Thread.sleep(1000);
             timeoutSeconds--;
         }
 
         String code = "123";
 
-        player.performCommand("sd verify " + code);
+        player.performCommand("syn verify " + code);
 
         commandOutput = player.nextMessage();
 
@@ -128,7 +130,7 @@ public class CommandTest extends PluginTest {
     @Test
     void console() {
         ConsoleCommandSenderMock consoleSender = server.getConsoleSender();
-        server.dispatchCommand(consoleSender, "sd");
+        server.dispatchCommand(consoleSender, "syn");
 
         String commandOutput = consoleSender.nextMessage();
 

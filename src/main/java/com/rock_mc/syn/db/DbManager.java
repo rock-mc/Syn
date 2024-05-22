@@ -1,15 +1,16 @@
-package com.rock_mc.securedoor.db;
 
-import com.rock_mc.securedoor.SecureDoor;
-import com.rock_mc.securedoor.config.Config;
+package com.rock_mc.syn.db;
+
+import com.rock_mc.syn.Syn;
+import com.rock_mc.syn.config.Config;
 
 public class DbManager {
 
-    private final SecureDoor plugin;
+    private final Syn plugin;
     private final Database database;
     private final Object lock = new Object();
 
-    public DbManager(SecureDoor plugin) {
+    public DbManager(Syn plugin) {
         this.plugin = plugin;
 
         if ("sqlite".equalsIgnoreCase(plugin.configManager.getConfig().getString(Config.DATABASE_TYPE))) {
@@ -48,7 +49,7 @@ public class DbManager {
             return this.database.getCodeCreateDate(code);
         }
     }
-    public boolean contains(String code) {
+    public boolean containsCode(String code) {
         synchronized (lock) {
             return this.database.contains(code);
         }
@@ -60,7 +61,7 @@ public class DbManager {
         }
     }
 
-    public void addAllowedPlayer(String playerUUID) {
+    public void addPlayerToAllowList(String playerUUID) {
         synchronized (lock) {
             this.database.addAllowedPlayer(playerUUID);
         }
@@ -72,7 +73,7 @@ public class DbManager {
         }
     }
 
-    public boolean isPlayerAllowed(String playerUUID) {
+    public boolean isPlayerInAllowList(String playerUUID) {
         synchronized (lock) {
             return this.database.isPlayerAllowed(playerUUID);
         }
@@ -120,13 +121,13 @@ public class DbManager {
         }
     }
 
-    public void addBanedPlayer(String playerUUID, String reason, long time) {
+    public void addPlayerToBannedList(String playerUUID, String reason, long time) {
         synchronized (lock) {
             this.database.addBanedPlayer(playerUUID, reason, time);
         }
     }
 
-    public void removeBanedPlayer(String playerUUID) {
+    public void removePlayerBannedList(String playerUUID) {
         synchronized (lock) {
             this.database.removeBanedPlayer(playerUUID);
         }

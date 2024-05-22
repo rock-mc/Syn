@@ -1,8 +1,10 @@
 package com.rock_mc.securedoor;
 
-import com.rock_mc.securedoor.config.Config;
-import com.rock_mc.securedoor.event.JoinEvent;
-import com.rock_mc.securedoor.event.KickEvent;
+package com.rock_mc.syn;
+
+import com.rock_mc.syn.config.Config;
+import com.rock_mc.syn.event.JoinEvent;
+import com.rock_mc.syn.event.KickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
@@ -19,10 +21,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Command implements CommandExecutor, TabCompleter {
+    private final Syn plugin;
 
-    private final SecureDoor plugin;
-
-    public Command(SecureDoor plugin) {
+    public Command(Syn plugin) {
         this.plugin = plugin;
     }
 
@@ -51,7 +52,7 @@ public class Command implements CommandExecutor, TabCompleter {
                 try {
                     codeNum = Integer.parseInt(args[1]);
                 } catch (NumberFormatException e) {
-                    Log.sendMessage(player, "Usage: /sd gencode [codeNum]");
+                    Log.sendMessage(player, "Usage: /syn gencode [codeNum]");
                     return true;
                 }
                 if (codeNum < 1) {
@@ -73,11 +74,10 @@ public class Command implements CommandExecutor, TabCompleter {
             for (int i = 0; i < codeNum; i++) {
 
                 String code = Utils.generateCode(available_characters, code_length);
-                while (plugin.dbManager.contains(code)) {
+                while (plugin.dbManager.containsCode(code)) {
                     code = Utils.generateCode(available_characters, code_length);
                 }
                 plugin.dbManager.addCode(code);
-
 
                 if (player == null) {
                     msg += "\n" + code;
@@ -100,14 +100,18 @@ public class Command implements CommandExecutor, TabCompleter {
             }
 
             if (args.length != 2) {
-                Log.sendMessage(player, "Usage: /sd verify <verification code>");
+                Log.sendMessage(player, "Usage: /syn verify <verification code>");
+                return true;
+            }
+
+            if (plugin.dbManager.isPlayerInAllowList(player.getUniqueId().toString())) {
+                Log.sendMessage(player, "你已經通過驗證了。");
                 return true;
             }
 
             int maxInputCodeTimes = this.plugin.getConfig().getInt(Config.MAX_INPUT_CODE_TIMES);
             int failTime = plugin.dbManager.getFailedAttempts(player.getUniqueId().toString());
 
-            Log.logInfo("failTime: " + failTime + ", maxInputCodeTimes: " + maxInputCodeTimes);
             if (failTime >= maxInputCodeTimes) {
 
                 int banDays = plugin.getConfig().getInt(Config.INPUT_CODE_BAN_DAYS);
@@ -116,7 +120,7 @@ public class Command implements CommandExecutor, TabCompleter {
 
                 long banedSec = (long) banDays * 24 * 60 * 60;
 
-                plugin.dbManager.addBanedPlayer(player.getUniqueId().toString(), banReason, banedSec);
+                plugin.dbManager.addPlayerToBannedList(player.getUniqueId().toString(), banReason, banedSec);
                 plugin.dbManager.updateFailedAttempts(player.getUniqueId().toString(), 1);
 
                 Event event = new KickEvent(false, player, message);
@@ -146,7 +150,7 @@ public class Command implements CommandExecutor, TabCompleter {
 
             // The verification code is exited and not expired
             // Add the player to the allow list
-            plugin.dbManager.addAllowedPlayer(player.getUniqueId().toString());
+            plugin.dbManager.addPlayerToAllowList(player.getUniqueId().toString());
             // check if the code is expired or not
             int expireDays = this.plugin.getConfig().getInt(Config.EXPIRE_DAYS);
 
@@ -164,13 +168,38 @@ public class Command implements CommandExecutor, TabCompleter {
             }
             // The verification code is exited and not expired
             // Add the player to the allow list
-            plugin.dbManager.addAllowedPlayer(player.getUniqueId().toString());
+            plugin.dbManager.addPlayerToAllowList(player.getUniqueId().toString());
 
             // Mark the verification code as used
             plugin.dbManager.markCode(code, true);
+            plugin.freezePlayerMap.remove(player.getUniqueId());
 
             Event event = new JoinEvent(false, player, "歡迎 " + ChatColor.YELLOW + player.getDisplayName() + ChatColor.WHITE + " 全新加入!");
             Bukkit.getPluginManager().callEvent(event);
+
+            return true;
+        }
+        if ("guest".equals(args[0])) {
+
+            if (player != null && !player.hasPermission(Permission.GUEST)) {
+                Log.sendMessage(player, "You don't have permission to use this command.");
+                return true;
+            }
+
+            if (args.length != 1) {
+                Log.sendMessage(player, "Usage: /syn guest");
+                return true;
+            }
+
+            boolean isGuest = plugin.configManager.getConfig().getBoolean(Config.GUEST);
+            isGuest = !isGuest;
+
+            plugin.configManager.getConfig().set(Config.GUEST, isGuest);
+
+            plugin.saveConfig();
+
+            Log.sendMessage(player, "訪客模式已經設定為: " + (isGuest ? ChatColor.GREEN + "On" : ChatColor.RED + "Off"));
+            Log.sendMessage(player, isGuest ? "所有玩家除了禁止名單都可以進入伺服器。" : "只有在允許名單的玩家可以進入伺服器。");
 
             return true;
         }
@@ -180,13 +209,13 @@ public class Command implements CommandExecutor, TabCompleter {
 
     private void showDefaultCmd(Player player) {
 
-        String gencode = "* gencode: Generate a verification code\nUsage: /sd gencode";
-        String info = "* info: Show the door information\nUsage: /sd info";
-        String verify = "* verify: Verify the verification code\nUsage: /sd verify <verification code>";
-        String ban = "* ban: Ban the player\nUsage: /sd ban <player>";
-        String unban = "* unban: Unban the door\nUsage: /sd unban <player>";
-        String open = "* open: Allow everyone to come into the server but the player in the ban list\nUsage: /sd open";
-        String close = "* close: Allow the player in the allowlist to come into the server\nUsage: /sd close";
+        String gencode = "* gencode: Generate a verification code\nUsage: /syn gencode";
+        String info = "* info: Show the door information\nUsage: /syn info";
+        String verify = "* verify: Verify the verification code\nUsage: /syn verify <verification code>";
+        String ban = "* ban: Ban the player\nUsage: /syn ban <player>";
+        String unban = "* unban: Unban the door\nUsage: /syn unban <player>";
+        String open = "* open: Allow everyone to come into the server but the player in the ban list\nUsage: /syn open";
+        String close = "* close: Allow the player in the allowlist to come into the server\nUsage: /syn close";
 
         String allCommands = "Commands:\n" + gencode + "\n" + info + "\n" + ban + "\n" + unban + "\n" + open + "\n" + close;
 
@@ -209,7 +238,7 @@ public class Command implements CommandExecutor, TabCompleter {
             if (player.hasPermission(Permission.UNBAN)) {
                 message += "\n" + unban;
             }
-            if (player.hasPermission(Permission.DOOR)) {
+            if (player.hasPermission(Permission.GUEST)) {
                 message += "\n" + open + "\n" + close;
             }
             if (message.equals("Commands:")) {

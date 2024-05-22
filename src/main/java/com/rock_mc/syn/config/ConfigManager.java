@@ -1,6 +1,6 @@
-package com.rock_mc.securedoor.config;
+package com.rock_mc.syn.config;
 
-import com.rock_mc.securedoor.Log;
+import com.rock_mc.syn.Log;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -30,11 +30,11 @@ public class ConfigManager {
 
         // Check if the configuration is valid
         boolean valid = true;
-        if (config.get(Config.OPEN) == null) {
+        if (config.get(Config.GUEST) == null) {
             valid = false;
         }
         else {
-            if (!(config.get(Config.OPEN) instanceof Boolean)) {
+            if (!(config.get(Config.GUEST) instanceof Boolean)) {
                 valid = false;
             }
         }
