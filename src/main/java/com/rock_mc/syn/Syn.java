@@ -26,7 +26,7 @@ public class Syn extends JavaPlugin {
 ███████╗ ╚████╔╝ ██╔██╗ ██║
 ╚════██║  ╚██╔╝  ██║╚██╗██║
 ███████║   ██║   ██║ ╚████║
-╚══════╝   ╚═╝   ╚═╝  ╚═══╝""" + " v " + this.getDescription().getVersion();
+╚══════╝   ╚═╝   ╚═╝  ╚═══╝""";
     // ANSI Shadow
 
     @Override

@@ -41,21 +41,24 @@ public class WaitVerify extends Thread {
             }
 
             if (!player.isOnline()) {
-                return;
+                break;
             }
         }
 
-        String eventMessage;
-        if (!plugin.dbManager.isPlayerAllowed(player.getUniqueId().toString())) {
-            eventMessage = "未通過認證，請取得驗證碼後，參考官網教學輸入驗證碼";
-            Event event = new KickEvent(true, player, eventMessage);
+        if (player.isOnline()) {
+            String eventMessage;
+            if (!plugin.dbManager.isPlayerAllowed(player.getUniqueId().toString())) {
+                eventMessage = "未通過認證，請取得驗證碼後，參考官網教學輸入驗證碼";
+                Event event = new KickEvent(true, player, eventMessage);
 
-            failTime = plugin.dbManager.getFailedAttempts(player.getUniqueId().toString());
-            plugin.dbManager.updateFailedAttempts(player.getUniqueId().toString(), failTime + 1);
+                failTime = plugin.dbManager.getFailedAttempts(player.getUniqueId().toString());
+                plugin.dbManager.updateFailedAttempts(player.getUniqueId().toString(), failTime + 1);
 
-            Log.broadcast(player.getDisplayName() + " 沒有通過驗證，被請出伺服器了...");
-            Bukkit.getPluginManager().callEvent(event);
+                Log.broadcast(player.getDisplayName() + " 沒有通過驗證，被請出伺服器了...");
+                Bukkit.getPluginManager().callEvent(event);
+            }
         }
+        plugin.freezePlayerMap.remove(player.getUniqueId());
     }
 }
 

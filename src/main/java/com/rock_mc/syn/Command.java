@@ -74,7 +74,6 @@ public class Command implements CommandExecutor {
                 }
                 plugin.dbManager.addCode(code);
 
-
                 if (player == null) {
                     msg += "\n" + code;
                 } else {
@@ -97,6 +96,11 @@ public class Command implements CommandExecutor {
 
             if (args.length != 2) {
                 Log.sendMessage(player, "Usage: /sd verify <verification code>");
+                return true;
+            }
+
+            if (plugin.dbManager.isPlayerAllowed(player.getUniqueId().toString())) {
+                Log.sendMessage(player, "你已經通過驗證了。");
                 return true;
             }
 
@@ -164,6 +168,7 @@ public class Command implements CommandExecutor {
 
             // Mark the verification code as used
             plugin.dbManager.markCode(code, true);
+            plugin.freezePlayerMap.remove(player.getUniqueId());
 
             Event event = new JoinEvent(false, player, "歡迎 " + ChatColor.YELLOW + player.getDisplayName() + ChatColor.WHITE + " 全新加入!");
             Bukkit.getPluginManager().callEvent(event);
