@@ -1,5 +1,9 @@
 # Syn
 
+<p align="center">
+  <img width="40%" src="https://raw.githubusercontent.com/rock-mc/Syn/main/images/logo.png">
+</p>
+
 **Syn** is a Minecraft plugin designed to manage player access to the server.  
 Before each new player logs in for the first time, they need to obtain a verification code and enter it in the game to
 be added to the allowlist.  
