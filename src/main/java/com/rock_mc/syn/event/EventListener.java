@@ -1,8 +1,9 @@
-package com.rock_mc.securedoor.event;
+package com.rock_mc.syn.event;
 
-import com.rock_mc.securedoor.Log;
-import com.rock_mc.securedoor.SecureDoor;
-import com.rock_mc.securedoor.Utils;
+import com.rock_mc.syn.Log;
+import com.rock_mc.syn.Syn;
+import com.rock_mc.syn.Utils;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -20,9 +21,9 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import java.io.IOException;
 
 public class EventListener implements Listener {
-    private final SecureDoor plugin;
+    private final Syn plugin;
 
-    public EventListener(SecureDoor plugin) {
+    public EventListener(Syn plugin) {
         this.plugin = plugin;
     }
 
@@ -77,21 +78,22 @@ public class EventListener implements Listener {
         final String name = player.getDisplayName();
         final String uuid = player.getUniqueId().toString();
 
+        String opWelcomeMsg = "管理員 " + ChatColor.GOLD + "" + ChatColor.BOLD + name + ChatColor.WHITE + " 取得女神 " + ChatColor.RED + Syn.APP_NAME + ChatColor.WHITE + " 的允許進入伺服器並得到了女神祝福";
         if (plugin.dbManager.isPlayerAllowed(uuid)) {
             if (player.isOp()) {
-                Log.broadcast("管理員 " + ChatColor.GOLD + "" + ChatColor.BOLD + name + ChatColor.WHITE + " 通過驗證。");
+                Log.broadcast(opWelcomeMsg);
             } else {
-                Log.broadcast("玩家 " + ChatColor.BOLD + name + ChatColor.WHITE + " 通過驗證。");
+                Log.broadcast("玩家 " + ChatColor.BOLD + name + ChatColor.WHITE + " 取得女神 " + ChatColor.RED + Syn.APP_NAME + ChatColor.WHITE + " 的允許進入伺服器。");
             }
             return;
         }
-
-        if (player.isOp()) {
+        else if (player.isOp()) {
             plugin.dbManager.addAllowedPlayer(uuid);
-            Log.broadcast("管理員 " + ChatColor.GOLD + "" + ChatColor.BOLD + name + ChatColor.WHITE + " 通過驗證。");
+            Log.broadcast(opWelcomeMsg);
             return;
         }
-        Log.logInfo("玩家 " + name + " 未通過驗證，凍結玩家。");
+
+        Log.logInfo("Player " + name + " is not verified, freeze player.");
 
         Location location = player.getLocation();
         plugin.freezePlayerMap.put(player.getUniqueId(), location);
@@ -100,13 +102,13 @@ public class EventListener implements Listener {
     }
 
     @EventHandler
-    public void onSDJoin(JoinEvent event) {
+    public void onPluginJoin(JoinEvent event) {
         Log.broadcast(event.getMessage());
         plugin.freezePlayerMap.remove(event.getPlayer().getUniqueId());
     }
 
     @EventHandler
-    public void onSDKick(KickEvent event) {
+    public void onPluginKick(KickEvent event) {
         Player player = event.getPlayer();
         Bukkit.getScheduler().runTask(plugin, () -> player.kickPlayer(event.getMessage()));
     }

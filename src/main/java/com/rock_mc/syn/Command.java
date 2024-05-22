@@ -1,8 +1,9 @@
-package com.rock_mc.securedoor;
 
-import com.rock_mc.securedoor.config.Config;
-import com.rock_mc.securedoor.event.JoinEvent;
-import com.rock_mc.securedoor.event.KickEvent;
+package com.rock_mc.syn;
+
+import com.rock_mc.syn.config.Config;
+import com.rock_mc.syn.event.JoinEvent;
+import com.rock_mc.syn.event.KickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
@@ -15,10 +16,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 public class Command implements CommandExecutor {
+    private final Syn plugin;
 
-    private final SecureDoor plugin;
-
-    public Command(SecureDoor plugin) {
+    public Command(Syn plugin) {
         this.plugin = plugin;
     }
 
@@ -74,7 +74,6 @@ public class Command implements CommandExecutor {
                 }
                 plugin.dbManager.addCode(code);
 
-
                 if (player == null) {
                     msg += "\n" + code;
                 } else {
@@ -100,10 +99,14 @@ public class Command implements CommandExecutor {
                 return true;
             }
 
+            if (plugin.dbManager.isPlayerAllowed(player.getUniqueId().toString())) {
+                Log.sendMessage(player, "你已經通過驗證了。");
+                return true;
+            }
+
             int maxInputCodeTimes = this.plugin.getConfig().getInt(Config.MAX_INPUT_CODE_TIMES);
             int failTime = plugin.dbManager.getFailedAttempts(player.getUniqueId().toString());
 
-            Log.logInfo("failTime: " + failTime + ", maxInputCodeTimes: " + maxInputCodeTimes);
             if (failTime >= maxInputCodeTimes) {
 
                 int banDays = plugin.getConfig().getInt(Config.INPUT_CODE_BAN_DAYS);
@@ -164,6 +167,7 @@ public class Command implements CommandExecutor {
 
             // Mark the verification code as used
             plugin.dbManager.markCode(code, true);
+            plugin.freezePlayerMap.remove(player.getUniqueId());
 
             Event event = new JoinEvent(false, player, "歡迎 " + ChatColor.YELLOW + player.getDisplayName() + ChatColor.WHITE + " 全新加入!");
             Bukkit.getPluginManager().callEvent(event);
@@ -205,7 +209,7 @@ public class Command implements CommandExecutor {
             if (player.hasPermission(Permission.UNBAN)) {
                 message += "\n" + unban;
             }
-            if (player.hasPermission(Permission.DOOR)) {
+            if (player.hasPermission(Permission.GUEST)) {
                 message += "\n" + open + "\n" + close;
             }
             if (message.equals("Commands:")) {

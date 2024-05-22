@@ -14,13 +14,15 @@ It has a guest mode that allows unverified players to enter the server, except f
 ## Usage
 
 * `/syn` - Show help information for Syn
-* `/syn verify <code>` - Input the verification code to verify the player
+* `/syn verify <code/player>` - The player input the verification code to verify themselves, or OPs inputs the
+  player's name to verify the Online player
 * `/syn gencode [number]` - Generate a specified number of verification codes
-* `/syn info [player]` - Show the status and information of Syn system or the player
+* `/syn info [player]` - Show the status of Syn plugin or the player
 * `/syn ban <player> [day hour min sec]` - Ban the player
 * `/syn unban <player>` - Unban the player
 * `/syn guest` - If on, it allows everyone to enter the server, except for players on the ban list.
-                 If off, it only allows the player in the allowlist to come into the server.
+  If off, it only allows the player in the allowlist to come into the server.
+* `/syn log [time] [player] [page]` - Show the log since the specified time or the last time the server was opened
 
 ## Permissions
 
