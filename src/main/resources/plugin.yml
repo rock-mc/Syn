@@ -24,9 +24,6 @@ commands:
   syn unban:
     description: Unban the player
     usage: /syn unban player
-  syn close:
-    description: Allow the player in the allowlist to come into the server.
-    usage: /syn close
   syn guest:
     description: Allow the player in the allowlist to come into the server.
     usage: /syn guest
@@ -41,8 +38,9 @@ permissions:
       syn.gencode: true
       syn.ban: true
       syn.unban: true
-      syn.info: true
       syn.guest: true
+      syn.info: true
+      syn.log: true
   syn.gencode:
     description: Allows you to generate verification code
     default: op
@@ -52,11 +50,11 @@ permissions:
   syn.unban:
     description: Allows you to unban the player
     default: op
+  syn.guest:
+    description: Allows you to turn on/off guest mode
+    default: op
   syn.info:
     description: Allows you to check the state of SecureDoor System info
-    default: op
-  syn.guest:
-    description: Allows you to open/close the door
     default: op
   syn.log:
     description: Allows you to check the log of the player
