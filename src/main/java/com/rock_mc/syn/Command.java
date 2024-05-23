@@ -50,7 +50,7 @@ public class Command implements CommandExecutor, TabCompleter {
                 try {
                     codeNum = Integer.parseInt(args[1]);
                 } catch (NumberFormatException e) {
-                    Log.sendMessage(player, "Usage: /syn gencode [codeNum]");
+                    Log.sendMessage(player, "Usage: /syn gencode [number]");
                     return true;
                 }
                 if (codeNum < 1) {
@@ -207,13 +207,13 @@ public class Command implements CommandExecutor, TabCompleter {
 
     private void showDefaultCmd(Player player) {
 
-        String gencode = "* gencode: Generate a verification code\nUsage: /syn gencode";
-        String info = "* info: Show the door information\nUsage: /syn info";
-        String verify = "* verify: Verify the verification code\nUsage: /syn verify <verification code>";
-        String ban = "* ban: Ban the player\nUsage: /syn ban <player>";
+        String gencode = "* gencode: Generate a the number of verification codes\nUsage: /syn gencode [number]";
+        String info = "* info: Show the status of Syn plugin or the player\nUsage: /syn info [player]";
+//        String verify = "* verify: The new player input the verification code to verify themselves, or OPs inputs the player's name to verify the Online player\nUsage: /syn verify <code/player>";
+        String ban = "* ban: Ban the player\nUsage: /syn ban <player> [day hour min sec]";
         String unban = "* unban: Unban the door\nUsage: /syn unban <player>";
-        String open = "* open: Allow everyone to come into the server but the player in the ban list\nUsage: /syn open";
-        String close = "* close: Allow the player in the allowlist to come into the server\nUsage: /syn close";
+        String open = "* guest: If on, it allows everyone to enter the server, except for players on the ban list. If off, it only allows the player in the allowlist to come into the server\nUsage: /syn guest";
+        String close = "* log: Show the log since the time or the last time the server was opened\nUsage: /syn log [time] [player] [page]";
 
         String allCommands = "Commands:\n" + gencode + "\n" + info + "\n" + ban + "\n" + unban + "\n" + open + "\n" + close;
 
@@ -248,10 +248,11 @@ public class Command implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
-        List<String> tab = new ArrayList<>(List.of("info", "help", "verify"));
+        List<String> tab = new ArrayList<>(List.of("info", "help"));
 
         if (sender.isOp()) {
-            tab = new ArrayList<>(List.of("info", "help", "gencode", "ban", "unban", "open", "close"));
+            tab = new ArrayList<>(List.of("gencode", "info", "help", "ban", "unban", "guest", "log"));
+
         }
 
         if (args.length == 0) {

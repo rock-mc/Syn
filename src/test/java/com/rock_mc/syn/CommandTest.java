@@ -24,13 +24,13 @@ public class CommandTest extends PluginTest {
 
         String expected = Log.PREFIX_GAME;
 
-        String gencode = "* gencode: Generate a verification code\nUsage: /syn gencode";
-        String info = "* info: Show the door information\nUsage: /syn info";
-//        String verify = "* verify: Verify the verification code\nUsage: /syn verify <verification code>";
-        String ban = "* ban: Ban the player\nUsage: /syn ban <player>";
+        String gencode = "* gencode: Generate a the number of verification codes\nUsage: /syn gencode [number]";
+        String info = "* info: Show the status of Syn plugin or the player\nUsage: /syn info [player]";
+//        String verify = "* verify: The new player input the verification code to verify themselves, or OPs inputs the player's name to verify the Online player\nUsage: /syn verify <code/player>";
+        String ban = "* ban: Ban the player\nUsage: /syn ban <player> [day hour min sec]";
         String unban = "* unban: Unban the door\nUsage: /syn unban <player>";
-        String open = "* open: Allow everyone to come into the server but the player in the ban list\nUsage: /syn open";
-        String close = "* close: Allow the player in the allowlist to come into the server\nUsage: /syn close";
+        String open = "* guest: If on, it allows everyone to enter the server, except for players on the ban list. If off, it only allows the player in the allowlist to come into the server\nUsage: /syn guest";
+        String close = "* log: Show the log since the time or the last time the server was opened\nUsage: /syn log [time] [player] [page]";
 
         expected += "Commands:\n" + gencode + "\n" + info + "\n" + ban + "\n" + unban + "\n" + open + "\n" + close;
 
@@ -147,15 +147,15 @@ public class CommandTest extends PluginTest {
         opPlayer.setOp(true);
 
         tabList = server.getCommandTabComplete(opPlayer, "syn ");
-        assertEquals("[info, help, gencode, ban, unban, open, close]", tabList.toString());
+        assertEquals("[gencode, info, help, ban, unban, guest, log]", tabList.toString());
 
         tabList = server.getCommandTabComplete(opPlayer, "syn g");
-        assertEquals("[gencode]", tabList.toString());
+        assertEquals("[gencode, guest]", tabList.toString());
 
         PlayerMock player = server.addPlayer();
 
         tabList = server.getCommandTabComplete(player, "syn ");
-        assertEquals("[info, help, verify]", tabList.toString());
+        assertEquals("[info, help]", tabList.toString());
 
     }
 }
