@@ -209,17 +209,20 @@ public class Command implements CommandExecutor, TabCompleter {
 
         String gencode = "* gencode: Generate a the number of verification codes\nUsage: /syn gencode [number]";
         String info = "* info: Show the status of Syn plugin or the player\nUsage: /syn info [player]";
-//        String verify = "* verify: The new player input the verification code to verify themselves, or OPs inputs the player's name to verify the Online player\nUsage: /syn verify <code/player>";
+        String verify = "* verify: The new player input the verification code to verify themselves, or OPs inputs the player's name to verify the Online player\nUsage: /syn verify <code/player>";
         String ban = "* ban: Ban the player\nUsage: /syn ban <player> [day hour min sec]";
         String unban = "* unban: Unban the door\nUsage: /syn unban <player>";
-        String open = "* guest: If on, it allows everyone to enter the server, except for players on the ban list. If off, it only allows the player in the allowlist to come into the server\nUsage: /syn guest";
-        String close = "* log: Show the log since the time or the last time the server was opened\nUsage: /syn log [time] [player] [page]";
+        String guest = "* guest: If on, it allows everyone to enter the server, except for players on the ban list. If off, it only allows the player in the allowlist to come into the server\nUsage: /syn guest";
+        String log = "* log: Show the log since the time or the last time the server was opened\nUsage: /syn log [time] [player] [page]";
 
-        String allCommands = "Commands:\n" + gencode + "\n" + info + "\n" + ban + "\n" + unban + "\n" + open + "\n" + close;
+        String allCommands = "Commands:\n" + gencode + "\n" + info + "\n" + verify + "\n" + ban + "\n" + unban + "\n" + guest + "\n" + log;
 
         String message;
         if (player == null) {
             message = allCommands;
+        } else if (plugin.dbManager.isPlayerInAllowList(player.getUniqueId().toString())) {
+            message = "Commands:\n" + verify;
+
         } else {
 
             message = "Commands:";
@@ -237,7 +240,10 @@ public class Command implements CommandExecutor, TabCompleter {
                 message += "\n" + unban;
             }
             if (player.hasPermission(Permission.GUEST)) {
-                message += "\n" + open + "\n" + close;
+                message += "\n" + guest;
+            }
+            if (player.hasPermission(Permission.LOG)) {
+                message += "\n" + log;
             }
             if (message.equals("Commands:")) {
                 message = "You don't have permission to use any command.";
