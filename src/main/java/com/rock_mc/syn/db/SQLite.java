@@ -42,13 +42,12 @@ public class SQLite extends Database {
         try (Statement statement = connection.createStatement()) {
             statement.execute("CREATE TABLE IF NOT EXISTS verification_codes (" +
                     "code TEXT PRIMARY KEY," +
-                    "used BOOLEAN DEFAULT FALSE," +
+                    "player_used TEXT DEFAULT NULL," +
                     "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
                     ")");
 
             // Create indexes on code, created_at, and used columns
             statement.execute("CREATE INDEX IF NOT EXISTS idx_verification_codes_code ON verification_codes (code)");
-            statement.execute("CREATE INDEX IF NOT EXISTS idx_verification_codes_created_at ON verification_codes (created_at)");
         } catch (SQLException e) {
             Log.logWarning("Could not create verification_codes table or indexes: " + e.getMessage());
         }
@@ -182,7 +181,7 @@ public class SQLite extends Database {
     public boolean contains(String code) {
         // Check if the code exists in the database
         try (Connection connection = getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("SELECT code FROM verification_codes WHERE code = ?");
+            PreparedStatement statement = connection.prepareStatement("SELECT code FROM verification_codes WHERE code = ? and player_used = null");
             statement.setString(1, code);
             ResultSet resultSet = statement.executeQuery();
             return resultSet.next();
@@ -193,13 +192,13 @@ public class SQLite extends Database {
     }
 
     @Override
-    public void markCode(String code, boolean used) {
+    public void markCode(String code, String playerUUID) {
         // Mark the code as used or not used
         try (Connection connection = getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO verification_codes (code, used) VALUES (?, ?) ON CONFLICT(code) DO UPDATE SET used = ?");
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO verification_codes (code, player_used) VALUES (?, ?) ON CONFLICT(code) DO UPDATE SET player_used = ?");
             statement.setString(1, code);
-            statement.setBoolean(2, used);
-            statement.setBoolean(3, used);
+            statement.setString(2, playerUUID);
+            statement.setString(3, playerUUID);
             statement.executeUpdate();
         } catch (SQLException e) {
             Log.logWarning("Could not mark the code as used or not used: " + e.getMessage());
@@ -363,11 +362,11 @@ public class SQLite extends Database {
     public boolean isCodeUsed(String code) {
         // Check if the code is used
         try (Connection connection = getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("SELECT used FROM verification_codes WHERE code = ?");
+            PreparedStatement statement = connection.prepareStatement("SELECT player_used FROM verification_codes WHERE code = ?");
             statement.setString(1, code);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                return resultSet.getBoolean("used");
+                return resultSet.getString("player_used") != null;
             }
         } catch (SQLException e) {
             Log.logWarning("Could not check if the code is used: " + e.getMessage());

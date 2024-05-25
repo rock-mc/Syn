@@ -11,7 +11,7 @@ public abstract class Database {
 
     public abstract boolean contains(String code);
 
-    public abstract void markCode(String code, boolean used);
+    public abstract void markCode(String code, String playerUUID);
 
     public abstract void addAllowedPlayer(String playerUUID);
 

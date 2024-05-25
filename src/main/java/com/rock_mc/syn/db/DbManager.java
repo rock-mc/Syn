@@ -55,9 +55,9 @@ public class DbManager {
         }
     }
 
-    public void markCode(String code, boolean used) {
+    public void markCode(String code, String playerUUID) {
         synchronized (lock) {
-            this.database.markCode(code, used);
+            this.database.markCode(code, playerUUID);
         }
     }
 
