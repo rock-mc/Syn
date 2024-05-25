@@ -75,7 +75,10 @@ public class Command implements CommandExecutor {
                 plugin.dbManager.addCode(code);
 
                 if (player == null) {
-                    msg += "\n" + code;
+                    if (msg.length() > 0) {
+                        msg += ", ";
+                    }
+                    msg += code;
                 } else {
                     String showCodeUrl = this.plugin.getConfig().getString(Config.SHOW_CODE_URL);
                     msg += "\n" + showCodeUrl + code;
