@@ -58,7 +58,10 @@ public class ConfigManager {
             if (!(config.get(Config.CODE_LENGTH) instanceof Integer)) {
                 valid = false;
             }
-            else if (config.getInt(Config.CODE_LENGTH) < 4) {
+            else if (config.getInt(Config.CODE_LENGTH) < 6) {
+                valid = false;
+            }
+            else if (config.getInt(Config.CODE_LENGTH) > 32) {
                 valid = false;
             }
         }
