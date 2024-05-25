@@ -1,14 +1,19 @@
-
 package com.rock_mc.syn.db;
 
 import com.rock_mc.syn.Syn;
 import com.rock_mc.syn.config.Config;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class DbManager {
 
     private final Syn plugin;
     private final Database database;
     private final Object lock = new Object();
+
+    private final Map<String, Boolean> codeCache = new HashMap<>();
+    private final Map<String, Boolean> playerAllowCache = new HashMap<>();
 
     public DbManager(Syn plugin) {
         this.plugin = plugin;
@@ -41,6 +46,7 @@ public class DbManager {
     public void addCode(String code) {
         synchronized (lock) {
             this.database.addCode(code);
+            codeCache.put(code, false);
         }
     }
 
@@ -49,39 +55,56 @@ public class DbManager {
             return this.database.getCodeCreateDate(code);
         }
     }
+
     public boolean containsCode(String code) {
         synchronized (lock) {
-            return this.database.contains(code);
+            if (codeCache.containsKey(code)) {
+                return codeCache.get(code);
+            } else {
+                boolean contains = this.database.contains(code);
+                codeCache.put(code, contains);
+                return contains;
+            }
         }
     }
 
     public void markCode(String code, String playerUUID) {
         synchronized (lock) {
             this.database.markCode(code, playerUUID);
+            codeCache.put(code, true);
         }
     }
 
     public void addPlayerToAllowList(String playerUUID) {
         synchronized (lock) {
             this.database.addAllowedPlayer(playerUUID);
+            playerAllowCache.put(playerUUID, true);
         }
     }
 
     public void removeAllowedPlayer(String playerUUID) {
         synchronized (lock) {
             this.database.removeAllowedPlayer(playerUUID);
+            playerAllowCache.remove(playerUUID);
         }
     }
 
     public boolean isPlayerInAllowList(String playerUUID) {
         synchronized (lock) {
-            return this.database.isPlayerAllowed(playerUUID);
+            if (playerAllowCache.containsKey(playerUUID)) {
+                return playerAllowCache.get(playerUUID);
+            } else {
+                boolean allowed = this.database.isPlayerAllowed(playerUUID);
+                playerAllowCache.put(playerUUID, allowed);
+                return allowed;
+            }
         }
     }
 
     public void removeCode(String code) {
         synchronized (lock) {
             this.database.removeCode(code);
+            codeCache.remove(code);
         }
     }
 
@@ -135,7 +158,13 @@ public class DbManager {
 
     public boolean isCodeUsed(String code) {
         synchronized (lock) {
-            return this.database.isCodeUsed(code);
+            if (codeCache.containsKey(code)) {
+                return codeCache.get(code);
+            } else {
+                boolean used = this.database.isCodeUsed(code);
+                codeCache.put(code, used);
+                return used;
+            }
         }
     }
 }
