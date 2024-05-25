@@ -64,6 +64,7 @@ public class SQLite extends Database {
             statement.execute("CREATE TABLE IF NOT EXISTS player_info (" +
                     "player_uuid TEXT PRIMARY KEY," +
                     "player_name TEXT NOT NULL," +
+                    "last_login TIMESTAMP," +
                     "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
                     ")");
 
@@ -348,7 +349,7 @@ public class SQLite extends Database {
     public void addPlayerInfo(String playerUUID, String playerName) {
         // Add or update player info in the database
         try (Connection connection = getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO player_info (player_uuid, player_name) VALUES (?, ?) ON CONFLICT(player_uuid) DO UPDATE SET player_name = ?");
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO player_info (player_uuid, player_name, last_login) VALUES (?, ?, CURRENT_TIMESTAMP) ON CONFLICT(player_uuid) DO UPDATE SET player_name = ?, last_login = CURRENT_TIMESTAMP");
             statement.setString(1, playerUUID);
             statement.setString(2, playerName);
             statement.setString(3, playerName);
