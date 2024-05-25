@@ -1,5 +1,8 @@
-package com.rock_mc.syn;
+package com.rock_mc.syn.command;
 
+import com.rock_mc.syn.Log;
+import com.rock_mc.syn.Syn;
+import com.rock_mc.syn.Utils;
 import com.rock_mc.syn.config.Config;
 import com.rock_mc.syn.event.JoinEvent;
 import com.rock_mc.syn.event.KickEvent;
@@ -8,6 +11,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
@@ -18,10 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Command implements CommandExecutor, TabCompleter {
+public class CmdExecutor implements CommandExecutor, TabCompleter {
     private final Syn plugin;
 
-    public Command(Syn plugin) {
+    public CmdExecutor(Syn plugin) {
         this.plugin = plugin;
     }
 
@@ -38,19 +42,22 @@ public class Command implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        if ("gencode".equals(args[0])) {
+        String commandName = args[0];
 
-            if (player != null && !player.hasPermission(Permission.GENCODE)) {
+        if (CmdManager.GENCODE.equals(commandName)) {
+
+            if (!isHasPermission(player, commandName)) {
                 Log.sendMessage(player, "You don't have permission to use this command.");
                 return true;
             }
+
             // args[1] = codeNum
             int codeNum = 1;
             if (args.length == 2) {
                 try {
                     codeNum = Integer.parseInt(args[1]);
                 } catch (NumberFormatException e) {
-                    Log.sendMessage(player, "Usage: /syn gencode [number]");
+                    Log.sendMessage(player, plugin.cmdManager.getCmd(commandName).usage);
                     return true;
                 }
                 if (codeNum < 1) {
@@ -63,8 +70,8 @@ public class Command implements CommandExecutor, TabCompleter {
                 }
             }
 
-            String available_characters = this.plugin.getConfig().getString(Config.AVAILABLE_CHARS);
-            int code_length = this.plugin.getConfig().getInt(Config.CODE_LENGTH);
+            String available_characters = plugin.getConfig().getString(Config.AVAILABLE_CHARS);
+            int code_length = plugin.getConfig().getInt(Config.CODE_LENGTH);
 
             // Generate a verification code
             // Check the code is unique
@@ -80,7 +87,7 @@ public class Command implements CommandExecutor, TabCompleter {
                 if (player == null) {
                     msg += "\n" + code;
                 } else {
-                    String showCodeUrl = this.plugin.getConfig().getString(Config.SHOW_CODE_URL);
+                    String showCodeUrl = plugin.getConfig().getString(Config.SHOW_CODE_URL);
                     msg += "\n" + showCodeUrl + code;
                 }
             }
@@ -90,15 +97,15 @@ public class Command implements CommandExecutor, TabCompleter {
 
             return true;
         }
-        if ("verify".equals(args[0])) {
+        if (CmdManager.VERIFY.equals(args[0])) {
 
-            if (player == null) {
-                Log.sendMessage(player, "You must be a player to use this command.");
+            if (!isHasPermission(player, commandName)) {
+                Log.sendMessage(player, "You don't have permission to use this command.");
                 return true;
             }
 
             if (args.length != 2) {
-                Log.sendMessage(player, "Usage: /syn verify <verification code>");
+                Log.sendMessage(player, plugin.cmdManager.getCmd(commandName).usage);
                 return true;
             }
 
@@ -107,7 +114,7 @@ public class Command implements CommandExecutor, TabCompleter {
                 return true;
             }
 
-            int maxInputCodeTimes = this.plugin.getConfig().getInt(Config.MAX_INPUT_CODE_TIMES);
+            int maxInputCodeTimes = plugin.getConfig().getInt(Config.MAX_INPUT_CODE_TIMES);
             int failTime = plugin.dbManager.getFailedAttempts(player.getUniqueId().toString());
 
             if (failTime >= maxInputCodeTimes) {
@@ -129,7 +136,7 @@ public class Command implements CommandExecutor, TabCompleter {
             }
 
             String code = args[1];
-            if (!Utils.isValidCode(this.plugin.getConfig().getString(Config.AVAILABLE_CHARS), this.plugin.getConfig().getInt(Config.CODE_LENGTH), code)) {
+            if (!Utils.isValidCode(plugin.getConfig().getString(Config.AVAILABLE_CHARS), plugin.getConfig().getInt(Config.CODE_LENGTH), code)) {
                 Log.sendMessage(player, ChatColor.RED + "驗證碼錯誤");
                 return true;
             }
@@ -150,7 +157,7 @@ public class Command implements CommandExecutor, TabCompleter {
             // Add the player to the allow list
             plugin.dbManager.addPlayerToAllowList(player.getUniqueId().toString());
             // check if the code is expired or not
-            int expireDays = this.plugin.getConfig().getInt(Config.EXPIRE_DAYS);
+            int expireDays = plugin.getConfig().getInt(Config.EXPIRE_DAYS);
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             LocalDateTime codeCreatedDateTime = LocalDateTime.parse(codeCreateDate, formatter);
@@ -177,15 +184,15 @@ public class Command implements CommandExecutor, TabCompleter {
 
             return true;
         }
-        if ("guest".equals(args[0])) {
+        if (CmdManager.GUEST.equals(args[0])) {
 
-            if (player != null && !player.hasPermission(Permission.GUEST)) {
+            if (!isHasPermission(player, commandName)) {
                 Log.sendMessage(player, "You don't have permission to use this command.");
                 return true;
             }
 
             if (args.length != 1) {
-                Log.sendMessage(player, "Usage: /syn guest");
+                Log.sendMessage(player, plugin.cmdManager.getCmd(commandName).usage);
                 return true;
             }
 
@@ -205,46 +212,46 @@ public class Command implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    private boolean isHasPermission(Player player, String command) {
+
+        if (player == null) {
+            // The console has all permissions
+            return true;
+        }
+
+        return player.hasPermission(plugin.cmdManager.getCmd(command).permission);
+    }
+
     private void showDefaultCmd(Player player) {
 
-        String gencode = "* gencode: Generate a the number of verification codes\nUsage: /syn gencode [number]";
-        String info = "* info: Show the status of Syn plugin or the player\nUsage: /syn info [player]";
-        String verify = "* verify: The new player input the verification code to verify themselves, or OPs inputs the player's name to verify the Online player\nUsage: /syn verify <code/player>";
-        String ban = "* ban: Ban the player\nUsage: /syn ban <player> [day hour min sec]";
-        String unban = "* unban: Unban the door\nUsage: /syn unban <player>";
-        String guest = "* guest: If on, it allows everyone to enter the server, except for players on the ban list. If off, it only allows the player in the allowlist to come into the server\nUsage: /syn guest";
-        String log = "* log: Show the log since the time or the last time the server was opened\nUsage: /syn log [time] [player] [page]";
+        String[] allCmds = plugin.cmdManager.getCmdList();
 
-        String allCommands = "Commands:\n" + gencode + "\n" + info + "\n" + verify + "\n" + ban + "\n" + unban + "\n" + guest + "\n" + log;
+        String allCommands = "Commands:\n";
+
+        for (String cmd : allCmds) {
+            allCommands += plugin.cmdManager.getCmd(cmd).description + "\n";
+            allCommands += plugin.cmdManager.getCmd(cmd).usage + "\n";
+        }
+        allCommands = allCommands.trim();
 
         String message;
         if (player == null) {
             message = allCommands;
-        } else if (plugin.dbManager.isPlayerInAllowList(player.getUniqueId().toString())) {
-            message = "Commands:\n" + verify;
+        } else if (!plugin.dbManager.isPlayerInAllowList(player.getUniqueId().toString())) {
+            message = "Commands:\n" + plugin.cmdManager.getCmd(CmdManager.VERIFY).description;
+            message += "\n" + plugin.cmdManager.getCmd(CmdManager.VERIFY).usage;
 
         } else {
-
             message = "Commands:";
 
-            if (player.hasPermission(Permission.GENCODE)) {
-                message += "\n" + gencode;
+            for (String cmd : allCmds) {
+                if (plugin.cmdManager.getCmd(cmd).permission != null && !player.hasPermission(plugin.cmdManager.getCmd(cmd).permission)) {
+                    continue;
+                }
+                message += "\n" + plugin.cmdManager.getCmd(cmd).description;
+                message += "\n" + plugin.cmdManager.getCmd(cmd).usage;
             }
-            if (player.hasPermission(Permission.INFO)) {
-                message += "\n" + info;
-            }
-            if (player.hasPermission(Permission.BAN)) {
-                message += "\n" + ban;
-            }
-            if (player.hasPermission(Permission.UNBAN)) {
-                message += "\n" + unban;
-            }
-            if (player.hasPermission(Permission.GUEST)) {
-                message += "\n" + guest;
-            }
-            if (player.hasPermission(Permission.LOG)) {
-                message += "\n" + log;
-            }
+
             if (message.equals("Commands:")) {
                 message = "You don't have permission to use any command.";
             }
@@ -254,17 +261,39 @@ public class Command implements CommandExecutor, TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, org.bukkit.command.Command command, String label, String[] args) {
-        List<String> tab = new ArrayList<>(List.of("info", "help"));
+        List<String> tab = null;
 
-        if (sender.isOp()) {
-            tab = new ArrayList<>(List.of("gencode", "info", "help", "ban", "unban", "guest", "log"));
+        String[] allCmds = plugin.cmdManager.getCmdList();
 
+        Player player = null;
+        if (sender instanceof Player tempPlayer) {
+            player = tempPlayer;
         }
 
-        if (args.length == 0) {
-            return tab;
+        if (!plugin.dbManager.isPlayerInAllowList(player.getUniqueId().toString())) {
+
+            tab = new ArrayList<>(List.of(CmdManager.VERIFY));
+
         } else if (args.length == 1) {
-            return tab.stream().filter(completion -> completion.startsWith(args[args.length - 1])).collect(Collectors.toList());
+            tab = new ArrayList<>();
+            for (String cmd : allCmds) {
+                if (plugin.cmdManager.getCmd(cmd).permission != null && !player.hasPermission(plugin.cmdManager.getCmd(cmd).permission)) {
+                    continue;
+                }
+                tab.add(cmd);
+            }
+            return tab;
+        } else if (args.length == 2) {
+            if (CmdManager.GENCODE.equals(args[0])) {
+                tab = new ArrayList<>(List.of("1", "3", "5"));
+            }
+            else if (CmdManager.VERIFY.equals(args[0])) {
+                tab = new ArrayList<>(List.of("code"));
+            }
+            else if (CmdManager.GUEST.equals(args[0])) {
+                tab = new ArrayList<>();
+            }
+            // TODO: Add more tab complete
         }
 
         return tab;

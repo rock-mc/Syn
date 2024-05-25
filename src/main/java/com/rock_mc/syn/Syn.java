@@ -1,13 +1,20 @@
 package com.rock_mc.syn;
 
+import com.rock_mc.syn.command.CmdExecutor;
+import com.rock_mc.syn.command.CmdManager;
+import com.rock_mc.syn.command.Permission;
 import com.rock_mc.syn.config.ConfigManager;
 import com.rock_mc.syn.db.DbManager;
 import com.rock_mc.syn.event.EventListener;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -19,6 +26,8 @@ public class Syn extends JavaPlugin {
     public DbManager dbManager;
 
     public HashMap<UUID, Location> freezePlayerMap;
+
+    public CmdManager cmdManager;
 
     String ANSI_ART = """
 ███████╗██╗   ██╗███╗   ██╗
@@ -32,18 +41,19 @@ public class Syn extends JavaPlugin {
     @Override
     public void onEnable() {
 
-        this.configManager = new ConfigManager(this);
-        this.configManager.load();
+        configManager = new ConfigManager(this);
+        configManager.load();
 
-        this.dbManager = new DbManager(this);
-        this.dbManager.load();
+        dbManager = new DbManager(this);
+        dbManager.load();
 
-        this.freezePlayerMap = new HashMap<>();
+        freezePlayerMap = new HashMap<>();
+        cmdManager = new CmdManager();
 
         getServer().getPluginManager()
                 .registerEvents(new EventListener(this), this);
-        Objects.requireNonNull(this.getCommand(APP_NAME.toLowerCase()))
-                .setExecutor(new Command(this));
+        Objects.requireNonNull(getCommand(APP_NAME.toLowerCase()))
+                .setExecutor(new CmdExecutor(this));
 
         for (String line : ANSI_ART.split("\n")) {
             Bukkit.getLogger().info(line);
@@ -53,8 +63,8 @@ public class Syn extends JavaPlugin {
     @Override
     public void onDisable() {
         saveConfig();
-        this.dbManager.save();
-        this.dbManager.close();
+        dbManager.save();
+        dbManager.close();
 
         for (String line : ANSI_ART.split("\n")) {
             Bukkit.getLogger().info(line);
