@@ -33,6 +33,6 @@ public class CmdManager {
     }
 
     public String [] getCmdList() {
-        return cmdMap.keySet().toArray(new String[0]);
+        return cmdMap.keySet().stream().sorted().toArray(String[]::new);
     }
 }

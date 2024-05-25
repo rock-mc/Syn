@@ -25,7 +25,7 @@ public class SQLite extends Database {
             Connection connection = getConnection();
             createTable(connection);
 
-            Log.logInfo("Connected to SQLite");
+            Log.logSevere("Connected to SQLite");
         } catch (ClassNotFoundException | SQLException e) {
             Log.logWarning("Could not connect to SQLite database: " + e.getMessage());
         }

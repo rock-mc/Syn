@@ -280,7 +280,9 @@ public class CmdExecutor implements CommandExecutor, TabCompleter {
                 if (plugin.cmdManager.getCmd(cmd).permission != null && !player.hasPermission(plugin.cmdManager.getCmd(cmd).permission)) {
                     continue;
                 }
-                tab.add(cmd);
+                if (cmd.startsWith(args[0])) {
+                    tab.add(cmd);
+                }
             }
             return tab;
         } else if (args.length == 2) {
