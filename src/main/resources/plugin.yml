@@ -7,16 +7,16 @@ author: Rock Minecraft Server
 prefix: Syn
 commands:
   syn:
-    description: Show help of Syn
+    description: Show help information for Syn
     usage: /syn
   syn verify:
-    description: Input the verification code to verify player
+    description: The new player input the verification code to verify themselves
     usage: /syn verify <code>
   syn gencode:
-    description: Generate verification code
+    description: Generate verification codes of the number
     usage: /syn gencode [number]
   syn info:
-    description: Show the the state of Syn System info
+    description: Show the status of Syn plugin or the player
     usage: /syn info
   syn ban:
     description: Ban the player
@@ -25,10 +25,10 @@ commands:
     description: Unban the player
     usage: /syn unban player
   syn guest:
-    description: Allow the player in the allowlist to come into the server.
+    description: If on, it allows everyone to enter the server, except for players on the ban list. If off, it only allows the player in the allowlist to come into the server.
     usage: /syn guest
   syn log:
-    description: Show the log of the player
+    description: Show the log since the time or the last time the server was opened
     usage: /syn log [time] [player] [page]
 
 permissions:
@@ -41,6 +41,10 @@ permissions:
       syn.guest: true
       syn.info: true
       syn.log: true
+      syn.verify: true
+  syn.verify:
+    description: Allows you to verify the player
+    default: true
   syn.gencode:
     description: Allows you to generate verification code
     default: op

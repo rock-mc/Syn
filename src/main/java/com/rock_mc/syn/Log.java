@@ -1,4 +1,3 @@
-
 package com.rock_mc.syn;
 
 import org.bukkit.ChatColor;

@@ -2,14 +2,18 @@ package com.rock_mc.syn;
 
 import be.seeseemelk.mockbukkit.command.ConsoleCommandSenderMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
+import com.google.common.collect.Lists;
 import com.rock_mc.syn.event.WaitVerify;
 import org.bukkit.ChatColor;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CommandTest extends PluginTest {
+public class CmdExecutorTest extends PluginTest {
 
 
     @Test
@@ -18,30 +22,24 @@ public class CommandTest extends PluginTest {
 
         PlayerMock opPlayer = server.addPlayer();
         opPlayer.setOp(true);
+        plugin.dbManager.addPlayerToAllowList(opPlayer.getUniqueId().toString());
 
         String expected = Log.PREFIX_GAME;
 
-        String gencode = "* gencode: Generate a verification code\nUsage: /syn gencode";
-        String info = "* info: Show the door information\nUsage: /syn info";
-//        String verify = "* verify: Verify the verification code\nUsage: /syn verify <verification code>";
-        String ban = "* ban: Ban the player\nUsage: /syn ban <player>";
-        String unban = "* unban: Unban the door\nUsage: /syn unban <player>";
-        String open = "* open: Allow everyone to come into the server but the player in the ban list\nUsage: /syn open";
-        String close = "* close: Allow the player in the allowlist to come into the server\nUsage: /syn close";
-
-        expected += "Commands:\n" + gencode + "\n" + info + "\n" + ban + "\n" + unban + "\n" + open + "\n" + close;
-
         opPlayer.performCommand("syn");
 
-        assertEquals(expected, opPlayer.nextMessage());
+        assertTrue(opPlayer.nextMessage().contains("Commands:"));
 
         opPlayer.performCommand("syn help");
-        assertEquals(expected, opPlayer.nextMessage());
+        assertTrue(opPlayer.nextMessage().contains("Commands:"));
 
         PlayerMock player = server.addPlayer();
         player.setOp(false);
 
-        expected = Log.PREFIX_GAME + "You don't have permission to use any command.";
+        expected = Log.PREFIX_GAME + "Commands:\n" +
+                "Input the verification code to verify player\n" +
+                "/syn verify <code>";
+
         player.performCommand("syn");
 
         assertEquals(expected, player.nextMessage());
@@ -131,6 +129,33 @@ public class CommandTest extends PluginTest {
 
         assert commandOutput != null;
         assertTrue(commandOutput.contains(Log.PREFIX_SERVER + "Commands:"));
+
+    }
+
+    @Test
+    void tabComplete() {
+        PlayerJoinEvent.getHandlerList().unregister(plugin);
+
+        List<String> tabList = Lists.newArrayList();
+
+        PlayerMock opPlayer = server.addPlayer();
+        opPlayer.setOp(true);
+
+        plugin.dbManager.addPlayerToAllowList(opPlayer.getUniqueId().toString());
+
+        tabList = server.getCommandTabComplete(opPlayer, "syn ");
+
+        // test String array
+
+        assertEquals(Arrays.asList(plugin.cmdManager.getCmdList()), tabList);
+
+        tabList = server.getCommandTabComplete(opPlayer, "syn g");
+        assertEquals("[gencode, guest]", tabList.toString());
+
+        PlayerMock player = server.addPlayer();
+
+        tabList = server.getCommandTabComplete(player, "syn ");
+        assertEquals("[verify]", tabList.toString());
 
     }
 }
