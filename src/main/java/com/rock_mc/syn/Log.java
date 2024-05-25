@@ -11,14 +11,12 @@ public class Log {
 
     public static void sendMessage(Player player, String message) {
 
-        if (player == null) {
-            // remove color codes
-            message = ChatColor.stripColor(message);
-            logInfo(message);
-            return;
+        if (player != null) {
+            player.sendMessage(PREFIX_GAME + message);
         }
 
-        player.sendMessage(PREFIX_GAME + message);
+        message = ChatColor.stripColor(message);
+        logInfo(message);
     }
 
     public static void broadcast(String message, ChatColor color) {

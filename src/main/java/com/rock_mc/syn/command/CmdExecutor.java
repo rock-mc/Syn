@@ -85,7 +85,10 @@ public class CmdExecutor implements CommandExecutor, TabCompleter {
                 plugin.dbManager.addCode(code);
 
                 if (player == null) {
-                    msg += "\n" + code;
+                    if (msg.length() > 0) {
+                        msg += ", ";
+                    }
+                    msg += code;
                 } else {
                     String showCodeUrl = plugin.getConfig().getString(Config.SHOW_CODE_URL);
                     msg += "\n" + showCodeUrl + code;
@@ -176,7 +179,7 @@ public class CmdExecutor implements CommandExecutor, TabCompleter {
             plugin.dbManager.addPlayerToAllowList(player.getUniqueId().toString());
 
             // Mark the verification code as used
-            plugin.dbManager.markCode(code, true);
+            plugin.dbManager.markCode(code, player.getUniqueId().toString());
             plugin.freezePlayerMap.remove(player.getUniqueId());
 
             Event event = new JoinEvent(false, player, "歡迎 " + ChatColor.YELLOW + player.getDisplayName() + ChatColor.WHITE + " 全新加入!");
