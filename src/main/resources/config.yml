@@ -19,9 +19,9 @@ syn:
   show_code_url: "https://rock-mc.com/code/?text="
 
   # The length of the verification code
-  # The length requires to be 4 or more
-  # The default value is 6
-  code_length: 6
+  # The length requires to be 6 or more
+  # The default value is 8
+  code_length: 8
 
   # The expiration time of the verification code
   # 0 means the verification code will never expire
