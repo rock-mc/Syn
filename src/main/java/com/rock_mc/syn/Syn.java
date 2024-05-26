@@ -2,19 +2,15 @@ package com.rock_mc.syn;
 
 import com.rock_mc.syn.command.CmdExecutor;
 import com.rock_mc.syn.command.CmdManager;
-import com.rock_mc.syn.command.Permission;
 import com.rock_mc.syn.config.ConfigManager;
 import com.rock_mc.syn.db.DbManager;
+import com.rock_mc.syn.event.DiscordListener;
 import com.rock_mc.syn.event.EventListener;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.InputStreamReader;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -52,6 +48,10 @@ public class Syn extends JavaPlugin {
 
         getServer().getPluginManager()
                 .registerEvents(new EventListener(this), this);
+
+        getServer().getPluginManager()
+                .registerEvents(new DiscordListener(this), this);
+
         Objects.requireNonNull(getCommand(APP_NAME.toLowerCase()))
                 .setExecutor(new CmdExecutor(this));
 
