@@ -11,7 +11,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
@@ -20,7 +19,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class CmdExecutor implements CommandExecutor, TabCompleter {
     private final Syn plugin;
@@ -70,31 +68,7 @@ public class CmdExecutor implements CommandExecutor, TabCompleter {
                 }
             }
 
-            String available_characters = plugin.getConfig().getString(Config.AVAILABLE_CHARS);
-            int code_length = plugin.getConfig().getInt(Config.CODE_LENGTH);
-
-            // Generate a verification code
-            // Check the code is unique
-            String msg = "";
-            for (int i = 0; i < codeNum; i++) {
-
-                String code = Utils.generateCode(available_characters, code_length);
-                while (plugin.dbManager.containsCode(code)) {
-                    code = Utils.generateCode(available_characters, code_length);
-                }
-                plugin.dbManager.addCode(code);
-
-                if (player == null) {
-                    if (msg.length() > 0) {
-                        msg += ", ";
-                    }
-                    msg += code;
-                } else {
-                    String showCodeUrl = plugin.getConfig().getString(Config.SHOW_CODE_URL);
-                    msg += "\n" + showCodeUrl + code;
-                }
-            }
-            msg = msg.trim();
+            String msg = CmdGenCode.run(plugin, codeNum, (player != null));
 
             Log.sendMessage(player, msg);
 
