@@ -398,7 +398,7 @@ public class SQLite extends Database {
                    player_name, 
                    last_login, 
                    created_at
-            FROM baned_players WHERE player_name = ?
+            FROM player_info WHERE player_name = ?
             """);
             statement.setString(1, playerName);
             ResultSet resultSet = statement.executeQuery();
