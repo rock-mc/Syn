@@ -8,6 +8,7 @@ import com.rock_mc.syn.event.DiscordListener;
 import com.rock_mc.syn.event.EventListener;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
@@ -69,5 +70,15 @@ public class Syn extends JavaPlugin {
         for (String line : ANSI_ART.split("\n")) {
             Bukkit.getLogger().info(line);
         }
+    }
+
+    public boolean lacksPermission(Player player, String command) {
+
+        if (player == null) {
+            // The console has all permissions
+            return false;
+        }
+
+        return !player.hasPermission(this.cmdManager.getCmd(command).permission);
     }
 }

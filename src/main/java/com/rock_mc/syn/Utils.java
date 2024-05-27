@@ -45,7 +45,7 @@ public class Utils {
         return timeToStr(day, hour, min, sec);
     }
 
-    static String timeToStr(long day, long hour, long min, long sec){
+    public static String timeToStr(long day, long hour, long min, long sec){
         String result = null;
         if(day > 0){
             result = day + " 天";

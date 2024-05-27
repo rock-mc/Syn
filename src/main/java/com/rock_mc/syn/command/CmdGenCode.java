@@ -3,11 +3,39 @@ package com.rock_mc.syn.command;
 import com.rock_mc.syn.Syn;
 import com.rock_mc.syn.Utils;
 import com.rock_mc.syn.config.Config;
+import com.rock_mc.syn.log.LogProvider;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 public class CmdGenCode {
 
-    public static @NotNull String run(Syn plugin, int codeNum, boolean hasUrl) {
+    private final static String commandName = CmdManager.GENCODE;
+
+    public static void run(Syn plugin, LogProvider log, Player player, String[] args) {
+        if (plugin.lacksPermission(player, commandName)) {
+            log.sendMessage(player, "You don't have permission to use this command.");
+            return;
+        }
+
+        // args[1] = codeNum
+        int codeNum = 1;
+        if (args.length == 2) {
+            try {
+                codeNum = Integer.parseInt(args[1]);
+            } catch (NumberFormatException e) {
+                log.sendMessage(player, plugin.cmdManager.getCmd(commandName).usage);
+                return;
+            }
+            if (codeNum < 1) {
+                log.sendMessage(player, "The codeNum must be greater than 0.");
+                return;
+            }
+            if (codeNum > 1000) {
+                log.sendMessage(player, "The codeNum must be less than 1000.");
+                return;
+            }
+        }
+
         String available_characters = plugin.getConfig().getString(Config.AVAILABLE_CHARS);
         int code_length = plugin.getConfig().getInt(Config.CODE_LENGTH);
 
@@ -23,7 +51,7 @@ public class CmdGenCode {
             }
             plugin.dbManager.addCode(code);
 
-            if (!hasUrl) {
+            if (player == null) {
                 if (!msg.isEmpty()) {
                     msg.append(", ");
                 }
@@ -36,7 +64,8 @@ public class CmdGenCode {
             }
         }
 
-        return msg.toString().trim();
+        log.sendMessage(player, msg.toString().trim());
+
     }
 
 }

@@ -1,7 +1,7 @@
 
 package com.rock_mc.syn.event;
 
-import com.rock_mc.syn.Log;
+import com.rock_mc.syn.log.Log;
 import com.rock_mc.syn.Syn;
 import com.rock_mc.syn.config.Config;
 
@@ -12,7 +12,7 @@ import org.bukkit.event.Event;
 public class WaitVerify extends Thread {
 
     private final Syn plugin;
-
+    private static final Log log = new Log();
     private final Player player;
     private final float CHECK_TIME = 0.1F;
     private int MAX_WAIT_INPUT_CODE_SECONDS = 0;
@@ -28,10 +28,10 @@ public class WaitVerify extends Thread {
 
     @Override
     public void run() {
-        Log.sendMessage(player, "請在 " + MAX_WAIT_INPUT_CODE_SECONDS + " 秒內輸入驗證碼");
+        log.sendMessage(player, "請在 " + MAX_WAIT_INPUT_CODE_SECONDS + " 秒內輸入驗證碼");
 
         int failTime = plugin.dbManager.getFailedAttempts(player.getUniqueId().toString());
-        Log.sendMessage(player, "您有 " + (MAX_INPUT_CODE_TIMES - (failTime - 1)) + " 次輸入機會");
+        log.sendMessage(player, "您有 " + (MAX_INPUT_CODE_TIMES - (failTime - 1)) + " 次輸入機會");
 
         long sleepTime = (long) (1000 * CHECK_TIME);
         for (int i = 0; i * CHECK_TIME < MAX_WAIT_INPUT_CODE_SECONDS; i++) {
@@ -59,7 +59,7 @@ public class WaitVerify extends Thread {
                 failTime = plugin.dbManager.getFailedAttempts(player.getUniqueId().toString());
                 plugin.dbManager.updateFailedAttempts(player.getUniqueId().toString(), failTime + 1);
 
-                Log.broadcast(player.getDisplayName() + " 沒有通過驗證，被請出伺服器了...");
+                log.broadcast(player.getDisplayName() + " 沒有通過驗證，被請出伺服器了...");
                 Bukkit.getPluginManager().callEvent(event);
             }
         }

@@ -4,6 +4,7 @@ import be.seeseemelk.mockbukkit.command.ConsoleCommandSenderMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import com.google.common.collect.Lists;
 import com.rock_mc.syn.event.WaitVerify;
+import com.rock_mc.syn.log.Log;
 import org.bukkit.ChatColor;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.junit.jupiter.api.Test;

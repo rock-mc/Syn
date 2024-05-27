@@ -1,6 +1,6 @@
 package com.rock_mc.syn.command;
 
-import com.rock_mc.syn.Log;
+import com.rock_mc.syn.log.Log;
 import com.rock_mc.syn.Syn;
 import com.rock_mc.syn.Utils;
 import com.rock_mc.syn.config.Config;
@@ -8,6 +8,7 @@ import com.rock_mc.syn.event.JoinEvent;
 import com.rock_mc.syn.event.KickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -22,6 +23,8 @@ import java.util.List;
 
 public class CmdExecutor implements CommandExecutor, TabCompleter {
     private final Syn plugin;
+
+    private static final Log log = new Log();
 
     public CmdExecutor(Syn plugin) {
         this.plugin = plugin;
@@ -43,51 +46,31 @@ public class CmdExecutor implements CommandExecutor, TabCompleter {
         String commandName = args[0];
 
         if (CmdManager.GENCODE.equals(commandName)) {
-
-            if (lacksPermission(player, commandName)) {
-                Log.sendMessage(player, "You don't have permission to use this command.");
-                return true;
-            }
-
-            // args[1] = codeNum
-            int codeNum = 1;
-            if (args.length == 2) {
-                try {
-                    codeNum = Integer.parseInt(args[1]);
-                } catch (NumberFormatException e) {
-                    Log.sendMessage(player, plugin.cmdManager.getCmd(commandName).usage);
-                    return true;
-                }
-                if (codeNum < 1) {
-                    Log.sendMessage(player, "The codeNum must be greater than 0.");
-                    return true;
-                }
-                if (codeNum > 1000) {
-                    Log.sendMessage(player, "The codeNum must be less than 1000.");
-                    return true;
-                }
-            }
-
-            String msg = CmdGenCode.run(plugin, codeNum, (player != null));
-
-            Log.sendMessage(player, msg);
-
+            CmdGenCode.run(plugin, log, player, args);
             return true;
-        }
-        if (CmdManager.VERIFY.equals(args[0])) {
 
-            if (lacksPermission(player, commandName)) {
-                Log.sendMessage(player, "You don't have permission to use this command.");
+        } else if (CmdManager.GUEST.equals(commandName)) {
+            CmdGuest.run(plugin, log, player, args);
+            return true;
+
+        } else if (CmdManager.BAN.equals(commandName)) {
+            CmdBan.run(plugin, log, player, args);
+            return true;
+
+        } else if (CmdManager.VERIFY.equals(commandName)) {
+
+            if (plugin.lacksPermission(player, commandName)) {
+                log.sendMessage(player, "You don't have permission to use this command.");
                 return true;
             }
 
             if (args.length != 2) {
-                Log.sendMessage(player, plugin.cmdManager.getCmd(commandName).usage);
+                log.sendMessage(player, plugin.cmdManager.getCmd(commandName).usage);
                 return true;
             }
 
             if (plugin.dbManager.isPlayerInAllowList(player.getUniqueId().toString())) {
-                Log.sendMessage(player, "你已經通過驗證了。");
+                log.sendMessage(player, "你已經通過驗證了。");
                 return true;
             }
 
@@ -114,19 +97,19 @@ public class CmdExecutor implements CommandExecutor, TabCompleter {
 
             String code = args[1];
             if (!Utils.isValidCode(plugin.getConfig().getString(Config.AVAILABLE_CHARS), plugin.getConfig().getInt(Config.CODE_LENGTH), code)) {
-                Log.sendMessage(player, ChatColor.RED + "驗證碼錯誤");
+                log.sendMessage(player, ChatColor.RED + "驗證碼錯誤");
                 return true;
             }
 
             String codeCreateDate = plugin.dbManager.getCodeCreateDate(code);
             if (codeCreateDate == null) {
                 // The verification code is not existed
-                Log.sendMessage(player, ChatColor.RED + "驗證碼錯誤");
+                log.sendMessage(player, ChatColor.RED + "驗證碼錯誤");
                 return true;
             }
             // check if the code is used or not
             if (plugin.dbManager.isCodeUsed(code)) {
-                Log.sendMessage(player, ChatColor.RED + "驗證碼已經使用過");
+                log.sendMessage(player, ChatColor.RED + "驗證碼已經使用過");
                 return true;
             }
 
@@ -145,7 +128,7 @@ public class CmdExecutor implements CommandExecutor, TabCompleter {
 
             if (minesBetween > (long) expireDays * 24 * 60) {
                 // The verification code is expired
-                Log.sendMessage(player, ChatColor.RED + "驗證碼過期。");
+                log.sendMessage(player, ChatColor.RED + "驗證碼過期。");
                 return true;
             }
             // The verification code is exited and not expired
@@ -160,36 +143,13 @@ public class CmdExecutor implements CommandExecutor, TabCompleter {
             Bukkit.getPluginManager().callEvent(event);
 
             return true;
-        }
-        if (CmdManager.GUEST.equals(args[0])) {
 
-            if (lacksPermission(player, commandName)) {
-                Log.sendMessage(player, "You don't have permission to use this command.");
-                return true;
-            }
-
-            if (args.length != 1) {
-                Log.sendMessage(player, plugin.cmdManager.getCmd(commandName).usage);
-                return true;
-            }
-
-            Log.sendMessage(player, CmdGuest.run(plugin));
-
-            return true;
         }
 
         return true;
     }
 
-    private boolean lacksPermission(Player player, String command) {
 
-        if (player == null) {
-            // The console has all permissions
-            return false;
-        }
-
-        return !player.hasPermission(plugin.cmdManager.getCmd(command).permission);
-    }
 
     private void showDefaultCmd(Player player) {
 
@@ -225,7 +185,7 @@ public class CmdExecutor implements CommandExecutor, TabCompleter {
                 message = "You don't have permission to use any command.";
             }
         }
-        Log.sendMessage(player, message);
+        log.sendMessage(player, message);
     }
 
     @Override

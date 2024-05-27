@@ -1,23 +1,25 @@
-package com.rock_mc.syn;
+package com.rock_mc.syn.log;
 
+import com.rock_mc.syn.Syn;
 import org.bukkit.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class Log {
+public class Log implements LogProvider {
     public static final String PREFIX_GAME = "[" + ChatColor.GOLD + Syn.APP_NAME + ChatColor.WHITE + "] ";
     public static final String PREFIX_SERVER = "[" + Syn.APP_NAME + "] ";
 
 
-    public static void sendMessage(Player player, List<String> messages) {
+    public void sendMessage(Player player, List<String> messages) {
         for (String message : messages) {
-            Log.sendMessage(player, message);
+            sendMessage(player, message);
         }
     }
 
-    public static void sendMessage(Player player, String message) {
+    @Override
+    public void sendMessage(Player player, String message) {
 
         if (player != null) {
             player.sendMessage(PREFIX_GAME + message);
@@ -27,7 +29,7 @@ public class Log {
         logInfo(message);
     }
 
-    public static void broadcast(String message, ChatColor color) {
+    public void broadcast(String message, ChatColor color) {
         String formattedMessage = PREFIX_GAME;
         if (color != null) {
             formattedMessage += color;
@@ -36,23 +38,23 @@ public class Log {
         Bukkit.broadcastMessage(formattedMessage);
     }
 
-    public static void broadcast(String message) {
+    public void broadcast(String message) {
         Bukkit.broadcastMessage(PREFIX_GAME + message);
     }
 
-    public static void logInfo(String message) {
+    public void logInfo(String message) {
         Bukkit.getConsoleSender().sendMessage(PREFIX_SERVER + message);
     }
 
-    public static void logWarning(String message) {
+    public void logWarning(String message) {
         Bukkit.getLogger().warning(PREFIX_SERVER + message);
     }
 
-    public static void logSevere(String message) {
+    public void logSevere(String message) {
         Bukkit.getLogger().severe(PREFIX_SERVER + message);
     }
 
-    public static String colorize(String message) {
+    public String colorize(String message) {
         return ChatColor.translateAlternateColorCodes('&', message);
     }
 }
