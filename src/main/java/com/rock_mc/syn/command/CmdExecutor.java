@@ -44,7 +44,7 @@ public class CmdExecutor implements CommandExecutor, TabCompleter {
 
         if (CmdManager.GENCODE.equals(commandName)) {
 
-            if (!isHasPermission(player, commandName)) {
+            if (lacksPermission(player, commandName)) {
                 Log.sendMessage(player, "You don't have permission to use this command.");
                 return true;
             }
@@ -76,7 +76,7 @@ public class CmdExecutor implements CommandExecutor, TabCompleter {
         }
         if (CmdManager.VERIFY.equals(args[0])) {
 
-            if (!isHasPermission(player, commandName)) {
+            if (lacksPermission(player, commandName)) {
                 Log.sendMessage(player, "You don't have permission to use this command.");
                 return true;
             }
@@ -163,7 +163,7 @@ public class CmdExecutor implements CommandExecutor, TabCompleter {
         }
         if (CmdManager.GUEST.equals(args[0])) {
 
-            if (!isHasPermission(player, commandName)) {
+            if (lacksPermission(player, commandName)) {
                 Log.sendMessage(player, "You don't have permission to use this command.");
                 return true;
             }
@@ -173,15 +173,7 @@ public class CmdExecutor implements CommandExecutor, TabCompleter {
                 return true;
             }
 
-            boolean isGuest = plugin.configManager.getConfig().getBoolean(Config.GUEST);
-            isGuest = !isGuest;
-
-            plugin.configManager.getConfig().set(Config.GUEST, isGuest);
-
-            plugin.saveConfig();
-
-            Log.sendMessage(player, "訪客模式已經設定為: " + (isGuest ? ChatColor.GREEN + "On" : ChatColor.RED + "Off"));
-            Log.sendMessage(player, isGuest ? "所有玩家除了禁止名單都可以進入伺服器。" : "只有在允許名單的玩家可以進入伺服器。");
+            Log.sendMessage(player, CmdGuest.run(plugin));
 
             return true;
         }
@@ -189,14 +181,14 @@ public class CmdExecutor implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    private boolean isHasPermission(Player player, String command) {
+    private boolean lacksPermission(Player player, String command) {
 
         if (player == null) {
             // The console has all permissions
-            return true;
+            return false;
         }
 
-        return player.hasPermission(plugin.cmdManager.getCmd(command).permission);
+        return !player.hasPermission(plugin.cmdManager.getCmd(command).permission);
     }
 
     private void showDefaultCmd(Player player) {

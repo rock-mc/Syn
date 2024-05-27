@@ -4,10 +4,18 @@ import org.bukkit.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 public class Log {
     public static final String PREFIX_GAME = "[" + ChatColor.GOLD + Syn.APP_NAME + ChatColor.WHITE + "] ";
     public static final String PREFIX_SERVER = "[" + Syn.APP_NAME + "] ";
 
+
+    public static void sendMessage(Player player, List<String> messages) {
+        for (String message : messages) {
+            Log.sendMessage(player, message);
+        }
+    }
 
     public static void sendMessage(Player player, String message) {
 

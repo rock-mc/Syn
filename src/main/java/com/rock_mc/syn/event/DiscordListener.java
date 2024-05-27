@@ -18,8 +18,6 @@ public class DiscordListener implements Listener {
 
     private String CHANNEL_NAME = null;
 
-    private String CHANNEL_ID = null;
-
     private final Syn plugin;
 
     public DiscordListener(Syn plugin) {
@@ -30,9 +28,7 @@ public class DiscordListener implements Listener {
         // Check if DiscordSRV is enabled
         if (discordSRV != null && discordSRV.isEnabled()) {
             isDiscordSRVEnabled = true;
-
             this.CHANNEL_NAME = plugin.getConfig().getString(Config.CHANNEL_NAME);
-            this.CHANNEL_ID = DiscordSRV.getPlugin().getChannels().get(this.CHANNEL_NAME);
 
             DiscordSRV.api.subscribe(this);
         }
@@ -42,7 +38,9 @@ public class DiscordListener implements Listener {
     // 接收 discord 訊息
     @Subscribe(priority = ListenerPriority.NORMAL)
     public void onDiscordMessageReceived(DiscordGuildMessageReceivedEvent event) {
-        if (!event.getChannel().getId().equals(this.CHANNEL_ID)) {
+        String channelId = DiscordSRV.getPlugin().getChannels().get(this.CHANNEL_NAME);
+
+        if (!event.getChannel().getId().equals(channelId)) {
             return;
         }
 
