@@ -1,6 +1,7 @@
 package com.rock_mc.syn.event;
 
 import com.rock_mc.syn.Syn;
+import com.rock_mc.syn.Utils;
 import com.rock_mc.syn.command.*;
 import com.rock_mc.syn.config.Config;
 import com.rock_mc.syn.log.LogDiscord;
@@ -11,7 +12,6 @@ import github.scarsz.discordsrv.api.events.DiscordGuildMessageReceivedEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
 
 public class DiscordListener implements Listener {
 
@@ -48,48 +48,33 @@ public class DiscordListener implements Listener {
 
         String cmdLine = event.getMessage().getContentDisplay().trim();
 
-        if (cmdLine.equals(CmdManager.SYN) || matchCommand(cmdLine, "help")) {
+        if (cmdLine.equals(CmdManager.SYN) || Utils.matchCommand(cmdLine, "help")) {
             CmdHelp.run(plugin, log, null);
 
-        } else if (matchCommand(cmdLine, CmdManager.VERIFY)) {
+        } else if (Utils.matchCommand(cmdLine, CmdManager.VERIFY)) {
             log.send("請進入遊戲中輸入驗證碼。");
 
-        } else if (matchCommand(cmdLine, CmdManager.GENCODE)) {
-            CmdGenCode.run(plugin, log, null, extractArgs(CmdManager.GENCODE, cmdLine));
+        } else if (Utils.matchCommand(cmdLine, CmdManager.GENCODE)) {
+            CmdGenCode.run(plugin, log, null, Utils.extractArgs(CmdManager.GENCODE, cmdLine));
 
-        } else if (matchCommand(cmdLine, CmdManager.INFO)) {
-            CmdInfo.run(plugin, log, null, extractArgs(CmdManager.INFO, cmdLine));
+        } else if (Utils.matchCommand(cmdLine, CmdManager.INFO)) {
+            CmdInfo.run(plugin, log, null, Utils.extractArgs(CmdManager.INFO, cmdLine));
 
-        } else if (matchCommand(cmdLine, CmdManager.BAN)) {
-            CmdBan.run(plugin, log, null, extractArgs(CmdManager.BAN, cmdLine));
+        } else if (Utils.matchCommand(cmdLine, CmdManager.BAN)) {
+            CmdBan.run(plugin, log, null, Utils.extractArgs(CmdManager.BAN, cmdLine));
 
-        } else if (matchCommand(cmdLine, CmdManager.UNBAN)) {
-            CmdUnban.run(plugin, log, null, extractArgs(CmdManager.UNBAN, cmdLine));
+        } else if (Utils.matchCommand(cmdLine, CmdManager.UNBAN)) {
+            CmdUnban.run(plugin, log, null, Utils.extractArgs(CmdManager.UNBAN, cmdLine));
 
-        } else if (matchCommand(cmdLine, CmdManager.GUEST)) {
-            CmdGuest.run(plugin, log, null, extractArgs(CmdManager.GUEST, cmdLine));
+        } else if (Utils.matchCommand(cmdLine, CmdManager.GUEST)) {
+            CmdGuest.run(plugin, log, null, Utils.extractArgs(CmdManager.GUEST, cmdLine));
 
-        } else if (matchCommand(cmdLine, CmdManager.LOG)) {
-            CmdGuest.run(plugin, log, null, extractArgs(CmdManager.LOG, cmdLine));
+        } else if (Utils.matchCommand(cmdLine, CmdManager.LOG)) {
+            CmdGuest.run(plugin, log, null, Utils.extractArgs(CmdManager.LOG, cmdLine));
 
         }
 
     }
 
-    private boolean matchCommand(String commandline, String commandCode) {
-        if (commandline == null || commandCode == null) {
-            return false;
-        }
-        return (commandline.contains(CmdManager.SYN + " " + commandCode));
-    }
-
-    private static @NotNull String[] extractArgs(String cmdCode, String cmdLine) {
-        int index = cmdLine.lastIndexOf(CmdManager.SYN + " " + cmdCode);
-        if (index == -1) {
-            return cmdLine.split(" ");
-        }
-        cmdLine = cmdLine.substring(index + CmdManager.SYN.length() + 1);
-        return cmdLine.split(" ");
-    }
 
 }

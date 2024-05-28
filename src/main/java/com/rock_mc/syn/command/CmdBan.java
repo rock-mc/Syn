@@ -65,9 +65,9 @@ public class CmdBan {
                 blockMsg += Utils.timeToStr(blockDay, blockHour, blockMin, blockSec);
             }
 
-            Player kickPlayer = Bukkit.getPlayer(playerInfo.getUUID());
+            Player banPlayer = Bukkit.getPlayer(playerInfo.getUUID());
 
-            Event event = new KickEvent(false, kickPlayer, blockMsg);
+            Event event = new KickEvent(false, banPlayer, blockMsg);
             Bukkit.getPluginManager().callEvent(event);
         }
 
