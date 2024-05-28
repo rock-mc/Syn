@@ -1,10 +1,7 @@
 package com.rock_mc.syn.event;
 
 import com.rock_mc.syn.Syn;
-import com.rock_mc.syn.command.CmdBan;
-import com.rock_mc.syn.command.CmdGenCode;
-import com.rock_mc.syn.command.CmdGuest;
-import com.rock_mc.syn.command.CmdManager;
+import com.rock_mc.syn.command.*;
 import com.rock_mc.syn.config.Config;
 import com.rock_mc.syn.log.LogDiscord;
 import github.scarsz.discordsrv.DiscordSRV;
@@ -15,8 +12,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 public class DiscordListener implements Listener {
 
@@ -40,7 +35,6 @@ public class DiscordListener implements Listener {
 
             DiscordSRV.api.subscribe(this);
         }
-        
     }
 
     // 接收 discord 訊息
@@ -52,18 +46,41 @@ public class DiscordListener implements Listener {
             return;
         }
 
-        String message = event.getMessage().getContentDisplay();
+        String cmdLine = event.getMessage().getContentDisplay().trim();
 
-        if (message.contains(CmdManager.SYN + " " + CmdManager.GENCODE)) {
-            CmdGenCode.run(plugin, log, null, extractArgs(CmdManager.GENCODE, message));
+        if (cmdLine.equals(CmdManager.SYN) || matchCommand(cmdLine, "help")) {
+            CmdHelp.run(plugin, log, null);
 
-        } else if (message.contains(CmdManager.SYN + " " + CmdManager.GUEST)) {
-            CmdGuest.run(plugin, log, null, extractArgs(CmdManager.GUEST, message));
+        } else if (matchCommand(cmdLine, CmdManager.VERIFY)) {
+            log.send("請進入遊戲中輸入驗證碼。");
 
-        } else if (message.contains(CmdManager.SYN + " " + CmdManager.BAN)) {
-            CmdBan.run(plugin, log, null, extractArgs(CmdManager.BAN, message));
+        } else if (matchCommand(cmdLine, CmdManager.GENCODE)) {
+            CmdGenCode.run(plugin, log, null, extractArgs(CmdManager.GENCODE, cmdLine));
+
+        } else if (matchCommand(cmdLine, CmdManager.INFO)) {
+            CmdInfo.run(plugin, log, null, extractArgs(CmdManager.INFO, cmdLine));
+
+        } else if (matchCommand(cmdLine, CmdManager.BAN)) {
+            CmdBan.run(plugin, log, null, extractArgs(CmdManager.BAN, cmdLine));
+
+        } else if (matchCommand(cmdLine, CmdManager.UNBAN)) {
+            CmdUnban.run(plugin, log, null, extractArgs(CmdManager.UNBAN, cmdLine));
+
+        } else if (matchCommand(cmdLine, CmdManager.GUEST)) {
+            CmdGuest.run(plugin, log, null, extractArgs(CmdManager.GUEST, cmdLine));
+
+        } else if (matchCommand(cmdLine, CmdManager.LOG)) {
+            CmdGuest.run(plugin, log, null, extractArgs(CmdManager.LOG, cmdLine));
 
         }
+
+    }
+
+    private boolean matchCommand(String commandline, String commandCode) {
+        if (commandline == null || commandCode == null) {
+            return false;
+        }
+        return (commandline.contains(CmdManager.SYN + " " + commandCode));
     }
 
     private static @NotNull String[] extractArgs(String cmdCode, String cmdLine) {
@@ -74,15 +91,5 @@ public class DiscordListener implements Listener {
         cmdLine = cmdLine.substring(index + CmdManager.SYN.length() + 1);
         return cmdLine.split(" ");
     }
-
-    // 傳送 discord 訊息
-    public void sendMessageToDiscord(String channelName, String message) {
-        if (isDiscordSRVEnabled && channelName != null && message != null) {
-            DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName(channelName)
-                    .sendMessage(message).queue();
-        }
-    }
-
-
 
 }
