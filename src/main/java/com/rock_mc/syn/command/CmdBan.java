@@ -1,7 +1,7 @@
 package com.rock_mc.syn.command;
 
 import com.rock_mc.syn.Syn;
-import com.rock_mc.syn.Utils;
+import com.rock_mc.syn.utlis.Utils;
 import com.rock_mc.syn.event.KickEvent;
 import com.rock_mc.syn.log.LogProvider;
 import org.bukkit.Bukkit;

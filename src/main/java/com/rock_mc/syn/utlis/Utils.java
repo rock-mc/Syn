@@ -1,4 +1,4 @@
-package com.rock_mc.syn;
+package com.rock_mc.syn.utlis;
 
 import com.rock_mc.syn.command.CmdManager;
 import org.jetbrains.annotations.NotNull;

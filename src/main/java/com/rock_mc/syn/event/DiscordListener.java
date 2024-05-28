@@ -1,7 +1,7 @@
 package com.rock_mc.syn.event;
 
 import com.rock_mc.syn.Syn;
-import com.rock_mc.syn.Utils;
+import com.rock_mc.syn.utlis.Utils;
 import com.rock_mc.syn.command.*;
 import com.rock_mc.syn.config.Config;
 import com.rock_mc.syn.log.LogDiscord;
