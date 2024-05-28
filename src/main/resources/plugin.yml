@@ -65,3 +65,4 @@ permissions:
     default: op
 
 softdepend: [DiscordSRV]
+folia-supported: true
