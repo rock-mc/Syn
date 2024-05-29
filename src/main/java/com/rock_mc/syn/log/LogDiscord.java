@@ -11,10 +11,16 @@ public class LogDiscord implements Log {
     }
 
     public void send(String message) {
-        if (DiscordListener.isDiscordSRVEnabled && message != null) {
-            DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName(DiscordListener.CHANNEL_NAME)
-                    .sendMessage(message).queue();
+
+        if (message == null) {
+            return;
         }
+        if (!DiscordListener.isDiscordSRVEnabled) {
+            return;
+        }
+
+        DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName(DiscordListener.CHANNEL_NAME)
+                .sendMessage(message).queue();
     }
 
 }
