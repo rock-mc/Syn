@@ -41,10 +41,16 @@ public class Syn extends JavaPlugin {
     public void onEnable() {
 
         configManager = new ConfigManager(this);
-        configManager.load();
-
         dbManager = new DbManager(this);
-        dbManager.load();
+
+        try {
+            configManager.load();
+            dbManager.load();
+        } catch (Exception e) {
+            Bukkit.getLogger().severe(e.getMessage());
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
 
         freezePlayerMap = new HashMap<>();
         cmdManager = new CmdManager();

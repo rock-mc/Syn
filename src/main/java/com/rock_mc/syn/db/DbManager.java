@@ -26,9 +26,7 @@ public class DbManager {
     }
 
     public void load() {
-        synchronized (lock) {
-            this.database.load();
-        }
+        this.database.load();
     }
 
     public void save() {

@@ -29,7 +29,8 @@ public class SQLite extends Database {
 
             LOG_PLUGIN.logInfo("Connected to SQLite");
         } catch (ClassNotFoundException | SQLException e) {
-            LOG_PLUGIN.logWarning("Could not connect to SQLite database: " + e.getMessage());
+            LOG_PLUGIN.logSevere("Could not connect to SQLite database: " + e.getMessage());
+            throw new IllegalStateException("Could not connect to SQLite database", e);
         }
     }
 
