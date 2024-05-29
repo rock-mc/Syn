@@ -9,6 +9,8 @@ Before each new player logs in for the first time, they need to obtain a verific
 be added to the allowlist.  
 It has a guest mode that allows unverified players to enter the server, except for players on the banlist.
 
+Supports Bukkit, Spigot, Paper, and Folia.
+
 ## Installation
 
 1. Download the latest version of Syn plugin
