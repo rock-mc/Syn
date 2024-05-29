@@ -1,9 +1,11 @@
-package com.rock_mc.syn.command;
+package com.rock_mc.syn.api;
 
 import com.rock_mc.syn.Syn;
+import com.rock_mc.syn.command.CmdManager;
+import com.rock_mc.syn.db.PlayerInfo;
 import com.rock_mc.syn.utlis.Utils;
-import com.rock_mc.syn.event.KickEvent;
-import com.rock_mc.syn.log.LogProvider;
+import com.rock_mc.syn.event.pluginevent.KickEvent;
+import com.rock_mc.syn.log.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -11,12 +13,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
 
-public class CmdBan {
+public class Ban {
 
     private final static String commandName = CmdManager.BAN;
 
-    public static void run(Syn plugin, LogProvider log, Player player, String[] args) {
-        if (plugin.lacksPermission(player, commandName)) {
+    public static void run(Syn plugin, Log log, Player player, String[] args) {
+        if (plugin.cmdManager.lacksPermission(player, commandName)) {
             log.sendMessage(player, "You don't have permission to use this command.");
             return;
         }

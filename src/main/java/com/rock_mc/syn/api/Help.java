@@ -1,12 +1,13 @@
-package com.rock_mc.syn.command;
+package com.rock_mc.syn.api;
 
 import com.rock_mc.syn.Syn;
-import com.rock_mc.syn.log.LogProvider;
+import com.rock_mc.syn.command.CmdManager;
+import com.rock_mc.syn.log.Log;
 import org.bukkit.entity.Player;
 
-public class CmdHelp {
+public class Help {
 
-    public static void run(Syn plugin, LogProvider log, Player player) {
+    public static void run(Syn plugin, Log log, Player player) {
 
         String[] allCmds = plugin.cmdManager.getCmdList();
 

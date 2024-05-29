@@ -1,4 +1,4 @@
-package com.rock_mc.syn.event;
+package com.rock_mc.syn.event.pluginevent;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;

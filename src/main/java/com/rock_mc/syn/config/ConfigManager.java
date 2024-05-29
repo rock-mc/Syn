@@ -1,6 +1,6 @@
 package com.rock_mc.syn.config;
 
-import com.rock_mc.syn.log.Log;
+import com.rock_mc.syn.log.LogPlugin;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -11,7 +11,7 @@ import java.util.Objects;
 public class ConfigManager {
     private final JavaPlugin plugin ;
 
-    private static final Log log = new Log();
+    private static final LogPlugin LOG_PLUGIN = new LogPlugin();
 
     private FileConfiguration config = null;
 
@@ -152,7 +152,7 @@ public class ConfigManager {
             plugin.saveResource("config.yml", true);
             config = YamlConfiguration.loadConfiguration(configFile);
 
-            log.logInfo("The configuration is not set correctly. The default configuration has been restored.");
+            LOG_PLUGIN.logInfo("The configuration is not set correctly. The default configuration has been restored.");
         }
     }
 }

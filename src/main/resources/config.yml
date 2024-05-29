@@ -46,7 +46,6 @@ syn:
   # The default value is 365
   clear_days: 365
 
-
   # Channel names set in the Channels section of the DiscordSRV plugin's config.yml
   channel_name: syn
 

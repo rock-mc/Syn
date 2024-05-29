@@ -1,11 +1,12 @@
 package com.rock_mc.syn;
 
-import com.rock_mc.syn.command.CmdExecutor;
+import com.rock_mc.syn.event.CmdExecutor;
 import com.rock_mc.syn.command.CmdManager;
 import com.rock_mc.syn.config.ConfigManager;
 import com.rock_mc.syn.db.DbManager;
 import com.rock_mc.syn.event.DiscordListener;
 import com.rock_mc.syn.event.EventListener;
+import com.rock_mc.syn.log.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -25,6 +26,7 @@ public class Syn extends JavaPlugin {
     public HashMap<UUID, Location> freezePlayerMap;
 
     public CmdManager cmdManager;
+    public LogManager logManager;
 
     String ANSI_ART = """
 ███████╗██╗   ██╗███╗   ██╗
@@ -46,12 +48,24 @@ public class Syn extends JavaPlugin {
 
         freezePlayerMap = new HashMap<>();
         cmdManager = new CmdManager();
+        logManager = new LogManager();
 
         getServer().getPluginManager()
                 .registerEvents(new EventListener(this), this);
 
-        getServer().getPluginManager()
-                .registerEvents(new DiscordListener(this), this);
+        try {
+            Class.forName("github.scarsz.discordsrv.DiscordSRV");
+
+            getServer().getPluginManager()
+                    .registerEvents(new DiscordListener(this), this);
+
+            // Maybe we can do more verification here
+            // Such as checking the channel that the bot is listening to?
+
+            Bukkit.getLogger().info("DiscordSRV is enabled.");
+        } catch (ClassNotFoundException e) {
+            // DiscordSRV is not enabled.
+        }
 
         Objects.requireNonNull(getCommand(APP_NAME.toLowerCase()))
                 .setExecutor(new CmdExecutor(this));
@@ -70,15 +84,5 @@ public class Syn extends JavaPlugin {
         for (String line : ANSI_ART.split("\n")) {
             Bukkit.getLogger().info(line);
         }
-    }
-
-    public boolean lacksPermission(Player player, String command) {
-
-        if (player == null) {
-            // The console has all permissions
-            return false;
-        }
-
-        return !player.hasPermission(this.cmdManager.getCmd(command).permission);
     }
 }

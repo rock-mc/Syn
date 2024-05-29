@@ -1,6 +1,8 @@
 package com.rock_mc.syn.event;
 
 import com.rock_mc.syn.Syn;
+import com.rock_mc.syn.api.*;
+import com.rock_mc.syn.log.LogManager;
 import com.rock_mc.syn.utlis.Utils;
 import com.rock_mc.syn.command.*;
 import com.rock_mc.syn.config.Config;
@@ -20,8 +22,6 @@ public class DiscordListener implements Listener {
     public static String CHANNEL_NAME = null;
 
     private final Syn plugin;
-
-    private final static LogDiscord log = new LogDiscord();
 
     public DiscordListener(Syn plugin) {
         this.plugin = plugin;
@@ -46,35 +46,33 @@ public class DiscordListener implements Listener {
             return;
         }
 
+        LogDiscord Log = LogManager.LOG_DISCORD;
+
         String cmdLine = event.getMessage().getContentDisplay().trim();
 
         if (cmdLine.equals(CmdManager.SYN) || Utils.matchCommand(cmdLine, "help")) {
-            CmdHelp.run(plugin, log, null);
+            Help.run(plugin, Log, null);
 
         } else if (Utils.matchCommand(cmdLine, CmdManager.VERIFY)) {
-            log.send("請進入遊戲中輸入驗證碼。");
+            Log.send("請進入遊戲中輸入驗證碼。");
 
         } else if (Utils.matchCommand(cmdLine, CmdManager.GENCODE)) {
-            CmdGenCode.run(plugin, log, null, Utils.extractArgs(CmdManager.GENCODE, cmdLine));
+            GenCode.run(plugin, Log, null, Utils.extractArgs(CmdManager.GENCODE, cmdLine));
 
         } else if (Utils.matchCommand(cmdLine, CmdManager.INFO)) {
-            CmdInfo.run(plugin, log, null, Utils.extractArgs(CmdManager.INFO, cmdLine));
+            Info.run(plugin, Log, null, Utils.extractArgs(CmdManager.INFO, cmdLine));
 
         } else if (Utils.matchCommand(cmdLine, CmdManager.BAN)) {
-            CmdBan.run(plugin, log, null, Utils.extractArgs(CmdManager.BAN, cmdLine));
+            Ban.run(plugin, Log, null, Utils.extractArgs(CmdManager.BAN, cmdLine));
 
         } else if (Utils.matchCommand(cmdLine, CmdManager.UNBAN)) {
-            CmdUnban.run(plugin, log, null, Utils.extractArgs(CmdManager.UNBAN, cmdLine));
+            Unban.run(plugin, Log, null, Utils.extractArgs(CmdManager.UNBAN, cmdLine));
 
         } else if (Utils.matchCommand(cmdLine, CmdManager.GUEST)) {
-            CmdGuest.run(plugin, log, null, Utils.extractArgs(CmdManager.GUEST, cmdLine));
+            Guest.run(plugin, Log, null, Utils.extractArgs(CmdManager.GUEST, cmdLine));
 
         } else if (Utils.matchCommand(cmdLine, CmdManager.LOG)) {
-            CmdGuest.run(plugin, log, null, Utils.extractArgs(CmdManager.LOG, cmdLine));
-
+            Guest.run(plugin, Log, null, Utils.extractArgs(CmdManager.LOG, cmdLine));
         }
-
     }
-
-
 }

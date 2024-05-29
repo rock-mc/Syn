@@ -1,11 +1,12 @@
-package com.rock_mc.syn.command;
+package com.rock_mc.syn.api;
 
 import com.rock_mc.syn.Syn;
+import com.rock_mc.syn.command.CmdManager;
 import com.rock_mc.syn.utlis.Utils;
 import com.rock_mc.syn.config.Config;
-import com.rock_mc.syn.event.JoinEvent;
-import com.rock_mc.syn.event.KickEvent;
-import com.rock_mc.syn.log.LogProvider;
+import com.rock_mc.syn.event.pluginevent.JoinEvent;
+import com.rock_mc.syn.event.pluginevent.KickEvent;
+import com.rock_mc.syn.log.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -15,12 +16,12 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
-public class CmdVerify {
+public class Verify {
     private final static String commandName = CmdManager.VERIFY;
 
-    public static void run(Syn plugin, LogProvider log, Player player, String[] args) {
+    public static void run(Syn plugin, Log log, Player player, String[] args) {
 
-        if (plugin.lacksPermission(player, commandName)) {
+        if (plugin.cmdManager.lacksPermission(player, commandName)) {
             log.sendMessage(player, "You don't have permission to use this command.");
             return;
         }

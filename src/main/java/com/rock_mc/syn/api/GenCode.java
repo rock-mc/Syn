@@ -1,17 +1,18 @@
-package com.rock_mc.syn.command;
+package com.rock_mc.syn.api;
 
 import com.rock_mc.syn.Syn;
+import com.rock_mc.syn.command.CmdManager;
 import com.rock_mc.syn.utlis.Utils;
 import com.rock_mc.syn.config.Config;
-import com.rock_mc.syn.log.LogProvider;
+import com.rock_mc.syn.log.Log;
 import org.bukkit.entity.Player;
 
-public class CmdGenCode {
+public class GenCode {
 
     private final static String commandName = CmdManager.GENCODE;
 
-    public static void run(Syn plugin, LogProvider log, Player player, String[] args) {
-        if (plugin.lacksPermission(player, commandName)) {
+    public static void run(Syn plugin, Log log, Player player, String[] args) {
+        if (plugin.cmdManager.lacksPermission(player, commandName)) {
             log.sendMessage(player, "You don't have permission to use this command.");
             return;
         }
@@ -29,7 +30,7 @@ public class CmdGenCode {
                 log.sendMessage(player, "The codeNum must be greater than 0.");
                 return;
             }
-            if (codeNum > 1000) {
+            if (codeNum > 100) {
                 log.sendMessage(player, "The codeNum must be less than 1000.");
                 return;
             }

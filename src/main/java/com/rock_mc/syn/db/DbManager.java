@@ -1,7 +1,6 @@
 package com.rock_mc.syn.db;
 
 import com.rock_mc.syn.Syn;
-import com.rock_mc.syn.command.PlayerInfo;
 import com.rock_mc.syn.config.Config;
 
 import java.util.HashMap;

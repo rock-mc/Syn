@@ -1,21 +1,18 @@
-package com.rock_mc.syn.command;
+package com.rock_mc.syn.api;
 
-import com.google.common.collect.Lists;
 import com.rock_mc.syn.Syn;
+import com.rock_mc.syn.command.CmdManager;
 import com.rock_mc.syn.config.Config;
-import com.rock_mc.syn.log.LogProvider;
+import com.rock_mc.syn.log.Log;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-
-public class CmdGuest {
+public class Guest {
 
     private final static String commandName = CmdManager.GUEST;
 
-    public static void run(Syn plugin, LogProvider log, Player player, String[] args) {
-        if (plugin.lacksPermission(player, commandName)) {
+    public static void run(Syn plugin, Log log, Player player, String[] args) {
+        if (plugin.cmdManager.lacksPermission(player, commandName)) {
             log.sendMessage(player, "You don't have permission to use this command.");
             return;
         }

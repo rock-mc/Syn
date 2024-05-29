@@ -1,7 +1,6 @@
 package com.rock_mc.syn.db;
 
-import com.rock_mc.syn.log.Log;
-import com.rock_mc.syn.command.PlayerInfo;
+import com.rock_mc.syn.log.LogPlugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -10,7 +9,7 @@ import java.sql.*;
 public class SQLite extends Database {
     private final JavaPlugin plugin;
 
-    private static final Log log = new Log();
+    private static final LogPlugin LOG_PLUGIN = new LogPlugin();
 
     public SQLite(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -28,9 +27,9 @@ public class SQLite extends Database {
             Connection connection = getConnection();
             createTable(connection);
 
-            log.logSevere("Connected to SQLite");
+            LOG_PLUGIN.logInfo("Connected to SQLite");
         } catch (ClassNotFoundException | SQLException e) {
-            log.logWarning("Could not connect to SQLite database: " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not connect to SQLite database: " + e.getMessage());
         }
     }
 
@@ -52,7 +51,7 @@ public class SQLite extends Database {
             // Create indexes on code, created_at, and used columns
             statement.execute("CREATE INDEX IF NOT EXISTS idx_verification_codes_code ON verification_codes (code)");
         } catch (SQLException e) {
-            log.logWarning("Could not create verification_codes table or indexes: " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not create verification_codes table or indexes: " + e.getMessage());
         }
 
         // Table: player_info
@@ -73,7 +72,7 @@ public class SQLite extends Database {
             // Create index on player_uuid column
             statement.execute("CREATE INDEX IF NOT EXISTS idx_player_info_player_uuid ON player_info (player_uuid)");
         } catch (SQLException e) {
-            log.logWarning("Could not create player_info table or index: " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not create player_info table or index: " + e.getMessage());
         }
 
         // Table: allowed_players
@@ -91,7 +90,7 @@ public class SQLite extends Database {
             // Create index on player_uuid column
             statement.execute("CREATE INDEX IF NOT EXISTS idx_allowed_players_player_uuid ON allowed_players (player_uuid)");
         } catch (SQLException e) {
-            log.logWarning("Could not create allowed_players table or index: " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not create allowed_players table or index: " + e.getMessage());
         }
 
         // Table: baned_players
@@ -113,7 +112,7 @@ public class SQLite extends Database {
             // Create index on player_uuid column
             statement.execute("CREATE INDEX IF NOT EXISTS idx_baned_players_player_uuid ON baned_players (player_uuid)");
         } catch (SQLException e) {
-            log.logWarning("Could not create baned_players table or index: " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not create baned_players table or index: " + e.getMessage());
         }
 
         // Table: failed_players
@@ -132,7 +131,7 @@ public class SQLite extends Database {
             // Create index on player_uuid column
             statement.execute("CREATE INDEX IF NOT EXISTS idx_failed_players_player_uuid ON failed_players (player_uuid)");
         } catch (SQLException e) {
-            log.logWarning("Could not create failed_players table or index: " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not create failed_players table or index: " + e.getMessage());
         }
     }
 
@@ -144,7 +143,7 @@ public class SQLite extends Database {
             statement.setString(1, code);
             statement.executeUpdate();
         } catch (SQLException e) {
-            log.logWarning("Could not add code to the database: " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not add code to the database: " + e.getMessage());
         }
     }
 
@@ -159,7 +158,7 @@ public class SQLite extends Database {
             statement.setLong(3, time);
             statement.executeUpdate();
         } catch (SQLException e) {
-            log.logWarning("Could not add baned player to the database: " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not add baned player to the database: " + e.getMessage());
         }
     }
 
@@ -175,7 +174,7 @@ public class SQLite extends Database {
                 return resultSet.getString("created_at");
             }
         } catch (SQLException e) {
-            log.logWarning("Could not get the created time of the code: " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not get the created time of the code: " + e.getMessage());
         }
         return null;
     }
@@ -189,7 +188,7 @@ public class SQLite extends Database {
             ResultSet resultSet = statement.executeQuery();
             return resultSet.next();
         } catch (SQLException e) {
-            log.logWarning("Could not check if the code exists in the database: " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not check if the code exists in the database: " + e.getMessage());
         }
         return false;
     }
@@ -204,7 +203,7 @@ public class SQLite extends Database {
             statement.setString(3, playerUUID);
             statement.executeUpdate();
         } catch (SQLException e) {
-            log.logWarning("Could not mark the code as used or not used: " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not mark the code as used or not used: " + e.getMessage());
         }
     }
 
@@ -215,7 +214,7 @@ public class SQLite extends Database {
             statement.setString(1, playerUUID);
             statement.executeUpdate();
         } catch (SQLException e) {
-            log.logWarning("Could not add player to the database: " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not add player to the database: " + e.getMessage());
         }
     }
 
@@ -227,7 +226,7 @@ public class SQLite extends Database {
             statement.setString(1, playerUUID);
             statement.executeUpdate();
         } catch (SQLException e) {
-            log.logWarning("Could not remove player from the database: " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not remove player from the database: " + e.getMessage());
         }
     }
 
@@ -240,7 +239,7 @@ public class SQLite extends Database {
             ResultSet resultSet = statement.executeQuery();
             return resultSet.next();
         } catch (SQLException e) {
-            log.logWarning("Could not check if the player is allowed: " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not check if the player is allowed: " + e.getMessage());
         }
         return false;
     }
@@ -255,7 +254,7 @@ public class SQLite extends Database {
             statement.setInt(3, failedAttempts);
             statement.executeUpdate();
         } catch (SQLException e) {
-            log.logWarning("Could not update the fail time of the player: " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not update the fail time of the player: " + e.getMessage());
         }
     }
 
@@ -267,7 +266,7 @@ public class SQLite extends Database {
             statement.setString(1, code);
             statement.executeUpdate();
         } catch (SQLException e) {
-            log.logWarning("Could not remove code from the database: " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not remove code from the database: " + e.getMessage());
         }
     }
 
@@ -282,7 +281,7 @@ public class SQLite extends Database {
                 return resultSet.getInt("fail_time");
             }
         } catch (SQLException e) {
-            log.logWarning("Could not get the fail time of the player: " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not get the fail time of the player: " + e.getMessage());
         }
         return 1;
     }
@@ -298,7 +297,7 @@ public class SQLite extends Database {
                 return resultSet.getLong("expire_time");
             }
         } catch (SQLException e) {
-            log.logWarning("Could not get the expire time of the player: " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not get the expire time of the player: " + e.getMessage());
         }
         return -1;
     }
@@ -311,7 +310,7 @@ public class SQLite extends Database {
             statement.setString(1, playerUUID);
             statement.executeUpdate();
         } catch (SQLException e) {
-            log.logWarning("Could not remove baned player from the database: " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not remove baned player from the database: " + e.getMessage());
         }
     }
     @Override
@@ -322,7 +321,7 @@ public class SQLite extends Database {
             statement.setString(1, playerUUID);
             statement.executeUpdate();
         } catch (SQLException e) {
-            log.logWarning("Could not remove failed player from the database: " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not remove failed player from the database: " + e.getMessage());
         }
     }
 
@@ -337,7 +336,7 @@ public class SQLite extends Database {
                 return resultSet.getString("reason");
             }
         } catch (SQLException e) {
-            log.logWarning("Could not get the reason of the player: " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not get the reason of the player: " + e.getMessage());
         }
         return null;
     }
@@ -353,7 +352,7 @@ public class SQLite extends Database {
                 return resultSet.getString("created_at");
             }
         } catch (SQLException e) {
-            log.logWarning("Could not get the created time of the player: " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not get the created time of the player: " + e.getMessage());
         }
         return null;
     }
@@ -368,7 +367,7 @@ public class SQLite extends Database {
             statement.setString(3, playerName);
             statement.executeUpdate();
         } catch (SQLException e) {
-            log.logWarning("Could not add or update player info in the database: " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not add or update player info in the database: " + e.getMessage());
         }
     }
 
@@ -383,7 +382,7 @@ public class SQLite extends Database {
                 return resultSet.getString("player_used") != null;
             }
         } catch (SQLException e) {
-            log.logWarning("Could not check if the code is used: " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not check if the code is used: " + e.getMessage());
         }
         return false;
     }
@@ -411,7 +410,7 @@ public class SQLite extends Database {
                 );
             }
         } catch (SQLException e) {
-            log.logWarning("Could not find the player: " + playerName + " " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not find the player: " + playerName + " " + e.getMessage());
         }
         return null;
     }

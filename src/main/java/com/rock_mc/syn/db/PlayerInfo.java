@@ -1,4 +1,4 @@
-package com.rock_mc.syn.command;
+package com.rock_mc.syn.db;
 
 import java.sql.Timestamp;
 import java.util.UUID;

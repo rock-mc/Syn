@@ -1,5 +1,7 @@
 package com.rock_mc.syn.command;
 
+import org.bukkit.entity.Player;
+
 import java.util.HashMap;
 
 public class CmdManager {
@@ -34,5 +36,15 @@ public class CmdManager {
 
     public String [] getCmdList() {
         return cmdMap.keySet().stream().sorted().toArray(String[]::new);
+    }
+
+    public boolean lacksPermission(Player player, String command) {
+
+        if (player == null) {
+            // The console has all permissions
+            return false;
+        }
+
+        return !player.hasPermission(getCmd(command).permission);
     }
 }

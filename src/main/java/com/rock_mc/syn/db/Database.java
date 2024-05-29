@@ -1,8 +1,6 @@
 package com.rock_mc.syn.db;
 
 
-import com.rock_mc.syn.command.PlayerInfo;
-
 public abstract class Database {
 
     public abstract void load();

@@ -4,7 +4,7 @@ import com.rock_mc.syn.event.DiscordListener;
 import github.scarsz.discordsrv.DiscordSRV;
 import org.bukkit.entity.Player;
 
-public class LogDiscord implements LogProvider {
+public class LogDiscord implements Log {
 
     public void sendMessage(Player player, String message) {
         send(message);

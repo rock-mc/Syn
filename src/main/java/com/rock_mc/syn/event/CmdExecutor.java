@@ -1,7 +1,10 @@
-package com.rock_mc.syn.command;
+package com.rock_mc.syn.event;
 
 import com.rock_mc.syn.Syn;
-import com.rock_mc.syn.log.Log;
+import com.rock_mc.syn.api.*;
+import com.rock_mc.syn.command.CmdManager;
+import com.rock_mc.syn.log.LogManager;
+import com.rock_mc.syn.log.LogPlugin;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -12,8 +15,6 @@ import java.util.List;
 
 public class CmdExecutor implements CommandExecutor, TabCompleter {
     private final Syn plugin;
-
-    private static final Log log = new Log();
 
     public CmdExecutor(Syn plugin) {
         this.plugin = plugin;
@@ -28,25 +29,25 @@ public class CmdExecutor implements CommandExecutor, TabCompleter {
         }
 
         String commandName = (args.length == 0) ? "help" : args[0];
+        LogPlugin Log = LogManager.LOG_PLUGIN;
 
         if ("help".equals(commandName)) {
-            CmdHelp.run(plugin, log, player);
+            Help.run(plugin, Log, player);
 
         } else if (CmdManager.VERIFY.equals(commandName)) {
-            CmdVerify.run(plugin, log, player, args);
+            Verify.run(plugin, Log, player, args);
 
         } else if (CmdManager.GENCODE.equals(commandName)) {
-            CmdGenCode.run(plugin, log, player, args);
+            GenCode.run(plugin, Log, player, args);
 
         } else if (CmdManager.INFO.equals(commandName)) {
-            CmdInfo.run(plugin, log, player, args);
+            Info.run(plugin, Log, player, args);
 
         } else if (CmdManager.GUEST.equals(commandName)) {
-            CmdGuest.run(plugin, log, player, args);
+            Guest.run(plugin, Log, player, args);
 
         } else if (CmdManager.BAN.equals(commandName)) {
-            CmdBan.run(plugin, log, player, args);
-
+            Ban.run(plugin, Log, player, args);
         }
 
         return true;
