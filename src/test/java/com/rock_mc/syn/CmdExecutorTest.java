@@ -4,6 +4,7 @@ import be.seeseemelk.mockbukkit.command.ConsoleCommandSenderMock;
 import be.seeseemelk.mockbukkit.entity.PlayerMock;
 import com.google.common.collect.Lists;
 import com.rock_mc.syn.event.WaitVerify;
+import com.rock_mc.syn.log.LogPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.junit.jupiter.api.Test;
@@ -24,7 +25,7 @@ public class CmdExecutorTest extends PluginTest {
         opPlayer.setOp(true);
         plugin.dbManager.addPlayerToAllowList(opPlayer.getUniqueId().toString());
 
-        String expected = Log.PREFIX_GAME;
+        String expected = LogPlugin.PREFIX_GAME;
 
         opPlayer.performCommand("syn");
 
@@ -36,7 +37,7 @@ public class CmdExecutorTest extends PluginTest {
         PlayerMock player = server.addPlayer();
         player.setOp(false);
 
-        expected = Log.PREFIX_GAME + "Commands:\n" +
+        expected = LogPlugin.PREFIX_GAME + "Commands:\n" +
                 "Input the verification code to verify player\n" +
                 "/syn verify <code>";
 
@@ -82,7 +83,7 @@ public class CmdExecutorTest extends PluginTest {
         otherPlayer.performCommand("syn verify " + code);
         commandOutput = otherPlayer.nextMessage();
 
-        assertEquals(Log.PREFIX_GAME + ChatColor.RED + "驗證碼已經使用過", commandOutput);
+        assertEquals(LogPlugin.PREFIX_GAME + ChatColor.RED + "驗證碼已經使用過", commandOutput);
     }
 
     @Test
@@ -102,7 +103,7 @@ public class CmdExecutorTest extends PluginTest {
             Thread.sleep(1000);
             timeoutSeconds--;
         }
-        assertEquals(Log.PREFIX_GAME + "請在 60 秒內輸入驗證碼", commandOutput);
+        assertEquals(LogPlugin.PREFIX_GAME + "請在 60 秒內輸入驗證碼", commandOutput);
 
         // 等待使用者輸入
         timeoutSeconds = 10;
@@ -117,7 +118,7 @@ public class CmdExecutorTest extends PluginTest {
 
         commandOutput = player.nextMessage();
 
-        assertEquals(Log.PREFIX_GAME + ChatColor.RED + "驗證碼錯誤", commandOutput);
+        assertEquals(LogPlugin.PREFIX_GAME + ChatColor.RED + "驗證碼錯誤", commandOutput);
     }
 
     @Test
@@ -128,7 +129,7 @@ public class CmdExecutorTest extends PluginTest {
         String commandOutput = consoleSender.nextMessage();
 
         assert commandOutput != null;
-        assertTrue(commandOutput.contains(Log.PREFIX_SERVER + "Commands:"));
+        assertTrue(commandOutput.contains(LogPlugin.PREFIX_SERVER + "Commands:"));
 
     }
 

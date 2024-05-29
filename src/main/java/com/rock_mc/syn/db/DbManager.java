@@ -26,9 +26,7 @@ public class DbManager {
     }
 
     public void load() {
-        synchronized (lock) {
-            this.database.load();
-        }
+        this.database.load();
     }
 
     public void save() {
@@ -155,6 +153,11 @@ public class DbManager {
             this.database.removeBanedPlayer(playerUUID);
         }
     }
+    public void removePlayerFailedList(String playerUUID) {
+        synchronized (lock) {
+            this.database.removeFailedPlayer(playerUUID);
+        }
+    }
 
     public boolean isCodeUsed(String code) {
         synchronized (lock) {
@@ -165,6 +168,11 @@ public class DbManager {
                 codeCache.put(code, used);
                 return used;
             }
+        }
+    }
+    public PlayerInfo getPlayerByName(String playerName) {
+        synchronized (lock) {
+            return this.database.getPlayerByName(playerName);
         }
     }
 }

@@ -27,6 +27,8 @@ public abstract class Database {
 
     public abstract void removeBanedPlayer(String playerUUID);
 
+    public abstract void removeFailedPlayer(String playerUUID);
+
     public abstract String getBannedReason(String playerUUID);
 
     public abstract String getBannedCreateAt(String playerUUID);
@@ -43,4 +45,5 @@ public abstract class Database {
 
     public abstract void updateFailedAttempts(String playerUUID, int failedAttempts);
 
+    public abstract PlayerInfo getPlayerByName(String playerName);
 }

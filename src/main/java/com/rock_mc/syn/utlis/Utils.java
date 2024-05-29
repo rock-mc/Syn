@@ -1,4 +1,7 @@
-package com.rock_mc.syn;
+package com.rock_mc.syn.utlis;
+
+import com.rock_mc.syn.command.CmdManager;
+import org.jetbrains.annotations.NotNull;
 
 public class Utils {
 
@@ -45,7 +48,7 @@ public class Utils {
         return timeToStr(day, hour, min, sec);
     }
 
-    static String timeToStr(long day, long hour, long min, long sec){
+    public static String timeToStr(long day, long hour, long min, long sec){
         String result = null;
         if(day > 0){
             result = day + " 天";
@@ -78,5 +81,21 @@ public class Utils {
             result = "∞";
         }
         return result;
+    }
+
+    public static boolean matchCommand(String commandline, String commandCode) {
+        if (commandline == null || commandCode == null) {
+            return false;
+        }
+        return (commandline.contains(CmdManager.SYN + " " + commandCode));
+    }
+
+    public static @NotNull String[] extractArgs(String cmdCode, String cmdLine) {
+        int index = cmdLine.lastIndexOf(CmdManager.SYN + " " + cmdCode);
+        if (index == -1) {
+            return cmdLine.split(" ");
+        }
+        cmdLine = cmdLine.substring(index + CmdManager.SYN.length() + 1);
+        return cmdLine.split(" ");
     }
 }

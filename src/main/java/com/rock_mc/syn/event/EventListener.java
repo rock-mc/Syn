@@ -1,8 +1,10 @@
 package com.rock_mc.syn.event;
 
-import com.rock_mc.syn.Log;
+import com.rock_mc.syn.event.pluginevent.JoinEvent;
+import com.rock_mc.syn.event.pluginevent.KickEvent;
+import com.rock_mc.syn.log.LogPlugin;
 import com.rock_mc.syn.Syn;
-import com.rock_mc.syn.Utils;
+import com.rock_mc.syn.utlis.Utils;
 
 import com.rock_mc.syn.config.Config;
 import org.bukkit.Bukkit;
@@ -21,7 +23,6 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.io.IOException;
-import java.util.UUID;
 
 public class EventListener implements Listener {
     private final Syn plugin;
@@ -29,6 +30,8 @@ public class EventListener implements Listener {
     public EventListener(Syn plugin) {
         this.plugin = plugin;
     }
+
+    private static final LogPlugin LOG_PLUGIN = new LogPlugin();
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerLogin(PlayerLoginEvent event) throws IOException {
@@ -85,24 +88,24 @@ public class EventListener implements Listener {
         String opWelcomeMsg = "管理員 " + ChatColor.GOLD + "" + ChatColor.BOLD + name + ChatColor.WHITE + " 取得女神 " + ChatColor.RED + Syn.APP_NAME + ChatColor.WHITE + " 的允許進入伺服器並得到了女神祝福";
         if (plugin.dbManager.isPlayerInAllowList(uuid)) {
             if (player.isOp()) {
-                Log.broadcast(opWelcomeMsg);
+                LOG_PLUGIN.broadcast(opWelcomeMsg);
             } else {
-                Log.broadcast("玩家 " + ChatColor.BOLD + name + ChatColor.WHITE + " 取得女神 " + ChatColor.RED + Syn.APP_NAME + ChatColor.WHITE + " 的允許進入伺服器。");
+                LOG_PLUGIN.broadcast("玩家 " + ChatColor.BOLD + name + ChatColor.WHITE + " 取得女神 " + ChatColor.RED + Syn.APP_NAME + ChatColor.WHITE + " 的允許進入伺服器。");
             }
             return;
         }
         else if (player.isOp()) {
             plugin.dbManager.addPlayerToAllowList(uuid);
-            Log.broadcast(opWelcomeMsg);
+            LOG_PLUGIN.broadcast(opWelcomeMsg);
             return;
         }
 
         if (plugin.configManager.getConfig().getBoolean(Config.GUEST)) {
-            Log.logInfo("Guest mode is enabled");
-            Log.broadcast("訪客玩家 " + ChatColor.BOLD + name + ChatColor.WHITE + " 取得女神 " + ChatColor.RED + Syn.APP_NAME + ChatColor.WHITE + " 的暫時允許進入伺服器。");
+            LOG_PLUGIN.logInfo("Guest mode is enabled");
+            LOG_PLUGIN.broadcast("訪客玩家 " + ChatColor.BOLD + name + ChatColor.WHITE + " 取得女神 " + ChatColor.RED + Syn.APP_NAME + ChatColor.WHITE + " 的暫時允許進入伺服器。");
         }
         else {
-            Log.logInfo("Player " + name + " is not verified, freeze player.");
+            LOG_PLUGIN.logInfo("Player " + name + " is not verified, freeze player.");
 
             Location location = player.getLocation();
             plugin.freezePlayerMap.put(player.getUniqueId(), location);
@@ -113,7 +116,7 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onPluginJoin(JoinEvent event) {
-        Log.broadcast(event.getMessage());
+        LOG_PLUGIN.broadcast(event.getMessage());
         plugin.freezePlayerMap.remove(event.getPlayer().getUniqueId());
     }
 
@@ -129,8 +132,7 @@ public class EventListener implements Listener {
         if (!plugin.freezePlayerMap.containsKey(player.getUniqueId())) {
             return;
         }
-        LivingEntity livingEntity = player;
-        if (!livingEntity.isOnGround()) {
+        if (!((LivingEntity) player).isOnGround()) {
             return;
         }
         event.setCancelled(true);
@@ -166,6 +168,6 @@ public class EventListener implements Listener {
 
         // 凍結狀態，取消對話
         event.setCancelled(true);
-        Log.sendMessage(player, "因為您尚未通過驗證，因此訊息並未送出");
+        LOG_PLUGIN.sendMessage(player, "因為您尚未通過驗證，因此訊息並未送出");
     }
 }

@@ -11,4 +11,5 @@ public class Config {
     public static final String DATABASE_TYPE = "syn.database.type";
     public static final String MAX_INPUT_CODE_TIMES = "syn.max_input_code_times";
     public static final String INPUT_CODE_BAN_DAYS = "syn.input_code_ban_days";
+    public static final String CHANNEL_NAME = "syn.channel_name";
 }

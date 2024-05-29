@@ -63,3 +63,6 @@ permissions:
   syn.log:
     description: Allows you to check the log of the player
     default: op
+
+softdepend: [DiscordSRV]
+folia-supported: true
