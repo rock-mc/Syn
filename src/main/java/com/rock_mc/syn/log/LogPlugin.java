@@ -26,7 +26,7 @@ public class LogPlugin implements Log {
         }
 
         message = ChatColor.stripColor(message);
-        logInfo(message);
+        sendMessage(message);
     }
 
     public void broadcast(String message, ChatColor color) {
@@ -42,9 +42,9 @@ public class LogPlugin implements Log {
         Bukkit.broadcastMessage(PREFIX_GAME + message);
     }
 
-    public void logInfo(String message) {
-        Bukkit.getConsoleSender().sendMessage(PREFIX_SERVER + message);
-    }
+    public void sendMessage(String message) { Bukkit.getConsoleSender().sendMessage(PREFIX_SERVER + message); }
+
+    public void logInfo(String message) { Bukkit.getLogger().info(PREFIX_SERVER + message); }
 
     public void logWarning(String message) {
         Bukkit.getLogger().warning(PREFIX_SERVER + message);

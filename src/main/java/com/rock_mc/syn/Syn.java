@@ -1,15 +1,14 @@
 package com.rock_mc.syn;
 
-import com.rock_mc.syn.event.CmdExecutor;
 import com.rock_mc.syn.command.CmdManager;
 import com.rock_mc.syn.config.ConfigManager;
 import com.rock_mc.syn.db.DbManager;
+import com.rock_mc.syn.event.CmdExecutor;
 import com.rock_mc.syn.event.DiscordListener;
 import com.rock_mc.syn.event.EventListener;
 import com.rock_mc.syn.log.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
@@ -40,12 +39,13 @@ public class Syn extends JavaPlugin {
     @Override
     public void onEnable() {
 
-        configManager = new ConfigManager(this);
-        dbManager = new DbManager(this);
-
         try {
+            configManager = new ConfigManager(this);
             configManager.load();
+
+            dbManager = new DbManager(this);
             dbManager.load();
+
         } catch (Exception e) {
             Bukkit.getLogger().severe(e.getMessage());
             Bukkit.getPluginManager().disablePlugin(this);
