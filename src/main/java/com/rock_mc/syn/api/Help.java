@@ -2,24 +2,24 @@ package com.rock_mc.syn.api;
 
 import com.rock_mc.syn.Syn;
 import com.rock_mc.syn.command.CmdManager;
-import com.rock_mc.syn.log.Log;
+import com.rock_mc.syn.log.Logger;
 import org.bukkit.entity.Player;
 
 public class Help {
 
-    public static void run(Syn plugin, Log log, Player player) {
+    public static void exec(Syn plugin, Logger logger, Player player) {
 
         String[] allCmds = plugin.cmdManager.getCmdList();
 
-        StringBuilder allCommands = new StringBuilder("Commands:\n");
-
-        for (String cmd : allCmds) {
-            allCommands.append(plugin.cmdManager.getCmd(cmd).description).append("\n");
-            allCommands.append(plugin.cmdManager.getCmd(cmd).usage).append("\n");
-        }
-
         StringBuilder message = new StringBuilder();
         if (player == null) {
+            StringBuilder allCommands = new StringBuilder("Commands:\n");
+
+            for (String cmd : allCmds) {
+                allCommands.append(plugin.cmdManager.getCmd(cmd).description).append("\n");
+                allCommands.append(plugin.cmdManager.getCmd(cmd).usage).append("\n");
+            }
+
             message = new StringBuilder(allCommands);
         } else if (!plugin.dbManager.isPlayerInAllowList(player.getUniqueId().toString())) {
             message.append("Commands:\n").append(plugin.cmdManager.getCmd(CmdManager.VERIFY).description);
@@ -41,7 +41,7 @@ public class Help {
             }
         }
 
-        log.sendMessage(player, message.toString().trim());
+        logger.sendMessage(player, message.toString().trim());
     }
 }
 

@@ -1,6 +1,6 @@
 package com.rock_mc.syn.config;
 
-import com.rock_mc.syn.log.LogPlugin;
+import com.rock_mc.syn.log.LoggerPlugin;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -11,7 +11,7 @@ import java.util.Objects;
 public class ConfigManager {
     private final JavaPlugin plugin ;
 
-    private static final LogPlugin LOG_PLUGIN = new LogPlugin();
+    private static final LoggerPlugin LOG_PLUGIN = new LoggerPlugin();
 
     private FileConfiguration config = null;
 

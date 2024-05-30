@@ -83,19 +83,88 @@ public class Utils {
         return result;
     }
 
-    public static boolean matchCommand(String commandline, String commandCode) {
+    public static long strToTime(String timeStr){
+        // timeStr is in the format of xyxdxhxmxs
+        // x is a number
+        // y is a letter, y, d, h, m, s
+        // xy is the number of years
+        // xd is the number of days
+        // xh is the number of hours
+        // xm is the number of minutes
+        // xs is the number of seconds
+
+        if (!isValidCode("0123456789ydhms", timeStr.length(), timeStr)){
+            return -1;
+        }
+
+        long time = 0;
+
+        // Extract years
+        int yearIndex = timeStr.indexOf('y');
+        if (yearIndex != -1) {
+            int years = Integer.parseInt(timeStr.substring(0, yearIndex));
+            time += years * 365L * 24 * 60 * 60;
+            timeStr = timeStr.substring(yearIndex + 1);
+        }
+
+        // Extract days
+        int dayIndex = timeStr.indexOf('d');
+        if (dayIndex != -1) {
+            int days = Integer.parseInt(timeStr.substring(0, dayIndex));
+            time += days * 24L * 60 * 60;
+            timeStr = timeStr.substring(dayIndex + 1);
+        }
+
+        // Extract hours
+        int hourIndex = timeStr.indexOf('h');
+        if (hourIndex != -1) {
+            int hours = Integer.parseInt(timeStr.substring(0, hourIndex));
+            time += hours * 60L * 60;
+            timeStr = timeStr.substring(hourIndex + 1);
+        }
+
+        // Extract minutes
+        int minuteIndex = timeStr.indexOf('m');
+        if (minuteIndex != -1) {
+            int minutes = Integer.parseInt(timeStr.substring(0, minuteIndex));
+            time += minutes * 60L;
+            timeStr = timeStr.substring(minuteIndex + 1);
+        }
+
+        // Extract seconds
+        if (!timeStr.isEmpty()) {
+            int seconds = Integer.parseInt(timeStr.substring(0, timeStr.length() - 1));
+            time += seconds;
+        }
+        return time;
+    }
+
+    public static boolean isCommand(String commandline, String commandCode) {
         if (commandline == null || commandCode == null) {
             return false;
         }
-        return (commandline.contains(CmdManager.SYN + " " + commandCode));
+        return (commandline.startsWith(CmdManager.SYN + " " + commandCode));
     }
 
-    public static @NotNull String[] extractArgs(String cmdCode, String cmdLine) {
-        int index = cmdLine.lastIndexOf(CmdManager.SYN + " " + cmdCode);
-        if (index == -1) {
-            return cmdLine.split(" ");
+    public static String extractCommand(String[] cmdList, String cmdLine) {
+
+        if (cmdLine == null) {
+            return null;
         }
-        cmdLine = cmdLine.substring(index + CmdManager.SYN.length() + 1);
-        return cmdLine.split(" ");
+
+        cmdLine = cmdLine.trim().toLowerCase();
+
+        if (!cmdLine.startsWith(CmdManager.SYN)) {
+            return null;
+        }
+
+        for (String cmdCode : cmdList) {
+            if (cmdLine.startsWith(CmdManager.SYN + " " + cmdCode.toLowerCase())) {
+                return cmdCode;
+            }
+        }
+
+        // starts with "syn" but not found in the command list
+        return "";
     }
 }

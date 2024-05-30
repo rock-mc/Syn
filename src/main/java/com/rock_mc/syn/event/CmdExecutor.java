@@ -3,8 +3,9 @@ package com.rock_mc.syn.event;
 import com.rock_mc.syn.Syn;
 import com.rock_mc.syn.api.*;
 import com.rock_mc.syn.command.CmdManager;
+import com.rock_mc.syn.config.Config;
 import com.rock_mc.syn.log.LogManager;
-import com.rock_mc.syn.log.LogPlugin;
+import com.rock_mc.syn.log.Logger;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -29,25 +30,56 @@ public class CmdExecutor implements CommandExecutor, TabCompleter {
         }
 
         String commandName = (args.length == 0) ? "help" : args[0];
-        LogPlugin Log = LogManager.LOG_PLUGIN;
+        Logger logger = LogManager.LOG_PLUGIN;
 
-        if ("help".equals(commandName)) {
-            Help.run(plugin, Log, player);
+        switch (commandName) {
+            case "help", "":
+                plugin.apiManager.help(logger, player);
+                break;
+            case CmdManager.VERIFY:
+                plugin.apiManager.verify(logger, player, args);
+                break;
+            case CmdManager.GENCODE:
 
-        } else if (CmdManager.VERIFY.equals(commandName)) {
-            Verify.run(plugin, Log, player, args);
+                String [] codes = plugin.apiManager.genCode(logger, player, args);
 
-        } else if (CmdManager.GENCODE.equals(commandName)) {
-            GenCode.run(plugin, Log, player, args);
+                if (codes == null) {
+                    return true;
+                }
 
-        } else if (CmdManager.INFO.equals(commandName)) {
-            Info.run(plugin, Log, player, args);
+                StringBuilder stringBuilder = new StringBuilder();
+                String codeURL = (player != null ? plugin.getConfig().getString(Config.SHOW_CODE_URL) : "");
 
-        } else if (CmdManager.GUEST.equals(commandName)) {
-            Guest.run(plugin, Log, player, args);
+                for (String code : codes) {
+                    if (player == null) {
+                        if (!stringBuilder.isEmpty()) {
+                            stringBuilder.append(", ");
+                        }
+                        stringBuilder.append(code);
+                    } else {
+                        stringBuilder.append("\n");
+                        stringBuilder.append(codeURL);
+                        stringBuilder.append(code);
+                    }
+                }
 
-        } else if (CmdManager.BAN.equals(commandName)) {
-            Ban.run(plugin, Log, player, args);
+                logger.sendMessage(player, stringBuilder.toString().trim());
+                break;
+            case CmdManager.GUEST:
+                plugin.apiManager.guest(logger, player);
+                break;
+            case CmdManager.BAN:
+                plugin.apiManager.ban(logger, player, args);
+                break;
+            case CmdManager.UNBAN:
+                plugin.apiManager.unban(logger, player, args);
+                break;
+            case CmdManager.INFO:
+                plugin.apiManager.info(logger, player, args);
+                break;
+            default:
+                logger.sendMessage(player, "Invalid command.");
+                break;
         }
 
         return true;
@@ -82,11 +114,9 @@ public class CmdExecutor implements CommandExecutor, TabCompleter {
         } else if (args.length == 2) {
             if (CmdManager.GENCODE.equals(args[0])) {
                 tab = new ArrayList<>(List.of("1", "3", "5"));
-            }
-            else if (CmdManager.VERIFY.equals(args[0])) {
+            } else if (CmdManager.VERIFY.equals(args[0])) {
                 tab = new ArrayList<>(List.of("code"));
-            }
-            else if (CmdManager.GUEST.equals(args[0])) {
+            } else if (CmdManager.GUEST.equals(args[0])) {
                 tab = new ArrayList<>();
             }
             // TODO: Add more tab complete

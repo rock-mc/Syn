@@ -7,14 +7,14 @@ import java.util.HashMap;
 public class CmdManager {
     private final HashMap<String, Command> cmdMap;
     
-    public static String SYN = "syn";
-    public static String VERIFY = "verify";
-    public static String GENCODE = "gencode";
-    public static String INFO = "info";
-    public static String BAN = "ban";
-    public static String UNBAN = "unban";
-    public static String GUEST = "guest";
-    public static String LOG = "log";
+    public static final String SYN = "syn";
+    public static final String VERIFY = "verify";
+    public static final String GENCODE = "gencode";
+    public static final String INFO = "info";
+    public static final String BAN = "ban";
+    public static final String UNBAN = "unban";
+    public static final String GUEST = "guest";
+    public static final String LOG = "log";
     
     public CmdManager() {
         cmdMap = new HashMap<>();

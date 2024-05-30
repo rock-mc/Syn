@@ -2,37 +2,33 @@ package com.rock_mc.syn.api;
 
 import com.rock_mc.syn.Syn;
 import com.rock_mc.syn.command.CmdManager;
-import com.rock_mc.syn.db.PlayerInfo;
-import com.rock_mc.syn.log.Log;
+import com.rock_mc.syn.db.PluginPlayerInfo;
+import com.rock_mc.syn.log.Logger;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
+import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 
 public class Info {
     private final static String commandName = CmdManager.INFO;
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(Info.class);
 
-    public static void run(Syn plugin, Log log, Player player, String[] args) {
-        PlayerInfo playerInfo = null;
-        if (args.length == 2) {
-            String playerName = args[1];
+    public static void exec(Syn plugin, Logger logger, Player player, String playerName) {
 
-            log.sendMessage(player, "查詢使用者" + ChatColor.GREEN + playerName);
-
-            // 取得玩家資料
-            playerInfo = plugin.dbManager.getPlayerByName(playerName);
-            if (playerInfo == null) {
-                log.sendMessage(player, "查無此玩家" + playerName);
-
-            } else {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-
-                log.sendMessage(player, "最近登入" + sdf.format(playerInfo.getLast_login()));
-                log.sendMessage(player, "加入時間" + sdf.format(playerInfo.getCreated_at()));
-
-            }
-        } else {
-            log.sendMessage(player, "Syn version: " + plugin.getServer().getVersion());
+        PluginPlayerInfo pluginPlayerInfo = plugin.dbManager.getPlayerByName(playerName);
+        if (pluginPlayerInfo == null) {
+            logger.sendMessage(player, "查無此玩家" + playerName);
+            logger.sendMessage(player, plugin.cmdManager.getCmd(commandName).usage);
+            return;
         }
+
+        logger.sendMessage(player, plugin.getDescription().getVersion());
+        logger.sendMessage(player, "使用者: " + ChatColor.GREEN + playerName);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+
+        logger.sendMessage(player, "最近登入" + sdf.format(pluginPlayerInfo.getLast_login()));
+        logger.sendMessage(player, "加入時間" + sdf.format(pluginPlayerInfo.getCreated_at()));
     }
 }

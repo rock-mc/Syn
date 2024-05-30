@@ -3,14 +3,14 @@ package com.rock_mc.syn.db;
 import java.sql.Timestamp;
 import java.util.UUID;
 
-public class PlayerInfo {
+public class PluginPlayerInfo {
 
     private String player_uuid;
     private String player_name;
     private Timestamp last_login;
     private Timestamp created_at;
 
-    public PlayerInfo(String player_uuid, String player_name, Timestamp last_login, Timestamp created_at) {
+    public PluginPlayerInfo(String player_uuid, String player_name, Timestamp last_login, Timestamp created_at) {
         this.player_uuid = player_uuid;
         this.player_name = player_name;
         this.last_login = last_login;

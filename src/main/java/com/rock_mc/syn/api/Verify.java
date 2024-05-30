@@ -2,11 +2,11 @@ package com.rock_mc.syn.api;
 
 import com.rock_mc.syn.Syn;
 import com.rock_mc.syn.command.CmdManager;
+import com.rock_mc.syn.log.Logger;
 import com.rock_mc.syn.utlis.Utils;
 import com.rock_mc.syn.config.Config;
 import com.rock_mc.syn.event.pluginevent.JoinEvent;
 import com.rock_mc.syn.event.pluginevent.KickEvent;
-import com.rock_mc.syn.log.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -19,21 +19,22 @@ import java.time.temporal.ChronoUnit;
 public class Verify {
     private final static String commandName = CmdManager.VERIFY;
 
-    public static void run(Syn plugin, Log log, Player player, String[] args) {
+    public static boolean exec(Syn plugin, Logger logger, Player player, String code) {
 
         if (plugin.cmdManager.lacksPermission(player, commandName)) {
-            log.sendMessage(player, "You don't have permission to use this command.");
-            return;
+            logger.sendMessage(player, "You don't have permission to use this command.");
+            return false;
         }
 
-        if (args.length != 2) {
-            log.sendMessage(player, plugin.cmdManager.getCmd(commandName).usage);
-            return;
+        if (code == null) {
+            logger.sendMessage(player, "Invalid code of arguments.");
+            logger.sendMessage(player, plugin.cmdManager.getCmd(commandName).usage);
+            return false;
         }
 
         if (plugin.dbManager.isPlayerInAllowList(player.getUniqueId().toString())) {
-            log.sendMessage(player, "你已經通過驗證了。");
-            return;
+            logger.sendMessage(player, "你已經通過驗證了。");
+            return false;
         }
 
         int maxInputCodeTimes = plugin.getConfig().getInt(Config.MAX_INPUT_CODE_TIMES);
@@ -52,27 +53,26 @@ public class Verify {
 
             Event event = new KickEvent(false, player, message);
             Bukkit.getPluginManager().callEvent(event);
-            return;
+            return false;
         } else {
             plugin.dbManager.updateFailedAttempts(player.getUniqueId().toString(), failTime + 1);
         }
 
-        String code = args[1];
         if (!Utils.isValidCode(plugin.getConfig().getString(Config.AVAILABLE_CHARS), plugin.getConfig().getInt(Config.CODE_LENGTH), code)) {
-            log.sendMessage(player, ChatColor.RED + "驗證碼錯誤");
-            return;
+            logger.sendMessage(player, ChatColor.RED + "驗證碼錯誤");
+            return false;
         }
 
         String codeCreateDate = plugin.dbManager.getCodeCreateDate(code);
         if (codeCreateDate == null) {
             // The verification code is not existed
-            log.sendMessage(player, ChatColor.RED + "驗證碼錯誤");
-            return;
+            logger.sendMessage(player, ChatColor.RED + "驗證碼錯誤");
+            return false;
         }
         // check if the code is used or not
         if (plugin.dbManager.isCodeUsed(code)) {
-            log.sendMessage(player, ChatColor.RED + "驗證碼已經使用過");
-            return;
+            logger.sendMessage(player, ChatColor.RED + "驗證碼已經使用過");
+            return false;
         }
 
         // The verification code is exited and not expired
@@ -90,8 +90,8 @@ public class Verify {
 
         if (minesBetween > (long) expireDays * 24 * 60) {
             // The verification code is expired
-            log.sendMessage(player, ChatColor.RED + "驗證碼過期。");
-            return;
+            logger.sendMessage(player, ChatColor.RED + "驗證碼過期。");
+            return false;
         }
         // The verification code is exited and not expired
         // Add the player to the allow list
@@ -104,5 +104,6 @@ public class Verify {
         Event event = new JoinEvent(false, player, "歡迎 " + ChatColor.YELLOW + player.getDisplayName() + ChatColor.WHITE + " 全新加入!");
         Bukkit.getPluginManager().callEvent(event);
 
+        return true;
     }
 }
