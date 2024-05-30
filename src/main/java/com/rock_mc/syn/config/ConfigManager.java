@@ -1,6 +1,7 @@
 package com.rock_mc.syn.config;
 
 import com.rock_mc.syn.log.LoggerPlugin;
+import com.rock_mc.syn.utlis.Utils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -69,14 +70,14 @@ public class ConfigManager {
             }
         }
 
-        if (config.get(Config.EXPIRE_DAYS) == null) {
+        if (config.get(Config.EXPIRE_TIME) == null) {
             valid = false;
         }
         else {
-            if (!(config.get(Config.EXPIRE_DAYS) instanceof Integer)) {
+            if (!(config.get(Config.EXPIRE_TIME) instanceof String temp)) {
                 valid = false;
             }
-            else if (config.getInt(Config.EXPIRE_DAYS) < 0) {
+            else if (!Utils.isValidCode("0123456789ydhms", temp.length(), temp)) {
                 valid = false;
             }
         }
@@ -93,6 +94,18 @@ public class ConfigManager {
             }
         }
 
+        if (config.get(Config.INPUT_CODE_BAN_TIME) == null) {
+            valid = false;
+        }
+        else {
+            if (!(config.get(Config.INPUT_CODE_BAN_TIME) instanceof String temp)) {
+                valid = false;
+            }
+            else if (!Utils.isValidCode("0123456789ydhms", temp.length(), temp)) {
+                valid = false;
+            }
+        }
+
         if (config.get(Config.CLEAR_DAYS) == null) {
             valid = false;
         }
@@ -101,18 +114,6 @@ public class ConfigManager {
                 valid = false;
             }
             else if (config.getInt(Config.CLEAR_DAYS) < 0) {
-                valid = false;
-            }
-        }
-
-        if (config.get(Config.DATABASE_TYPE) == null) {
-            valid = false;
-        }
-        else {
-            if (!(config.get(Config.DATABASE_TYPE) instanceof String)) {
-                valid = false;
-            }
-            else if (!"sqlite".equalsIgnoreCase(config.getString(Config.DATABASE_TYPE))) {
                 valid = false;
             }
         }
@@ -144,6 +145,27 @@ public class ConfigManager {
                 valid = false;
             }
             else if (config.getInt(Config.MAX_INPUT_CODE_TIMES) < 1) {
+                valid = false;
+            }
+        }
+
+        if (config.get(Config.CHANNEL_NAME) == null) {
+            valid = false;
+        }
+        else {
+            if (!(config.get(Config.CHANNEL_NAME) instanceof String)) {
+                valid = false;
+            }
+        }
+
+        if (config.get(Config.DATABASE_TYPE) == null) {
+            valid = false;
+        }
+        else {
+            if (!(config.get(Config.DATABASE_TYPE) instanceof String)) {
+                valid = false;
+            }
+            else if (!"sqlite".equalsIgnoreCase(config.getString(Config.DATABASE_TYPE))) {
                 valid = false;
             }
         }

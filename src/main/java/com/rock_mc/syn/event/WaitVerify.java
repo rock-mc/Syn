@@ -62,11 +62,9 @@ public class WaitVerify extends Thread {
                 failTime = plugin.dbManager.getFailedAttempts(player.getUniqueId().toString());
                 if (failTime >= MAX_INPUT_CODE_TIMES) {
 
-                    int banDays = plugin.getConfig().getInt(Config.INPUT_CODE_BAN_DAYS);
+                    String banTimes = plugin.getConfig().getString(Config.INPUT_CODE_BAN_TIME);
 
-                    Ban.exec(plugin, LOG_PLUGIN, null, player.getName(), "7d", "請取得驗證碼後，參考官網輸入驗證碼方式，伺服器暫時凍結登入");
-
-                    plugin.dbManager.updateFailedAttempts(player.getUniqueId().toString(), 1);
+                    Ban.exec(plugin, LOG_PLUGIN, null, player.getName(), "請取得驗證碼後，參考官網輸入驗證碼方式，伺服器暫時凍結登入", banTimes);
                 } else {
                     plugin.dbManager.updateFailedAttempts(player.getUniqueId().toString(), failTime + 1);
 

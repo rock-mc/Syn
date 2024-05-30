@@ -43,17 +43,20 @@ public class Verify {
 
             if (failTime >= maxInputCodeTimes) {
 
-                int banDays = plugin.getConfig().getInt(Config.INPUT_CODE_BAN_DAYS);
-                String message = "請勿亂猜驗證碼，冷靜個 " + banDays + " 天再來吧";
-                String banReason = "try code too much times";
+                String banTime = plugin.getConfig().getString(Config.INPUT_CODE_BAN_TIME);
+                long banedSec = Utils.strToTime(banTime);
 
-                long banedSec = (long) banDays * 24 * 60 * 60;
+                String message = "請勿亂猜驗證碼，冷靜個 " + Utils.timeToStr(0, 0, 0, banedSec) + "再來吧";
+                String banReason = "Verify code failed too many times.";
 
                 plugin.dbManager.addPlayerToBannedList(player.getUniqueId().toString(), banReason, banedSec);
-                plugin.dbManager.updateFailedAttempts(player.getUniqueId().toString(), 1);
+                plugin.dbManager.removePlayerFailedList(player.getUniqueId().toString());
 
-                Event event = new KickEvent(false, player, message);
-                Bukkit.getPluginManager().callEvent(event);
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                    Event kickEvent = new KickEvent(true, player, message);
+                    Bukkit.getPluginManager().callEvent(kickEvent);
+                });
+
                 return false;
             } else {
                 plugin.dbManager.updateFailedAttempts(player.getUniqueId().toString(), failTime + 1);
@@ -80,16 +83,16 @@ public class Verify {
             // Add the player to the allow list
             plugin.dbManager.addPlayerToAllowList(player.getUniqueId().toString());
             // check if the code is expired or not
-            int expireDays = plugin.getConfig().getInt(Config.EXPIRE_DAYS);
+            long expireSecs = Utils.strToTime(plugin.getConfig().getString(Config.EXPIRE_TIME));
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             LocalDateTime codeCreatedDateTime = LocalDateTime.parse(codeCreateDate, formatter);
 
             LocalDateTime currentDateTime = LocalDateTime.now();
 
-            long minesBetween = ChronoUnit.MINUTES.between(codeCreatedDateTime, currentDateTime);
+            long secondsBetween = ChronoUnit.SECONDS.between(codeCreatedDateTime, currentDateTime);
 
-            if (minesBetween > (long) expireDays * 24 * 60) {
+            if (secondsBetween > expireSecs) {
                 // The verification code is expired
                 logger.sendMessage(player, ChatColor.RED + "驗證碼過期。");
                 return false;
@@ -102,8 +105,10 @@ public class Verify {
             plugin.dbManager.markCode(code, player.getUniqueId().toString());
             plugin.freezePlayerMap.remove(player.getUniqueId());
 
-            Event event = new JoinEvent(false, player, "歡迎 " + ChatColor.YELLOW + player.getDisplayName() + ChatColor.WHITE + " 全新加入!");
-            Bukkit.getPluginManager().callEvent(event);
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                Event joinEvent = new JoinEvent(true, player, "歡迎 " + ChatColor.YELLOW + player.getDisplayName() + ChatColor.WHITE + " 全新加入!");
+                Bukkit.getPluginManager().callEvent(joinEvent);
+            });
 
             return true;
         }

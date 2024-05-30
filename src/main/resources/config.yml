@@ -24,9 +24,10 @@ syn:
   code_length: 8
 
   # The expiration time of the verification code
-  # 0 means the verification code will never expire
-  # The default value is 14
-  expire_days: 14
+  # 0s means the verification code will never expire
+  # You can use the time unit: s, m, h, d, y
+  # The default value is 14d
+  expire_time: 14d
 
   # The max wait time of the input verification code
   # The default value is 60
@@ -37,8 +38,9 @@ syn:
   max_input_code_times: 3
 
   # The ban time of the player who input the wrong verification code too many times
-  # The default value is 1
-  input_code_ban_days: 1
+  # You can use the time unit: s, m, h, d, y
+  # The default value is 1d
+  input_code_ban_time: 1d
 
   # The clear time of the expired verification code
   # 0 means the verification code will never clear
