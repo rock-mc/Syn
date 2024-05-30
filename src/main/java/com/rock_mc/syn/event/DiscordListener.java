@@ -60,13 +60,13 @@ public class DiscordListener implements Listener {
 
         switch (commandName) {
             case "help", "":
-                plugin.apiManager.help(logger, null);
+                Help.exec(plugin, logger, null);
                 break;
             case CmdManager.VERIFY:
-                plugin.apiManager.verify(logger, null, args);
+                Verify.exec(plugin, logger, null, args);
                 break;
             case CmdManager.GENCODE:
-                String[] codes = plugin.apiManager.genCode(logger, null, args);
+                String[] codes = GenCode.exec(plugin, logger, null, args);
 
                 if (codes == null) {
                     return;
@@ -77,16 +77,16 @@ public class DiscordListener implements Listener {
                 }
                 break;
             case CmdManager.GUEST:
-                plugin.apiManager.guest(logger, null);
+                Guest.exec(plugin, logger, null);
                 break;
             case CmdManager.BAN:
-                plugin.apiManager.ban(logger, null, args);
+                Ban.exec(plugin, logger, null, args);
                 break;
             case CmdManager.UNBAN:
-                plugin.apiManager.unban(logger, null, args);
+                Unban.exec(plugin, logger, null, args);
                 break;
             case CmdManager.INFO:
-                plugin.apiManager.info(logger, null, args);
+                Info.exec(plugin, logger, null, args);
                 break;
             default:
                 logger.sendMessage(null, "Invalid command.");

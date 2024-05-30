@@ -1,12 +1,14 @@
 
 package com.rock_mc.syn.event;
 
+import com.rock_mc.syn.api.Ban;
 import com.rock_mc.syn.event.pluginevent.KickEvent;
 import com.rock_mc.syn.log.LoggerPlugin;
 import com.rock_mc.syn.Syn;
 import com.rock_mc.syn.config.Config;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
@@ -52,16 +54,28 @@ public class WaitVerify extends Thread {
         }
 
         if (player.isOnline()) {
-            String eventMessage;
+            String kickMsg;
             if (!plugin.dbManager.isPlayerInAllowList(player.getUniqueId().toString())) {
-                eventMessage = "未通過認證，請取得驗證碼後，參考官網教學輸入驗證碼";
-                Event event = new KickEvent(true, player, eventMessage);
+
+                Event event;
 
                 failTime = plugin.dbManager.getFailedAttempts(player.getUniqueId().toString());
-                plugin.dbManager.updateFailedAttempts(player.getUniqueId().toString(), failTime + 1);
+                if (failTime >= MAX_INPUT_CODE_TIMES) {
 
-                LOG_PLUGIN.broadcast(player.getDisplayName() + " 沒有通過驗證，被請出伺服器了...");
-                Bukkit.getPluginManager().callEvent(event);
+                    int banDays = plugin.getConfig().getInt(Config.INPUT_CODE_BAN_DAYS);
+
+                    Ban.exec(plugin, LOG_PLUGIN, null, player.getName(), "7d", "請取得驗證碼後，參考官網輸入驗證碼方式，伺服器暫時凍結登入");
+
+                    plugin.dbManager.updateFailedAttempts(player.getUniqueId().toString(), 1);
+                } else {
+                    plugin.dbManager.updateFailedAttempts(player.getUniqueId().toString(), failTime + 1);
+
+                    kickMsg = "未通過認證，請取得驗證碼後，參考官網教學輸入驗證碼";
+                    event = new KickEvent(true, player, kickMsg);
+                    Bukkit.getPluginManager().callEvent(event);
+                }
+
+                LOG_PLUGIN.broadcast(player.getDisplayName() + " 沒有正確回答女神 " + ChatColor.RED + Syn.APP_NAME + ChatColor.WHITE + " 的問題，被請出伺服器了...");
             }
         }
         plugin.freezePlayerMap.remove(player.getUniqueId());

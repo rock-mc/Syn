@@ -36,14 +36,14 @@ public class CmdExecutor implements CommandExecutor, TabCompleter {
 
         switch (commandName) {
             case "help", "":
-                plugin.apiManager.help(logger, player);
+                Help.exec(plugin, logger, player);
                 break;
             case CmdManager.VERIFY:
-                plugin.apiManager.verify(logger, player, args);
+                Verify.exec(plugin, logger, player, args);
                 break;
             case CmdManager.GENCODE:
 
-                String [] codes = plugin.apiManager.genCode(logger, player, args);
+                String [] codes = GenCode.exec(plugin, logger, player, args);
 
                 if (codes == null) {
                     return true;
@@ -68,16 +68,16 @@ public class CmdExecutor implements CommandExecutor, TabCompleter {
                 logger.sendMessage(player, stringBuilder.toString().trim());
                 break;
             case CmdManager.GUEST:
-                plugin.apiManager.guest(logger, player);
+                Guest.exec(plugin, logger, player);
                 break;
             case CmdManager.BAN:
-                plugin.apiManager.ban(logger, player, args);
+                Ban.exec(plugin, logger, player, args);
                 break;
             case CmdManager.UNBAN:
-                plugin.apiManager.unban(logger, player, args);
+                Unban.exec(plugin, logger, player, args);
                 break;
             case CmdManager.INFO:
-                plugin.apiManager.info(logger, player, args);
+                Info.exec(plugin, logger, player, args);
                 break;
             default:
                 logger.sendMessage(player, "Invalid command.");

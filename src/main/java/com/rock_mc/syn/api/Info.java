@@ -16,19 +16,34 @@ public class Info {
 
     public static void exec(Syn plugin, Logger logger, Player player, String playerName) {
 
-        PluginPlayerInfo pluginPlayerInfo = plugin.dbManager.getPlayerByName(playerName);
-        if (pluginPlayerInfo == null) {
-            logger.sendMessage(player, "查無此玩家" + playerName);
+        synchronized (Syn.apiLock) {
+            PluginPlayerInfo pluginPlayerInfo = plugin.dbManager.getPlayerByName(playerName);
+            if (pluginPlayerInfo == null) {
+                logger.sendMessage(player, "查無此玩家" + playerName);
+                logger.sendMessage(player, plugin.cmdManager.getCmd(commandName).usage);
+                return;
+            }
+
+            logger.sendMessage(player, plugin.getDescription().getVersion());
+            logger.sendMessage(player, "使用者: " + ChatColor.GREEN + playerName);
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+
+            logger.sendMessage(player, "最近登入" + sdf.format(pluginPlayerInfo.getLast_login()));
+            logger.sendMessage(player, "加入時間" + sdf.format(pluginPlayerInfo.getCreated_at()));
+        }
+    }
+
+    public static void exec(Syn plugin, Logger logger, Player player, String[] args) {
+
+        if (args.length > 2) {
+            logger.sendMessage(player, "Invalid number of arguments.");
             logger.sendMessage(player, plugin.cmdManager.getCmd(commandName).usage);
             return;
         }
 
-        logger.sendMessage(player, plugin.getDescription().getVersion());
-        logger.sendMessage(player, "使用者: " + ChatColor.GREEN + playerName);
+        String playerName = args[1];
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-
-        logger.sendMessage(player, "最近登入" + sdf.format(pluginPlayerInfo.getLast_login()));
-        logger.sendMessage(player, "加入時間" + sdf.format(pluginPlayerInfo.getCreated_at()));
+        exec(plugin, logger, player, playerName);
     }
 }

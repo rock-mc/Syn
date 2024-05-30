@@ -1,6 +1,5 @@
 package com.rock_mc.syn;
 
-import com.rock_mc.syn.api.ApiManager;
 import com.rock_mc.syn.command.CmdManager;
 import com.rock_mc.syn.config.ConfigManager;
 import com.rock_mc.syn.db.DbManager;
@@ -27,7 +26,8 @@ public class Syn extends JavaPlugin {
 
     public CmdManager cmdManager;
     public LogManager logManager;
-    public ApiManager apiManager;
+
+    public static final Object apiLock = new Object();
 
     String ANSI_ART = """
             ███████╗██╗   ██╗███╗   ██╗
@@ -47,8 +47,6 @@ public class Syn extends JavaPlugin {
 
             dbManager = new DbManager(this);
             dbManager.load();
-
-            apiManager = new ApiManager(this);
 
         } catch (Exception e) {
             Bukkit.getLogger().severe(e.getMessage());

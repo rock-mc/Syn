@@ -12,20 +12,34 @@ public class Unban {
 
     public static boolean exec(Syn plugin, Logger logger, Player player, String bannedPlayerName) {
 
-        if (plugin.cmdManager.lacksPermission(player, commandName)) {
-            logger.sendMessage(player, "You don't have permission to use this command.");
+        synchronized (Syn.apiLock) {
+            if (plugin.cmdManager.lacksPermission(player, commandName)) {
+                logger.sendMessage(player, "You don't have permission to use this command.");
+                return false;
+            }
+
+            PluginPlayerInfo unblockPlayer = plugin.dbManager.getPlayerByName(bannedPlayerName);
+            if (unblockPlayer == null) {
+                logger.sendMessage(player, "查無此玩家: " + bannedPlayerName);
+                return false;
+            }
+
+            plugin.dbManager.removePlayerBannedList(unblockPlayer.getPlayer_uuid());
+
+            logger.sendMessage(player, "將使用者移出禁止名單" + ChatColor.GREEN + bannedPlayerName);
+            return true;
+        }
+    }
+
+    public static boolean exec(Syn plugin, Logger logger, Player player, String[] args) {
+        if (args.length != 2) {
+            logger.sendMessage(player, "Invalid number of arguments.");
+            logger.sendMessage(player, plugin.cmdManager.getCmd(CmdManager.UNBAN).usage);
             return false;
         }
 
-        PluginPlayerInfo unblockPlayer = plugin.dbManager.getPlayerByName(bannedPlayerName);
-        if (unblockPlayer == null) {
-            logger.sendMessage(player, "查無此玩家: " + bannedPlayerName);
-            return false;
-        }
+        String bannedPlayerName = args[1];
 
-        plugin.dbManager.removePlayerBannedList(unblockPlayer.getPlayer_uuid());
-
-        logger.sendMessage(player, "將使用者移出禁止名單" + ChatColor.GREEN + bannedPlayerName);
-        return true;
+        return exec(plugin, logger, player, bannedPlayerName);
     }
 }
