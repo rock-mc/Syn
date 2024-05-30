@@ -67,9 +67,9 @@ public class EventListener implements Listener {
 
         String kickMsg;
         if (banedSecs == 0) {
-            kickMsg = "抱歉！你是永久黑名單。";
+            kickMsg = "抱歉！你是永久禁止名單。";
         } else {
-            kickMsg = "抱歉！你被列為黑名單！\n刑期尚有 ";
+            kickMsg = "抱歉！你被列為禁止名單！\n刑期尚有 ";
             long expiryTime = banedSecs + bannedCreateAtSecs;
             expiryTime -= now;
             kickMsg += Utils.timeToStr(expiryTime);
