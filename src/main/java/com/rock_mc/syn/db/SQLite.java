@@ -1,6 +1,6 @@
 package com.rock_mc.syn.db;
 
-import com.rock_mc.syn.log.LogPlugin;
+import com.rock_mc.syn.log.LoggerPlugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -9,7 +9,7 @@ import java.sql.*;
 public class SQLite extends Database {
     private final JavaPlugin plugin;
 
-    private static final LogPlugin LOG_PLUGIN = new LogPlugin();
+    private static final LoggerPlugin LOG_PLUGIN = new LoggerPlugin();
 
     public SQLite(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -390,7 +390,7 @@ public class SQLite extends Database {
 
 
     @Override
-    public PlayerInfo getPlayerByName(String playerName) {
+    public PluginPlayerInfo getPlayerByName(String playerName) {
         // Check if the code is used
         try (Connection connection = getConnection()) {
             PreparedStatement statement = connection.prepareStatement("""
@@ -403,7 +403,7 @@ public class SQLite extends Database {
             statement.setString(1, playerName);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                return new PlayerInfo(
+                return new PluginPlayerInfo(
                         resultSet.getString("player_uuid"),
                         resultSet.getString("player_name"),
                         resultSet.getTimestamp("last_login"),

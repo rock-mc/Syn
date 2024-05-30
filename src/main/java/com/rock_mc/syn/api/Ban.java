@@ -2,10 +2,10 @@ package com.rock_mc.syn.api;
 
 import com.rock_mc.syn.Syn;
 import com.rock_mc.syn.command.CmdManager;
-import com.rock_mc.syn.db.PlayerInfo;
+import com.rock_mc.syn.db.PluginPlayerInfo;
+import com.rock_mc.syn.log.Logger;
 import com.rock_mc.syn.utlis.Utils;
 import com.rock_mc.syn.event.pluginevent.KickEvent;
-import com.rock_mc.syn.log.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -17,63 +17,41 @@ public class Ban {
 
     private final static String commandName = CmdManager.BAN;
 
-    public static void run(Syn plugin, Log log, Player player, String[] args) {
+    public static boolean exec(Syn plugin, Logger logger, Player player, String banPlayerName, String reason, Long banSecs) {
         if (plugin.cmdManager.lacksPermission(player, commandName)) {
-            log.sendMessage(player, "You don't have permission to use this command.");
-            return;
+            logger.sendMessage(player, "You don't have permission to use this command.");
+            return false;
         }
 
-        String blockPlayerName = args[1];
-        log.sendMessage(player, "將使用者加入黑名單" + ChatColor.RED + blockPlayerName);
-
-        int blockDay = 0;
-        if (args.length >= 3) {
-            blockDay = Integer.parseInt(args[2]);
-        }
-        int blockHour = 0;
-        if (args.length >= 4) {
-            blockHour = Integer.parseInt(args[3]);
-        }
-        int blockMin = 0;
-        if (args.length >= 5) {
-            blockMin = Integer.parseInt(args[4]);
-        }
-        int blockSec = 0;
-        if (args.length == 6) {
-            blockSec = Integer.parseInt(args[5]);
+        PluginPlayerInfo pluginPlayerInfo = plugin.dbManager.getPlayerByName(banPlayerName);
+        if (pluginPlayerInfo == null) {
+            logger.sendMessage(player, "查無此玩家: " + banPlayerName);
+            logger.sendMessage(player, plugin.cmdManager.getCmd(commandName).usage);
+            return false;
         }
 
-        PlayerInfo playerInfo = plugin.dbManager.getPlayerByName(blockPlayerName);
-        if (playerInfo == null) {
-            log.sendMessage(player, "查無此玩家" + blockPlayerName);
-            return;
-        }
+        reason = (reason == null ? "Admin Ban" : reason);
 
-        plugin.dbManager.addPlayerToBannedList(playerInfo.getPlayer_uuid(),
-                "Admin Ban",
-                blockDay * 24 * 60 * 60L + blockHour * 60 * 60L + blockMin * 60L + blockSec);
+        plugin.dbManager.addPlayerToBannedList(pluginPlayerInfo.getPlayer_uuid(), reason, banSecs);
+        plugin.dbManager.removePlayerFailedList(pluginPlayerInfo.getPlayer_uuid());
 
-        plugin.dbManager.removePlayerFailedList(playerInfo.getPlayer_uuid());
-
-        OfflinePlayer blockPlayer = Bukkit.getOfflinePlayer(playerInfo.getUUID());
-        if (blockPlayer.isOnline()) {
+        if (Bukkit.getOfflinePlayer(pluginPlayerInfo.getUUID()).isOnline()) {
             // 如果在線上踢掉
             // 順便告訴他刑期，很棒吧
             String blockMsg;
-            if (blockDay == 0 && blockHour == 0 && blockMin == 0 && blockSec == 0) {
-                blockMsg = "抱歉，你已經被永久加入黑名單";
+            if (banSecs == 0) {
+                blockMsg = "你被永久加入黑名單";
             } else {
-                blockMsg = "抱歉，你已經被加入黑名單，刑期 ";
-                blockMsg += Utils.timeToStr(blockDay, blockHour, blockMin, blockSec);
+                blockMsg = "你被加入黑名單，刑期 " + Utils.timeToStr(banSecs);
             }
 
-            Player banPlayer = Bukkit.getPlayer(playerInfo.getUUID());
+            Player banPlayer = Bukkit.getPlayer(pluginPlayerInfo.getUUID());
 
             Event event = new KickEvent(false, banPlayer, blockMsg);
             Bukkit.getPluginManager().callEvent(event);
         }
 
-        log.sendMessage(player, "執行狀態" + ChatColor.GREEN + "完成");
-
+        logger.sendMessage(player, "將使用者加入黑名單" + ChatColor.RED + banPlayerName);
+        return true;
     }
 }

@@ -5,7 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-public class LogPlugin implements Log {
+public class LoggerPlugin implements Logger {
     public static final String PREFIX_GAME = "[" + ChatColor.GOLD + Syn.APP_NAME + ChatColor.WHITE + "] ";
     public static final String PREFIX_SERVER = "[" + Syn.APP_NAME + "] ";
 

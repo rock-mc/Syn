@@ -3,10 +3,10 @@ package com.rock_mc.syn.event;
 import com.rock_mc.syn.Syn;
 import com.rock_mc.syn.api.*;
 import com.rock_mc.syn.log.LogManager;
+import com.rock_mc.syn.log.Logger;
 import com.rock_mc.syn.utlis.Utils;
 import com.rock_mc.syn.command.*;
 import com.rock_mc.syn.config.Config;
-import com.rock_mc.syn.log.LogDiscord;
 import github.scarsz.discordsrv.DiscordSRV;
 import github.scarsz.discordsrv.api.ListenerPriority;
 import github.scarsz.discordsrv.api.Subscribe;
@@ -46,33 +46,51 @@ public class DiscordListener implements Listener {
             return;
         }
 
-        LogDiscord Log = LogManager.LOG_DISCORD;
+        Logger logger = LogManager.LOG_DISCORD;
 
         String cmdLine = event.getMessage().getContentDisplay().trim();
 
-        if (cmdLine.equals(CmdManager.SYN) || Utils.matchCommand(cmdLine, "help")) {
-            Help.run(plugin, Log, null);
+        if (!cmdLine.startsWith(CmdManager.SYN)) {
+            return;
+        }
+        cmdLine = cmdLine.substring(CmdManager.SYN.length()).trim();
 
-        } else if (Utils.matchCommand(cmdLine, CmdManager.VERIFY)) {
-            Log.send("請進入遊戲中輸入驗證碼。");
+        String commandName = Utils.extractCommand(plugin.cmdManager.getCmdList(), cmdLine);
+        String[] args = cmdLine.split(" ");
 
-        } else if (Utils.matchCommand(cmdLine, CmdManager.GENCODE)) {
-            GenCode.run(plugin, Log, null, Utils.extractArgs(CmdManager.GENCODE, cmdLine));
+        switch (commandName) {
+            case "help", "":
+                plugin.apiManager.help(logger, null);
+                break;
+            case CmdManager.VERIFY:
+                plugin.apiManager.verify(logger, null, args);
+                break;
+            case CmdManager.GENCODE:
+                String[] codes = plugin.apiManager.genCode(logger, null, args);
 
-        } else if (Utils.matchCommand(cmdLine, CmdManager.INFO)) {
-            Info.run(plugin, Log, null, Utils.extractArgs(CmdManager.INFO, cmdLine));
+                if (codes == null) {
+                    return;
+                }
 
-        } else if (Utils.matchCommand(cmdLine, CmdManager.BAN)) {
-            Ban.run(plugin, Log, null, Utils.extractArgs(CmdManager.BAN, cmdLine));
-
-        } else if (Utils.matchCommand(cmdLine, CmdManager.UNBAN)) {
-            Unban.run(plugin, Log, null, Utils.extractArgs(CmdManager.UNBAN, cmdLine));
-
-        } else if (Utils.matchCommand(cmdLine, CmdManager.GUEST)) {
-            Guest.run(plugin, Log, null, Utils.extractArgs(CmdManager.GUEST, cmdLine));
-
-        } else if (Utils.matchCommand(cmdLine, CmdManager.LOG)) {
-            Guest.run(plugin, Log, null, Utils.extractArgs(CmdManager.LOG, cmdLine));
+                for (String code : codes) {
+                    logger.sendMessage(null, code);
+                }
+                break;
+            case CmdManager.GUEST:
+                plugin.apiManager.guest(logger, null);
+                break;
+            case CmdManager.BAN:
+                plugin.apiManager.ban(logger, null, args);
+                break;
+            case CmdManager.UNBAN:
+                plugin.apiManager.unban(logger, null, args);
+                break;
+            case CmdManager.INFO:
+                plugin.apiManager.info(logger, null, args);
+                break;
+            default:
+                logger.sendMessage(null, "Invalid command.");
+                break;
         }
     }
 }

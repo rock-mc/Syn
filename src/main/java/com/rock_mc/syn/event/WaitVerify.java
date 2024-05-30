@@ -2,7 +2,7 @@
 package com.rock_mc.syn.event;
 
 import com.rock_mc.syn.event.pluginevent.KickEvent;
-import com.rock_mc.syn.log.LogPlugin;
+import com.rock_mc.syn.log.LoggerPlugin;
 import com.rock_mc.syn.Syn;
 import com.rock_mc.syn.config.Config;
 
@@ -13,7 +13,7 @@ import org.bukkit.event.Event;
 public class WaitVerify extends Thread {
 
     private final Syn plugin;
-    private static final LogPlugin LOG_PLUGIN = new LogPlugin();
+    private static final LoggerPlugin LOG_PLUGIN = new LoggerPlugin();
     private final Player player;
     private final float CHECK_TIME = 0.1F;
     private int MAX_WAIT_INPUT_CODE_SECONDS = 0;

@@ -2,7 +2,7 @@ package com.rock_mc.syn.event;
 
 import com.rock_mc.syn.event.pluginevent.JoinEvent;
 import com.rock_mc.syn.event.pluginevent.KickEvent;
-import com.rock_mc.syn.log.LogPlugin;
+import com.rock_mc.syn.log.LoggerPlugin;
 import com.rock_mc.syn.Syn;
 import com.rock_mc.syn.utlis.Utils;
 
@@ -31,7 +31,7 @@ public class EventListener implements Listener {
         this.plugin = plugin;
     }
 
-    private static final LogPlugin LOG_PLUGIN = new LogPlugin();
+    private static final LoggerPlugin LOG_PLUGIN = new LoggerPlugin();
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerLogin(PlayerLoginEvent event) throws IOException {

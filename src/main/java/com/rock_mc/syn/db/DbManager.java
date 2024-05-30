@@ -170,7 +170,7 @@ public class DbManager {
             }
         }
     }
-    public PlayerInfo getPlayerByName(String playerName) {
+    public PluginPlayerInfo getPlayerByName(String playerName) {
         synchronized (lock) {
             return this.database.getPlayerByName(playerName);
         }

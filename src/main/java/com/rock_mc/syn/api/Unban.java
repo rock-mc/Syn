@@ -2,28 +2,30 @@ package com.rock_mc.syn.api;
 
 import com.rock_mc.syn.Syn;
 import com.rock_mc.syn.command.CmdManager;
-import com.rock_mc.syn.db.PlayerInfo;
-import com.rock_mc.syn.log.Log;
+import com.rock_mc.syn.db.PluginPlayerInfo;
+import com.rock_mc.syn.log.Logger;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 
 public class Unban {
     private final static String commandName = CmdManager.UNBAN;
 
-    public static void run(Syn plugin, Log log, Player player, String[] args) {
-        String unblockPlayerName = args[1];
-        log.sendMessage(player, "將使用者移出黑名單" + ChatColor.GREEN + unblockPlayerName);
+    public static boolean exec(Syn plugin, Logger logger, Player player, String bannedPlayerName) {
 
+        if (plugin.cmdManager.lacksPermission(player, commandName)) {
+            logger.sendMessage(player, "You don't have permission to use this command.");
+            return false;
+        }
 
-        PlayerInfo unblockPlayer = plugin.dbManager.getPlayerByName(unblockPlayerName);
+        PluginPlayerInfo unblockPlayer = plugin.dbManager.getPlayerByName(bannedPlayerName);
         if (unblockPlayer == null) {
-            log.sendMessage(player, "查無此玩家" + unblockPlayerName);
-            return;
+            logger.sendMessage(player, "查無此玩家: " + bannedPlayerName);
+            return false;
         }
 
         plugin.dbManager.removePlayerBannedList(unblockPlayer.getPlayer_uuid());
 
-        log.sendMessage(player, "執行狀態" + ChatColor.GREEN + "完成");
-
+        logger.sendMessage(player, "將使用者移出黑名單" + ChatColor.GREEN + bannedPlayerName);
+        return true;
     }
 }

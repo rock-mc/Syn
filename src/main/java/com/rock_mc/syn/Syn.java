@@ -1,5 +1,6 @@
 package com.rock_mc.syn;
 
+import com.rock_mc.syn.api.ApiManager;
 import com.rock_mc.syn.command.CmdManager;
 import com.rock_mc.syn.config.ConfigManager;
 import com.rock_mc.syn.db.DbManager;
@@ -26,14 +27,15 @@ public class Syn extends JavaPlugin {
 
     public CmdManager cmdManager;
     public LogManager logManager;
+    public ApiManager apiManager;
 
     String ANSI_ART = """
-███████╗██╗   ██╗███╗   ██╗
-██╔════╝╚██╗ ██╔╝████╗  ██║
-███████╗ ╚████╔╝ ██╔██╗ ██║
-╚════██║  ╚██╔╝  ██║╚██╗██║
-███████║   ██║   ██║ ╚████║
-╚══════╝   ╚═╝   ╚═╝  ╚═══╝""";
+            ███████╗██╗   ██╗███╗   ██╗
+            ██╔════╝╚██╗ ██╔╝████╗  ██║
+            ███████╗ ╚████╔╝ ██╔██╗ ██║
+            ╚════██║  ╚██╔╝  ██║╚██╗██║
+            ███████║   ██║   ██║ ╚████║
+            ╚══════╝   ╚═╝   ╚═╝  ╚═══╝""";
     // ANSI Shadow
 
     @Override
@@ -45,6 +47,8 @@ public class Syn extends JavaPlugin {
 
             dbManager = new DbManager(this);
             dbManager.load();
+
+            apiManager = new ApiManager(this);
 
         } catch (Exception e) {
             Bukkit.getLogger().severe(e.getMessage());
@@ -73,7 +77,7 @@ public class Syn extends JavaPlugin {
             // DiscordSRV is not enabled.
         }
 
-        Objects.requireNonNull(getCommand(APP_NAME.toLowerCase()))
+        Objects.requireNonNull(getCommand(CmdManager.SYN))
                 .setExecutor(new CmdExecutor(this));
 
         for (String line : ANSI_ART.split("\n")) {
@@ -90,5 +94,7 @@ public class Syn extends JavaPlugin {
         for (String line : ANSI_ART.split("\n")) {
             Bukkit.getLogger().info(line);
         }
+        // show plugin version
+        Bukkit.getLogger().info("Plugin " + APP_NAME + " v" + getDescription().getVersion() + " is disabled.");
     }
 }
