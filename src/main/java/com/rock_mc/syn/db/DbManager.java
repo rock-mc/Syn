@@ -14,6 +14,10 @@ public class DbManager {
 
     private final Map<String, Boolean> codeCache = new HashMap<>();
     private final Map<String, Boolean> playerAllowCache = new HashMap<>();
+    private final Map<String, Long> bannedExpireTimeCache = new HashMap<>();
+    private final Map<String, String> playerAddCache = new HashMap<>();
+    private final Map<String, PluginPlayerInfo> playerInfoCache = new HashMap<>();
+
 
     public DbManager(Syn plugin) {
         this.plugin = plugin;
@@ -120,7 +124,17 @@ public class DbManager {
 
     public long getBannedExpireTime(String playerUUID) {
         synchronized (dbLock) {
-            return this.database.getBannedExpireTime(playerUUID);
+            // 先從緩存中獲取
+            Long expireTime = bannedExpireTimeCache.get(playerUUID);
+            if (expireTime != null) {
+                return expireTime;
+            }
+
+            long time = this.database.getBannedExpireTime(playerUUID);
+
+            bannedExpireTimeCache.put(playerUUID, time);
+
+            return time;
         }
     }
 
@@ -138,21 +152,29 @@ public class DbManager {
 
     public void addPlayerInfo(String playerUUID, String playerName) {
         synchronized (dbLock) {
+            if (playerAddCache.containsKey(playerUUID) && playerAddCache.get(playerUUID).equals(playerName)) {
+                return;
+            }
+
             this.database.addPlayerInfo(playerUUID, playerName);
+            playerAddCache.put(playerUUID, playerName);
         }
     }
 
     public void addPlayerToBannedList(String playerUUID, String reason, long time) {
         synchronized (dbLock) {
             this.database.addBanedPlayer(playerUUID, reason, time);
+            bannedExpireTimeCache.put(playerUUID, time);
         }
     }
 
     public void removePlayerBannedList(String playerUUID) {
         synchronized (dbLock) {
             this.database.removeBanedPlayer(playerUUID);
+            bannedExpireTimeCache.remove(playerUUID);
         }
     }
+
     public void removePlayerFailedList(String playerUUID) {
         synchronized (dbLock) {
             this.database.removeFailedPlayer(playerUUID);
@@ -170,9 +192,21 @@ public class DbManager {
             }
         }
     }
+
     public PluginPlayerInfo getPlayerByName(String playerName) {
         synchronized (dbLock) {
-            return this.database.getPlayerByName(playerName);
+
+            PluginPlayerInfo playerInfo = playerInfoCache.get(playerName);
+            if (playerInfo != null) {
+                return playerInfo;
+            }
+
+            playerInfo = this.database.getPlayerByName(playerName);
+            if (playerInfo != null) {
+                playerInfoCache.put(playerName, playerInfo);
+            }
+
+            return playerInfo;
         }
     }
 }

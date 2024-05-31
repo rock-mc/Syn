@@ -42,10 +42,6 @@ public class EventListener implements Listener {
         // 進來就建立玩家資料
         plugin.dbManager.addPlayerInfo(uuid, name);
 
-        if (plugin.dbManager.isPlayerInAllowList(uuid)) {
-            return;
-        }
-
         // get expire_time from db
         long banedSecs = plugin.dbManager.getBannedExpireTime(uuid);
         if (banedSecs == -1) {
