@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.util.List;
 import java.util.Objects;
 
 public class ConfigManager {
@@ -145,6 +146,15 @@ public class ConfigManager {
                 valid = false;
             }
             else if (config.getInt(Config.MAX_INPUT_CODE_TIMES) < 1) {
+                valid = false;
+            }
+        }
+
+        if (config.get(Config.WELCOME) == null) {
+            valid = false;
+        }
+        else {
+            if (!(config.get(Config.WELCOME) instanceof List)) {
                 valid = false;
             }
         }

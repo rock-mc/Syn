@@ -14,6 +14,7 @@ public class DbManager {
 
     private final Map<String, Boolean> codeCache = new HashMap<>();
     private final Map<String, Boolean> playerAllowCache = new HashMap<>();
+    private final Map<String, Boolean> playerBannedCache = new HashMap<>();
     private final Map<String, Long> bannedExpireTimeCache = new HashMap<>();
     private final Map<String, String> playerAddCache = new HashMap<>();
     private final Map<String, PluginPlayerInfo> playerInfoCache = new HashMap<>();
@@ -98,6 +99,18 @@ public class DbManager {
             } else {
                 boolean allowed = this.database.isPlayerAllowed(playerUUID);
                 playerAllowCache.put(playerUUID, allowed);
+                return allowed;
+            }
+        }
+    }
+
+    public boolean isPlayerInBannedList(String playerUUID) {
+        synchronized (dbLock) {
+            if (playerBannedCache.containsKey(playerUUID)) {
+                return playerBannedCache.get(playerUUID);
+            } else {
+                boolean allowed = this.database.isPlayerAllowed(playerUUID);
+                playerBannedCache.put(playerUUID, allowed);
                 return allowed;
             }
         }

@@ -23,6 +23,7 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.io.IOException;
+import java.util.List;
 
 public class EventListener implements Listener {
     private final Syn plugin;
@@ -42,13 +43,25 @@ public class EventListener implements Listener {
         // 進來就建立玩家資料
         plugin.dbManager.addPlayerInfo(uuid, name);
 
-        // get expire_time from db
+        if (!plugin.dbManager.isPlayerInBannedList(uuid)) {
+            // Player is not banned
+            event.allow();
+            return;
+        }
+
+        // check ban time is expired or not
         long banedSecs = plugin.dbManager.getBannedExpireTime(uuid);
         if (banedSecs == -1) {
             // Player is not banned
             // Guest
+            event.allow();
+
+            LOG_PLUGIN.logWarning("Player " + name + " is in banned list but expire time is not set.");
             return;
         }
+
+        // the player is banned and the ban time is not expired
+        // calculate how long is left
 
         String bannedCreateAtDate = plugin.dbManager.getBannedCreateAt(uuid);
 
@@ -58,6 +71,7 @@ public class EventListener implements Listener {
         long now = java.time.Instant.now().getEpochSecond();
         if (now > banedSecs + bannedCreateAtSecs) {
             plugin.dbManager.removePlayerBannedList(uuid);
+            event.allow();
             return;
         }
 
@@ -81,6 +95,8 @@ public class EventListener implements Listener {
         final String name = player.getDisplayName();
         final String uuid = player.getUniqueId().toString();
 
+        List<String> welcome = plugin.configManager.getConfig().getStringList(Config.WELCOME);
+
         String opWelcomeMsg = "管理員 " + ChatColor.GOLD + "" + ChatColor.BOLD + name + ChatColor.WHITE + " 取得女神 " + ChatColor.RED + Syn.APP_NAME + ChatColor.WHITE + " 的允許進入伺服器並得到了女神祝福";
         if (plugin.dbManager.isPlayerInAllowList(uuid)) {
             if (player.isOp()) {
@@ -88,15 +104,16 @@ public class EventListener implements Listener {
             } else {
                 LOG_PLUGIN.broadcast("玩家 " + ChatColor.BOLD + name + ChatColor.WHITE + " 取得女神 " + ChatColor.RED + Syn.APP_NAME + ChatColor.WHITE + " 的允許進入伺服器。");
             }
-            return;
+
+            LOG_PLUGIN.sendMessage(player, "女神 " + ChatColor.RED + Syn.APP_NAME + ChatColor.WHITE + " 輕輕地在你耳邊說：\n" + welcome.get((int) (Math.random() * welcome.size())));
         }
         else if (player.isOp()) {
             plugin.dbManager.addPlayerToAllowList(uuid);
             LOG_PLUGIN.broadcast(opWelcomeMsg);
-            return;
-        }
 
-        if (plugin.configManager.getConfig().getBoolean(Config.GUEST)) {
+            LOG_PLUGIN.sendMessage(player, "女神 " + ChatColor.RED + Syn.APP_NAME + ChatColor.WHITE + " 輕輕地在你耳邊說：\n" + welcome.get((int) (Math.random() * welcome.size())));
+        }
+        else if (plugin.configManager.getConfig().getBoolean(Config.GUEST)) {
             LOG_PLUGIN.logInfo("Guest mode is enabled");
             LOG_PLUGIN.broadcast("訪客玩家 " + ChatColor.BOLD + name + ChatColor.WHITE + " 取得女神 " + ChatColor.RED + Syn.APP_NAME + ChatColor.WHITE + " 的暫時允許進入伺服器。");
         }

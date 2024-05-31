@@ -104,6 +104,7 @@ public class Verify {
             // Mark the verification code as used
             plugin.dbManager.markCode(code, player.getUniqueId().toString());
             plugin.freezePlayerMap.remove(player.getUniqueId());
+            plugin.dbManager.removePlayerFailedList(player.getUniqueId().toString());
 
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                 Event joinEvent = new JoinEvent(true, player, "歡迎 " + ChatColor.YELLOW + player.getDisplayName() + ChatColor.WHITE + " 全新加入!");

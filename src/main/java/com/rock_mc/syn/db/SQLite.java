@@ -246,6 +246,20 @@ public class SQLite extends Database {
     }
 
     @Override
+    public boolean isPlayerBanned(String playerUUID) {
+        // Check if the player is banned
+        try (Connection connection = getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("SELECT player_uuid FROM baned_players WHERE player_uuid = ?");
+            statement.setString(1, playerUUID);
+            ResultSet resultSet = statement.executeQuery();
+            return resultSet.next();
+        } catch (SQLException e) {
+            LOG_PLUGIN.logWarning("Could not check if the player is banned: " + e.getMessage());
+        }
+        return false;
+    }
+
+    @Override
     public void updateFailedAttempts(String playerUUID, int failedAttempts) {
         // Update the number of failed attempts of the player
         try (Connection connection = getConnection()) {

@@ -18,15 +18,21 @@ public class Unban {
                 return false;
             }
 
-            PluginPlayerInfo unblockPlayer = plugin.dbManager.getPlayerByName(bannedPlayerName);
-            if (unblockPlayer == null) {
+            PluginPlayerInfo unbanPlayer = plugin.dbManager.getPlayerByName(bannedPlayerName);
+            if (unbanPlayer == null) {
                 logger.sendMessage(player, "查無此玩家: " + bannedPlayerName);
                 return false;
             }
 
-            plugin.dbManager.removePlayerBannedList(unblockPlayer.getPlayer_uuid());
+            if (!plugin.dbManager.isPlayerInBannedList(unbanPlayer.getPlayer_uuid())) {
+                logger.sendMessage(player, "使用者不在禁止名單中: " + ChatColor.RED + bannedPlayerName);
+                return false;
+            }
 
-            logger.sendMessage(player, "將使用者移出禁止名單" + ChatColor.GREEN + bannedPlayerName);
+            plugin.dbManager.removePlayerBannedList(unbanPlayer.getPlayer_uuid());
+            plugin.dbManager.removePlayerFailedList(player.getUniqueId().toString());
+
+            logger.sendMessage(player, "將使用者移出禁止名單: " + ChatColor.GREEN + bannedPlayerName);
             return true;
         }
     }
