@@ -4,9 +4,11 @@ import com.rock_mc.syn.Syn;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerJoinEvent;
 
 public class LoggerPlugin implements Logger {
-    public static final String PREFIX_GAME = "[" + ChatColor.GOLD + Syn.APP_NAME + ChatColor.WHITE + "] ";
+//    public static final String PREFIX_GAME = "[" + ChatColor.BOLD + Syn.APP_NAME + ChatColor.RESET + "] ";
+    public static final String PREFIX_GAME = "";
     public static final String PREFIX_SERVER = "[" + Syn.APP_NAME + "] ";
 
     @Override
@@ -21,7 +23,10 @@ public class LoggerPlugin implements Logger {
     }
 
     public void broadcast(String message) {
-        Bukkit.broadcastMessage(PREFIX_GAME + message);
+//        Bukkit.broadcastMessage(PREFIX_GAME + message);
+        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+            player.sendMessage(PREFIX_GAME + message);
+        }
     }
 
     // use Bukkit.getConsoleSender() to reply messages on console. the messages could be tested.

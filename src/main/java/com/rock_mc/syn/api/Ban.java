@@ -4,6 +4,7 @@ import com.rock_mc.syn.Syn;
 import com.rock_mc.syn.command.CmdManager;
 import com.rock_mc.syn.db.PluginPlayerInfo;
 import com.rock_mc.syn.event.pluginevent.KickEvent;
+import com.rock_mc.syn.event.pluginevent.PluginEventSender;
 import com.rock_mc.syn.log.Logger;
 import com.rock_mc.syn.utlis.Utils;
 import org.bukkit.Bukkit;
@@ -49,8 +50,7 @@ public class Ban {
 
                 Player banPlayer = Bukkit.getPlayer(pluginPlayerInfo.getUUID());
 
-                Event kickEvent = new KickEvent(false, banPlayer, banMsg);
-                Bukkit.getPluginManager().callEvent(kickEvent);
+                PluginEventSender.sendKickEvent(banPlayer, banMsg);
             }
 
             logger.sendMessage(player, "將使用者加入禁止名單: " + ChatColor.RED + banPlayerName);

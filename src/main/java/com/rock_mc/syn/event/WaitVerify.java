@@ -3,9 +3,8 @@ package com.rock_mc.syn.event;
 import com.rock_mc.syn.Syn;
 import com.rock_mc.syn.api.Ban;
 import com.rock_mc.syn.config.Config;
-import com.rock_mc.syn.event.pluginevent.KickEvent;
+import com.rock_mc.syn.event.pluginevent.PluginEventSender;
 import com.rock_mc.syn.log.LoggerPlugin;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -29,10 +28,11 @@ public class WaitVerify extends Thread {
 
     @Override
     public void run() {
-        LOG_PLUGIN.sendMessage(player, "請在 " + MAX_WAIT_INPUT_CODE_SECONDS + " 秒內輸入驗證碼");
+        LOG_PLUGIN.sendMessage(player, "女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 正守護著通往磐石的入口。她雙目炯炯有神，手持大斧，氣宇軒昂。世人若想進入磐石，就必須通過她的考驗與允許。");
+        LOG_PLUGIN.sendMessage(player, "女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 問道：「你是誰？你有創世神給你的 " + ChatColor.BOLD + "" + ChatColor.GOLD + "驗證碼" + ChatColor.RESET + " 嗎？」");
 
         int failTime = plugin.dbManager.getFailedAttempts(player.getUniqueId().toString());
-        LOG_PLUGIN.sendMessage(player, "您有 " + (MAX_INPUT_CODE_TIMES - (failTime - 1)) + " 次輸入機會");
+        LOG_PLUGIN.sendMessage(player, "女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + "：「最好趕快回答，你有 " + (MAX_INPUT_CODE_TIMES - (failTime - 1)) + " 次機會。」");
 
         long sleepTime = (long) (1000 * CHECK_TIME);
         for (int i = 0; i * CHECK_TIME < MAX_WAIT_INPUT_CODE_SECONDS; i++) {
@@ -52,10 +52,7 @@ public class WaitVerify extends Thread {
         }
 
         if (player.isOnline()) {
-            String kickMsg;
             if (!plugin.dbManager.isPlayerInAllowList(player.getUniqueId().toString())) {
-
-                Event event;
 
                 failTime = plugin.dbManager.getFailedAttempts(player.getUniqueId().toString());
                 if (failTime >= MAX_INPUT_CODE_TIMES) {
@@ -66,12 +63,10 @@ public class WaitVerify extends Thread {
                 } else {
                     plugin.dbManager.updateFailedAttempts(player.getUniqueId().toString(), failTime + 1);
 
-                    kickMsg = "未通過認證，請取得驗證碼後，參考官網教學輸入驗證碼";
-                    event = new KickEvent(true, player, kickMsg);
-                    Bukkit.getPluginManager().callEvent(event);
+                    PluginEventSender.sendKickEvent(player, "未通過認證，請取得驗證碼後，參考官網教學輸入驗證碼");
                 }
 
-                LOG_PLUGIN.broadcast(player.getDisplayName() + " 沒有正確回答女神 " + ChatColor.RED + Syn.APP_NAME + ChatColor.WHITE + " 的問題，被請出伺服器了...");
+                LOG_PLUGIN.broadcast(player.getDisplayName() + " 沒有正確回答女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 的問題，被請出伺服器了...");
             }
         }
         plugin.freezePlayerMap.remove(player.getUniqueId());
