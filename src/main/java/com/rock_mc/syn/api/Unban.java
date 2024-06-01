@@ -30,7 +30,7 @@ public class Unban {
             }
 
             plugin.dbManager.removePlayerBannedList(unbanPlayer.getPlayer_uuid());
-            plugin.dbManager.removePlayerFailedList(player.getUniqueId().toString());
+            plugin.dbManager.removePlayerFailedList(unbanPlayer.getPlayer_uuid());
 
             logger.sendMessage(player, "將使用者移出禁止名單: " + ChatColor.GREEN + bannedPlayerName);
             return true;

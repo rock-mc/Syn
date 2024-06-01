@@ -64,6 +64,6 @@ syn:
 
   # Database setting
   database:
-      # The database type, currently only support sqlite
-      # The default value is sqlite
-      type: sqlite
+    # The database type, currently only support sqlite
+    # The default value is sqlite
+    type: sqlite

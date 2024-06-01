@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CmdExecutor implements CommandExecutor, TabCompleter {
@@ -43,7 +44,7 @@ public class CmdExecutor implements CommandExecutor, TabCompleter {
                 break;
             case CmdManager.GENCODE:
 
-                String [] codes = GenCode.exec(plugin, logger, player, args);
+                String[] codes = GenCode.exec(plugin, logger, player, args);
 
                 if (codes == null) {
                     return true;
@@ -98,14 +99,12 @@ public class CmdExecutor implements CommandExecutor, TabCompleter {
             player = tempPlayer;
         }
 
-        if (!plugin.dbManager.isPlayerInAllowList(player.getUniqueId().toString())) {
-
+        if (player != null && !plugin.dbManager.isPlayerInAllowList(player.getUniqueId().toString())) {
             tab = new ArrayList<>(List.of(CmdManager.VERIFY));
-
         } else if (args.length == 1) {
             tab = new ArrayList<>();
             for (String cmd : allCmds) {
-                if (plugin.cmdManager.getCmd(cmd).permission != null && !player.hasPermission(plugin.cmdManager.getCmd(cmd).permission)) {
+                if (player != null && plugin.cmdManager.getCmd(cmd).permission != null && !player.hasPermission(plugin.cmdManager.getCmd(cmd).permission)) {
                     continue;
                 }
                 if (cmd.startsWith(args[0])) {
@@ -115,11 +114,27 @@ public class CmdExecutor implements CommandExecutor, TabCompleter {
             return tab;
         } else if (args.length == 2) {
             if (CmdManager.GENCODE.equals(args[0])) {
-                tab = new ArrayList<>(List.of("1", "3", "5"));
+                tab = new ArrayList<>(List.of("1", "2", "3"));
             } else if (CmdManager.VERIFY.equals(args[0])) {
                 tab = new ArrayList<>(List.of("code"));
             } else if (CmdManager.GUEST.equals(args[0])) {
                 tab = new ArrayList<>();
+            } else if (CmdManager.BAN.equals(args[0])) {
+                tab = new ArrayList<>();
+
+                // list all players
+                for (Player p : plugin.getServer().getOnlinePlayers()) {
+                    tab.add(p.getName());
+                }
+            } else if (CmdManager.UNBAN.equals(args[0])) {
+
+                String [] bannedPlayerNames = plugin.dbManager.getBannedPlayerList();
+
+                if (bannedPlayerNames != null) {
+                    tab = new ArrayList<>(Arrays.asList(bannedPlayerNames));
+                } else {
+                    tab = new ArrayList<>(List.of());
+                }
             }
             // TODO: Add more tab complete
         }

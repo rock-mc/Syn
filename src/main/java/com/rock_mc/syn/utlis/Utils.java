@@ -1,7 +1,6 @@
 package com.rock_mc.syn.utlis;
 
 import com.rock_mc.syn.command.CmdManager;
-import org.jetbrains.annotations.NotNull;
 
 public class Utils {
 
@@ -36,7 +35,7 @@ public class Utils {
     static final int HOUR = 60 * MIN;
     static final int DAY = 24 * HOUR;
 
-    public static String timeToStr(long expiryTime){
+    public static String timeToStr(long expiryTime) {
         long day = expiryTime / DAY;
         expiryTime %= DAY;
         long hour = expiryTime / HOUR;
@@ -48,42 +47,39 @@ public class Utils {
         return timeToStr(day, hour, min, sec);
     }
 
-    public static String timeToStr(long day, long hour, long min, long sec){
+    public static String timeToStr(long day, long hour, long min, long sec) {
         String result = null;
-        if(day > 0){
+        if (day > 0) {
             result = day + " 天";
         }
-        if(hour > 0){
-            if (result == null){
+        if (hour > 0) {
+            if (result == null) {
                 result = hour + " 小時";
-            }
-            else {
+            } else {
                 result += " " + hour + " 小時";
             }
         }
-        if(min > 0){
-            if(result == null){
+        if (min > 0) {
+            if (result == null) {
                 result = min + " 分鐘";
-            }
-            else{
+            } else {
                 result += " " + min + " 分鐘";
             }
         }
-        if(sec > 0){
-            if (result == null){
+        if (sec > 0) {
+            if (result == null) {
                 result = sec + " 秒";
-            }
-            else{
+            } else {
                 result += " " + sec + " 秒";
             }
         }
-        if (result == null){
+        if (result == null) {
             result = "∞";
         }
         return result;
     }
 
-    public static long strToTime(String timeStr){
+    public static long strToTime(String timeStr) {
         // timeStr is in the format of xyxdxhxmxs
         // x is a number
         // y is a letter, y, d, h, m, s
@@ -93,7 +89,7 @@ public class Utils {
         // xm is the number of minutes
         // xs is the number of seconds
 
-        if (!isValidCode("0123456789ydhms", timeStr.length(), timeStr)){
+        if (!isValidCode("0123456789ydhms", timeStr.length(), timeStr)) {
             return -1;
         }
 

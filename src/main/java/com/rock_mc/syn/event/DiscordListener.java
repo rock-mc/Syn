@@ -2,11 +2,11 @@ package com.rock_mc.syn.event;
 
 import com.rock_mc.syn.Syn;
 import com.rock_mc.syn.api.*;
+import com.rock_mc.syn.command.CmdManager;
+import com.rock_mc.syn.config.Config;
 import com.rock_mc.syn.log.LogManager;
 import com.rock_mc.syn.log.Logger;
 import com.rock_mc.syn.utlis.Utils;
-import com.rock_mc.syn.command.*;
-import com.rock_mc.syn.config.Config;
 import github.scarsz.discordsrv.DiscordSRV;
 import github.scarsz.discordsrv.api.ListenerPriority;
 import github.scarsz.discordsrv.api.Subscribe;

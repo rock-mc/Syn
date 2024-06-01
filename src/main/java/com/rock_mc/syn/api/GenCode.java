@@ -2,16 +2,16 @@ package com.rock_mc.syn.api;
 
 import com.rock_mc.syn.Syn;
 import com.rock_mc.syn.command.CmdManager;
+import com.rock_mc.syn.config.Config;
 import com.rock_mc.syn.log.Logger;
 import com.rock_mc.syn.utlis.Utils;
-import com.rock_mc.syn.config.Config;
 import org.bukkit.entity.Player;
 
 public class GenCode {
 
     private final static String commandName = CmdManager.GENCODE;
 
-    public static String [] exec(Syn plugin, Logger logger, Player player, int codeNum) {
+    public static String[] exec(Syn plugin, Logger logger, Player player, int codeNum) {
 
         synchronized (Syn.apiLock) {
 
@@ -52,7 +52,7 @@ public class GenCode {
         }
     }
 
-    public static String [] exec(Syn plugin, Logger logger, Player player, String [] args) {
+    public static String[] exec(Syn plugin, Logger logger, Player player, String[] args) {
         int codeNum;
         if (args.length == 1) {
             codeNum = 1;

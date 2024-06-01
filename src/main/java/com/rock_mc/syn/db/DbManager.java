@@ -109,9 +109,9 @@ public class DbManager {
             if (playerBannedCache.containsKey(playerUUID)) {
                 return playerBannedCache.get(playerUUID);
             } else {
-                boolean allowed = this.database.isPlayerAllowed(playerUUID);
-                playerBannedCache.put(playerUUID, allowed);
-                return allowed;
+                boolean banned = this.database.isPlayerBanned(playerUUID);
+                playerBannedCache.put(playerUUID, banned);
+                return banned;
             }
         }
     }
@@ -178,6 +178,7 @@ public class DbManager {
         synchronized (dbLock) {
             this.database.addBanedPlayer(playerUUID, reason, time);
             bannedExpireTimeCache.put(playerUUID, time);
+            playerBannedCache.put(playerUUID, true);
         }
     }
 
@@ -185,6 +186,7 @@ public class DbManager {
         synchronized (dbLock) {
             this.database.removeBanedPlayer(playerUUID);
             bannedExpireTimeCache.remove(playerUUID);
+            playerBannedCache.remove(playerUUID);
         }
     }
 
@@ -220,6 +222,12 @@ public class DbManager {
             }
 
             return playerInfo;
+        }
+    }
+
+    public String [] getBannedPlayerList() {
+        synchronized (dbLock) {
+            return this.database.getBannedPlayerList();
         }
     }
 }

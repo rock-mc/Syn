@@ -1,12 +1,10 @@
-
 package com.rock_mc.syn.event;
 
+import com.rock_mc.syn.Syn;
 import com.rock_mc.syn.api.Ban;
+import com.rock_mc.syn.config.Config;
 import com.rock_mc.syn.event.pluginevent.KickEvent;
 import com.rock_mc.syn.log.LoggerPlugin;
-import com.rock_mc.syn.Syn;
-import com.rock_mc.syn.config.Config;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

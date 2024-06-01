@@ -48,4 +48,6 @@ public abstract class Database {
     public abstract void updateFailedAttempts(String playerUUID, int failedAttempts);
 
     public abstract PluginPlayerInfo getPlayerByName(String playerName);
+
+    public abstract String [] getBannedPlayerList();
 }

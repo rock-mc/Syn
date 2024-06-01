@@ -3,12 +3,11 @@ package com.rock_mc.syn.api;
 import com.rock_mc.syn.Syn;
 import com.rock_mc.syn.command.CmdManager;
 import com.rock_mc.syn.db.PluginPlayerInfo;
+import com.rock_mc.syn.event.pluginevent.KickEvent;
 import com.rock_mc.syn.log.Logger;
 import com.rock_mc.syn.utlis.Utils;
-import com.rock_mc.syn.event.pluginevent.KickEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
@@ -50,13 +49,11 @@ public class Ban {
 
                 Player banPlayer = Bukkit.getPlayer(pluginPlayerInfo.getUUID());
 
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                    Event kickEvent = new KickEvent(true, banPlayer, banMsg);
-                    Bukkit.getPluginManager().callEvent(kickEvent);
-                });
+                Event kickEvent = new KickEvent(false, banPlayer, banMsg);
+                Bukkit.getPluginManager().callEvent(kickEvent);
             }
 
-            logger.sendMessage(player, "將使用者加入禁止名單" + ChatColor.RED + banPlayerName);
+            logger.sendMessage(player, "將使用者加入禁止名單: " + ChatColor.RED + banPlayerName);
             return true;
         }
     }

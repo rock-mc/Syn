@@ -2,11 +2,11 @@ package com.rock_mc.syn.api;
 
 import com.rock_mc.syn.Syn;
 import com.rock_mc.syn.command.CmdManager;
-import com.rock_mc.syn.log.Logger;
-import com.rock_mc.syn.utlis.Utils;
 import com.rock_mc.syn.config.Config;
 import com.rock_mc.syn.event.pluginevent.JoinEvent;
 import com.rock_mc.syn.event.pluginevent.KickEvent;
+import com.rock_mc.syn.log.Logger;
+import com.rock_mc.syn.utlis.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -52,10 +52,8 @@ public class Verify {
                 plugin.dbManager.addPlayerToBannedList(player.getUniqueId().toString(), banReason, banedSec);
                 plugin.dbManager.removePlayerFailedList(player.getUniqueId().toString());
 
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                    Event kickEvent = new KickEvent(true, player, message);
-                    Bukkit.getPluginManager().callEvent(kickEvent);
-                });
+                Event kickEvent = new KickEvent(false, player, message);
+                Bukkit.getPluginManager().callEvent(kickEvent);
 
                 return false;
             } else {
@@ -106,10 +104,8 @@ public class Verify {
             plugin.freezePlayerMap.remove(player.getUniqueId());
             plugin.dbManager.removePlayerFailedList(player.getUniqueId().toString());
 
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                Event joinEvent = new JoinEvent(true, player, "歡迎 " + ChatColor.YELLOW + player.getDisplayName() + ChatColor.WHITE + " 全新加入!");
-                Bukkit.getPluginManager().callEvent(joinEvent);
-            });
+            Event joinEvent = new JoinEvent(false, player, "歡迎 " + ChatColor.YELLOW + player.getDisplayName() + ChatColor.WHITE + " 全新加入!");
+            Bukkit.getPluginManager().callEvent(joinEvent);
 
             return true;
         }

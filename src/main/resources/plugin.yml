@@ -64,5 +64,5 @@ permissions:
     description: Allows you to check the log of the player
     default: op
 
-softdepend: [DiscordSRV]
+softdepend: [ DiscordSRV ]
 folia-supported: true

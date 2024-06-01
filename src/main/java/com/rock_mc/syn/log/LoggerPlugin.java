@@ -25,10 +25,14 @@ public class LoggerPlugin implements Logger {
     }
 
     // use Bukkit.getConsoleSender() to reply messages on console. the messages could be tested.
-    public void sendMessage(String message) { Bukkit.getConsoleSender().sendMessage(PREFIX_SERVER + message); }
+    public void sendMessage(String message) {
+        Bukkit.getConsoleSender().sendMessage(PREFIX_SERVER + message);
+    }
 
     // use Bukkit.getLogger() for different system level logs
-    public void logInfo(String message) { Bukkit.getLogger().info(PREFIX_SERVER + message); }
+    public void logInfo(String message) {
+        Bukkit.getLogger().info(PREFIX_SERVER + message);
+    }
 
     public void logWarning(String message) {
         Bukkit.getLogger().warning(PREFIX_SERVER + message);

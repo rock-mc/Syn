@@ -1,13 +1,11 @@
 package com.rock_mc.syn.event;
 
+import com.rock_mc.syn.Syn;
+import com.rock_mc.syn.config.Config;
 import com.rock_mc.syn.event.pluginevent.JoinEvent;
 import com.rock_mc.syn.event.pluginevent.KickEvent;
 import com.rock_mc.syn.log.LoggerPlugin;
-import com.rock_mc.syn.Syn;
 import com.rock_mc.syn.utlis.Utils;
-
-import com.rock_mc.syn.config.Config;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
@@ -45,6 +43,7 @@ public class EventListener implements Listener {
 
         if (!plugin.dbManager.isPlayerInBannedList(uuid)) {
             // Player is not banned
+            LOG_PLUGIN.logInfo("Player " + name + " is not in banned list.");
             event.allow();
             return;
         }
@@ -69,8 +68,9 @@ public class EventListener implements Listener {
         long bannedCreateAtSecs = java.time.LocalDateTime.parse(bannedCreateAtDate, java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).toEpochSecond(java.time.ZoneOffset.UTC);
 
         long now = java.time.Instant.now().getEpochSecond();
-        if (now > banedSecs + bannedCreateAtSecs) {
+        if (banedSecs != 0 && now > banedSecs + bannedCreateAtSecs) {
             plugin.dbManager.removePlayerBannedList(uuid);
+            LOG_PLUGIN.logInfo("Player " + name + " is removed from banned list.");
             event.allow();
             return;
         }
@@ -106,18 +106,15 @@ public class EventListener implements Listener {
             }
 
             LOG_PLUGIN.sendMessage(player, "女神 " + ChatColor.RED + Syn.APP_NAME + ChatColor.WHITE + " 輕輕地在你耳邊說：\n" + welcome.get((int) (Math.random() * welcome.size())));
-        }
-        else if (player.isOp()) {
+        } else if (player.isOp()) {
             plugin.dbManager.addPlayerToAllowList(uuid);
             LOG_PLUGIN.broadcast(opWelcomeMsg);
 
             LOG_PLUGIN.sendMessage(player, "女神 " + ChatColor.RED + Syn.APP_NAME + ChatColor.WHITE + " 輕輕地在你耳邊說：\n" + welcome.get((int) (Math.random() * welcome.size())));
-        }
-        else if (plugin.configManager.getConfig().getBoolean(Config.GUEST)) {
+        } else if (plugin.configManager.getConfig().getBoolean(Config.GUEST)) {
             LOG_PLUGIN.logInfo("Guest mode is enabled");
             LOG_PLUGIN.broadcast("訪客玩家 " + ChatColor.BOLD + name + ChatColor.WHITE + " 取得女神 " + ChatColor.RED + Syn.APP_NAME + ChatColor.WHITE + " 的暫時允許進入伺服器。");
-        }
-        else {
+        } else {
             LOG_PLUGIN.logInfo("Player " + name + " is not verified, freeze player.");
 
             Location location = player.getLocation();
@@ -136,7 +133,7 @@ public class EventListener implements Listener {
     @EventHandler
     public void onPluginKick(KickEvent event) {
         Player player = event.getPlayer();
-        Bukkit.getScheduler().runTask(plugin, () -> player.kickPlayer(event.getMessage()));
+        player.kickPlayer(event.getMessage());
     }
 
     @EventHandler
