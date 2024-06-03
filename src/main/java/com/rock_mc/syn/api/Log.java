@@ -9,6 +9,8 @@ public class Log {
     private final static String commandName = CmdManager.LOG;
 
     public static void run(Syn plugin, Logger logger, Player player, String[] args) {
-        // TODO: syn log [time] [player] [page]
+        synchronized (Syn.apiLock) {
+            // TODO: syn log [time] [player] [page]
+        }
     }
 }

@@ -19,6 +19,8 @@ public abstract class Database {
 
     public abstract boolean isPlayerAllowed(String playerUUID);
 
+    public abstract boolean isPlayerBanned(String playerUUID);
+
     public abstract void removeCode(String code);
 
     public abstract int getFailedAttempts(String playerUUID);
@@ -46,4 +48,6 @@ public abstract class Database {
     public abstract void updateFailedAttempts(String playerUUID, int failedAttempts);
 
     public abstract PluginPlayerInfo getPlayerByName(String playerName);
+
+    public abstract String [] getBannedPlayerList();
 }

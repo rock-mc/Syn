@@ -1,6 +1,5 @@
 package com.rock_mc.syn;
 
-import com.rock_mc.syn.api.ApiManager;
 import com.rock_mc.syn.command.CmdManager;
 import com.rock_mc.syn.config.ConfigManager;
 import com.rock_mc.syn.db.DbManager;
@@ -27,7 +26,9 @@ public class Syn extends JavaPlugin {
 
     public CmdManager cmdManager;
     public LogManager logManager;
-    public ApiManager apiManager;
+
+    public static final Object apiLock = new Object();
+    public boolean isFolia;
 
     String ANSI_ART = """
             ███████╗██╗   ██╗███╗   ██╗
@@ -42,13 +43,18 @@ public class Syn extends JavaPlugin {
     public void onEnable() {
 
         try {
+            Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
+            isFolia = true;
+        } catch (ClassNotFoundException e) {
+            isFolia = false;
+        }
+
+        try {
             configManager = new ConfigManager(this);
             configManager.load();
 
             dbManager = new DbManager(this);
             dbManager.load();
-
-            apiManager = new ApiManager(this);
 
         } catch (Exception e) {
             Bukkit.getLogger().severe(e.getMessage());

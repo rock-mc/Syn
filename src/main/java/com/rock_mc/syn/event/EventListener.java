@@ -1,13 +1,12 @@
 package com.rock_mc.syn.event;
 
+import com.rock_mc.syn.Syn;
+import com.rock_mc.syn.config.Config;
 import com.rock_mc.syn.event.pluginevent.JoinEvent;
 import com.rock_mc.syn.event.pluginevent.KickEvent;
+import com.rock_mc.syn.log.LogManager;
 import com.rock_mc.syn.log.LoggerPlugin;
-import com.rock_mc.syn.Syn;
 import com.rock_mc.syn.utlis.Utils;
-
-import com.rock_mc.syn.config.Config;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
@@ -23,15 +22,19 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import java.io.IOException;
+import java.util.List;
 
 public class EventListener implements Listener {
     private final Syn plugin;
 
+    private LoggerPlugin LOG_PLUGIN;
+
     public EventListener(Syn plugin) {
         this.plugin = plugin;
+
+        LOG_PLUGIN = LogManager.LOG_PLUGIN;
     }
 
-    private static final LoggerPlugin LOG_PLUGIN = new LoggerPlugin();
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerLogin(PlayerLoginEvent event) throws IOException {
@@ -42,17 +45,26 @@ public class EventListener implements Listener {
         // 進來就建立玩家資料
         plugin.dbManager.addPlayerInfo(uuid, name);
 
-        if (plugin.dbManager.isPlayerInAllowList(uuid)) {
+        if (!plugin.dbManager.isPlayerInBannedList(uuid)) {
+            // Player is not banned
+            LOG_PLUGIN.logInfo("Player " + name + " is not in banned list.");
+            event.allow();
             return;
         }
 
-        // get expire_time from db
+        // check ban time is expired or not
         long banedSecs = plugin.dbManager.getBannedExpireTime(uuid);
         if (banedSecs == -1) {
             // Player is not banned
             // Guest
+            event.allow();
+
+            LOG_PLUGIN.logWarning("Player " + name + " is in banned list but expire time is not set.");
             return;
         }
+
+        // the player is banned and the ban time is not expired
+        // calculate how long is left
 
         String bannedCreateAtDate = plugin.dbManager.getBannedCreateAt(uuid);
 
@@ -60,16 +72,18 @@ public class EventListener implements Listener {
         long bannedCreateAtSecs = java.time.LocalDateTime.parse(bannedCreateAtDate, java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).toEpochSecond(java.time.ZoneOffset.UTC);
 
         long now = java.time.Instant.now().getEpochSecond();
-        if (now > banedSecs + bannedCreateAtSecs) {
+        if (banedSecs != 0 && now > banedSecs + bannedCreateAtSecs) {
             plugin.dbManager.removePlayerBannedList(uuid);
+            LOG_PLUGIN.logInfo("Player " + name + " is removed from banned list.");
+            event.allow();
             return;
         }
 
         String kickMsg;
         if (banedSecs == 0) {
-            kickMsg = "抱歉！你是永久黑名單。";
+            kickMsg = "抱歉！你是永久禁止名單。";
         } else {
-            kickMsg = "抱歉！你被列為黑名單！\n刑期尚有 ";
+            kickMsg = "抱歉！你被列為禁止名單！\n刑期尚有 ";
             long expiryTime = banedSecs + bannedCreateAtSecs;
             expiryTime -= now;
             kickMsg += Utils.timeToStr(expiryTime);
@@ -85,26 +99,26 @@ public class EventListener implements Listener {
         final String name = player.getDisplayName();
         final String uuid = player.getUniqueId().toString();
 
-        String opWelcomeMsg = "管理員 " + ChatColor.GOLD + "" + ChatColor.BOLD + name + ChatColor.WHITE + " 取得女神 " + ChatColor.RED + Syn.APP_NAME + ChatColor.WHITE + " 的允許進入伺服器並得到了女神祝福";
+        List<String> welcome = plugin.configManager.getConfig().getStringList(Config.WELCOME);
+
+        String opWelcomeMsg = "管理員 " + ChatColor.DARK_RED + "" + ChatColor.BOLD + name + ChatColor.RESET + " 取得女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 的允許進入伺服器並得到了女神祝福";
         if (plugin.dbManager.isPlayerInAllowList(uuid)) {
             if (player.isOp()) {
-                LOG_PLUGIN.broadcast(opWelcomeMsg);
+                event.setJoinMessage(LoggerPlugin.PREFIX_GAME + opWelcomeMsg);
             } else {
-                LOG_PLUGIN.broadcast("玩家 " + ChatColor.BOLD + name + ChatColor.WHITE + " 取得女神 " + ChatColor.RED + Syn.APP_NAME + ChatColor.WHITE + " 的允許進入伺服器。");
+                event.setJoinMessage(LoggerPlugin.PREFIX_GAME + "玩家 " + ChatColor.GREEN + "" + ChatColor.BOLD + name + ChatColor.RESET + " 取得女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 的允許進入伺服器。");
             }
-            return;
-        }
-        else if (player.isOp()) {
-            plugin.dbManager.addPlayerToAllowList(uuid);
-            LOG_PLUGIN.broadcast(opWelcomeMsg);
-            return;
-        }
 
-        if (plugin.configManager.getConfig().getBoolean(Config.GUEST)) {
+            LOG_PLUGIN.sendMessage(player, "女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 輕輕地在你耳邊說：\n" + welcome.get((int) (Math.random() * welcome.size())));
+        } else if (player.isOp()) {
+            plugin.dbManager.addPlayerToAllowList(uuid);
+
+            event.setJoinMessage(LoggerPlugin.PREFIX_GAME + opWelcomeMsg);
+            LOG_PLUGIN.sendMessage(player, "女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 輕輕地在你耳邊說：\n" + welcome.get((int) (Math.random() * welcome.size())));
+        } else if (plugin.configManager.getConfig().getBoolean(Config.GUEST)) {
             LOG_PLUGIN.logInfo("Guest mode is enabled");
-            LOG_PLUGIN.broadcast("訪客玩家 " + ChatColor.BOLD + name + ChatColor.WHITE + " 取得女神 " + ChatColor.RED + Syn.APP_NAME + ChatColor.WHITE + " 的暫時允許進入伺服器。");
-        }
-        else {
+            event.setJoinMessage(LoggerPlugin.PREFIX_GAME + "訪客玩家 " + ChatColor.BOLD + name + ChatColor.RESET + " 取得女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 的暫時允許進入伺服器。");
+        } else {
             LOG_PLUGIN.logInfo("Player " + name + " is not verified, freeze player.");
 
             Location location = player.getLocation();
@@ -123,7 +137,7 @@ public class EventListener implements Listener {
     @EventHandler
     public void onPluginKick(KickEvent event) {
         Player player = event.getPlayer();
-        Bukkit.getScheduler().runTask(plugin, () -> player.kickPlayer(event.getMessage()));
+        player.kickPlayer(event.getMessage());
     }
 
     @EventHandler

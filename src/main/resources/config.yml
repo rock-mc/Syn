@@ -24,9 +24,10 @@ syn:
   code_length: 8
 
   # The expiration time of the verification code
-  # 0 means the verification code will never expire
-  # The default value is 14
-  expire_days: 14
+  # 0s means the verification code will never expire
+  # You can use the time unit: s, m, h, d, y
+  # The default value is 14d
+  expire_time: 14d
 
   # The max wait time of the input verification code
   # The default value is 60
@@ -37,8 +38,20 @@ syn:
   max_input_code_times: 3
 
   # The ban time of the player who input the wrong verification code too many times
-  # The default value is 1
-  input_code_ban_days: 1
+  # You can use the time unit: s, m, h, d, y
+  # The default value is 1d
+  input_code_ban_time: 1d
+
+  # The message when the player login
+  welcome:
+    - "親愛的孩子，歡迎來到我的國度。很高興看到你懷抱希望和夢想來到這裡。"
+    - "願你在磐石的旅程上披荊斬棘，達成心之所向。"
+    - "親愛的孩子，這片無盡的方塊國度，從此有了你的名字。在歷險的途中，願你不忘初心，用純粹的心靈去體悟世界的美好。"
+    - "願你在這片廣袤無垠的土地上找到心之所屬，或高山，或海洋，或柔軟的沙岸，都是你自由馳騁的歸處。"
+    - "當你踏上磐石大地的那一刻，我就在雲上微笑著凝視著你。我看見你眼中閃爍的光芒，那是對未知的嚮往，對冒險的渴望。"
+    - "願你在同行的朋友中找到真摯的情誼，在歡聲笑語中建起夢想的城堡，友誼的旗幟永遠在上空飄揚。"
+    - "讓我們攜手共進，在磐石的天空謳歌，直到時光的盡頭。我就在雲上默默守望，你的喜悅，就是我最大的欣慰。"
+    - "帶著我的祝福出發吧，祈願屬於你的傳奇，從此在這個世界中永恆閃耀。"
 
   # The clear time of the expired verification code
   # 0 means the verification code will never clear
@@ -51,6 +64,6 @@ syn:
 
   # Database setting
   database:
-      # The database type, currently only support sqlite
-      # The default value is sqlite
-      type: sqlite
+    # The database type, currently only support sqlite
+    # The default value is sqlite
+    type: sqlite

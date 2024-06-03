@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 public class CmdManager {
     private final HashMap<String, Command> cmdMap;
-    
+
     public static final String SYN = "syn";
     public static final String VERIFY = "verify";
     public static final String GENCODE = "gencode";
@@ -15,10 +15,10 @@ public class CmdManager {
     public static final String UNBAN = "unban";
     public static final String GUEST = "guest";
     public static final String LOG = "log";
-    
+
     public CmdManager() {
         cmdMap = new HashMap<>();
-        
+
         cmdMap.put("syn", new Command("syn", "Show help of Syn", "/syn", null));
         cmdMap.put("verify", new Command("verify", "Input the verification code to verify player", "/syn verify <code>", Permission.VERIFY));
         cmdMap.put("gencode", new Command("gencode", "Generate verification code", "/syn gencode [number]", Permission.GENCODE));
@@ -34,7 +34,7 @@ public class CmdManager {
         return cmdMap.get(name);
     }
 
-    public String [] getCmdList() {
+    public String[] getCmdList() {
         return cmdMap.keySet().stream().sorted().toArray(String[]::new);
     }
 

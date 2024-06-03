@@ -5,6 +5,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SQLite extends Database {
     private final JavaPlugin plugin;
@@ -246,6 +248,20 @@ public class SQLite extends Database {
     }
 
     @Override
+    public boolean isPlayerBanned(String playerUUID) {
+        // Check if the player is banned
+        try (Connection connection = getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("SELECT player_uuid FROM baned_players WHERE player_uuid = ?");
+            statement.setString(1, playerUUID);
+            ResultSet resultSet = statement.executeQuery();
+            return resultSet.next();
+        } catch (SQLException e) {
+            LOG_PLUGIN.logWarning("Could not check if the player is banned: " + e.getMessage());
+        }
+        return false;
+    }
+
+    @Override
     public void updateFailedAttempts(String playerUUID, int failedAttempts) {
         // Update the number of failed attempts of the player
         try (Connection connection = getConnection()) {
@@ -314,6 +330,7 @@ public class SQLite extends Database {
             LOG_PLUGIN.logWarning("Could not remove baned player from the database: " + e.getMessage());
         }
     }
+
     @Override
     public void removeFailedPlayer(String playerUUID) {
         // Remove baned player from the database
@@ -394,12 +411,12 @@ public class SQLite extends Database {
         // Check if the code is used
         try (Connection connection = getConnection()) {
             PreparedStatement statement = connection.prepareStatement("""
-            SELECT player_uuid, 
-                   player_name, 
-                   last_login, 
-                   created_at
-            FROM player_info WHERE player_name = ?
-            """);
+                    SELECT player_uuid, 
+                           player_name, 
+                           last_login, 
+                           created_at
+                    FROM player_info WHERE player_name = ?
+                    """);
             statement.setString(1, playerName);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
@@ -412,6 +429,25 @@ public class SQLite extends Database {
             }
         } catch (SQLException e) {
             LOG_PLUGIN.logWarning("Could not find the player: " + playerName + " " + e.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public String[] getBannedPlayerList() {
+        // Get the name list of banned players
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(
+                     "SELECT player_name FROM player_info WHERE player_uuid IN (SELECT player_uuid FROM baned_players)"
+             )) {
+            ResultSet resultSet = statement.executeQuery();
+            List<String> bannedPlayers = new ArrayList<>();
+            while (resultSet.next()) {
+                bannedPlayers.add(resultSet.getString("player_name"));
+            }
+            return bannedPlayers.toArray(new String[0]);
+        } catch (SQLException e) {
+            LOG_PLUGIN.logWarning("Could not get the list of banned players: " + e.getMessage());
         }
         return null;
     }

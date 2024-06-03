@@ -6,12 +6,15 @@ import com.rock_mc.syn.command.CmdManager;
 import com.rock_mc.syn.config.Config;
 import com.rock_mc.syn.log.LogManager;
 import com.rock_mc.syn.log.Logger;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CmdExecutor implements CommandExecutor, TabCompleter {
@@ -22,7 +25,7 @@ public class CmdExecutor implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, org.bukkit.command.Command command, String commandLabel, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String commandLabel, @NotNull String[] args) {
 
         Player player = null;
         if (sender instanceof Player tempPlayer) {
@@ -34,14 +37,14 @@ public class CmdExecutor implements CommandExecutor, TabCompleter {
 
         switch (commandName) {
             case "help", "":
-                plugin.apiManager.help(logger, player);
+                Help.exec(plugin, logger, player);
                 break;
             case CmdManager.VERIFY:
-                plugin.apiManager.verify(logger, player, args);
+                Verify.exec(plugin, logger, player, args);
                 break;
             case CmdManager.GENCODE:
 
-                String [] codes = plugin.apiManager.genCode(logger, player, args);
+                String[] codes = GenCode.exec(plugin, logger, player, args);
 
                 if (codes == null) {
                     return true;
@@ -66,16 +69,16 @@ public class CmdExecutor implements CommandExecutor, TabCompleter {
                 logger.sendMessage(player, stringBuilder.toString().trim());
                 break;
             case CmdManager.GUEST:
-                plugin.apiManager.guest(logger, player);
+                Guest.exec(plugin, logger, player);
                 break;
             case CmdManager.BAN:
-                plugin.apiManager.ban(logger, player, args);
+                Ban.exec(plugin, logger, player, args);
                 break;
             case CmdManager.UNBAN:
-                plugin.apiManager.unban(logger, player, args);
+                Unban.exec(plugin, logger, player, args);
                 break;
             case CmdManager.INFO:
-                plugin.apiManager.info(logger, player, args);
+                Info.exec(plugin, logger, player, args);
                 break;
             default:
                 logger.sendMessage(player, "Invalid command.");
@@ -96,14 +99,12 @@ public class CmdExecutor implements CommandExecutor, TabCompleter {
             player = tempPlayer;
         }
 
-        if (!plugin.dbManager.isPlayerInAllowList(player.getUniqueId().toString())) {
-
+        if (player != null && !plugin.dbManager.isPlayerInAllowList(player.getUniqueId().toString())) {
             tab = new ArrayList<>(List.of(CmdManager.VERIFY));
-
         } else if (args.length == 1) {
             tab = new ArrayList<>();
             for (String cmd : allCmds) {
-                if (plugin.cmdManager.getCmd(cmd).permission != null && !player.hasPermission(plugin.cmdManager.getCmd(cmd).permission)) {
+                if (player != null && plugin.cmdManager.getCmd(cmd).permission != null && !player.hasPermission(plugin.cmdManager.getCmd(cmd).permission)) {
                     continue;
                 }
                 if (cmd.startsWith(args[0])) {
@@ -113,11 +114,27 @@ public class CmdExecutor implements CommandExecutor, TabCompleter {
             return tab;
         } else if (args.length == 2) {
             if (CmdManager.GENCODE.equals(args[0])) {
-                tab = new ArrayList<>(List.of("1", "3", "5"));
+                tab = new ArrayList<>(List.of("1", "2", "3"));
             } else if (CmdManager.VERIFY.equals(args[0])) {
                 tab = new ArrayList<>(List.of("code"));
             } else if (CmdManager.GUEST.equals(args[0])) {
                 tab = new ArrayList<>();
+            } else if (CmdManager.BAN.equals(args[0])) {
+                tab = new ArrayList<>();
+
+                // list all players
+                for (Player p : plugin.getServer().getOnlinePlayers()) {
+                    tab.add(p.getName());
+                }
+            } else if (CmdManager.UNBAN.equals(args[0])) {
+
+                String [] bannedPlayerNames = plugin.dbManager.getBannedPlayerList();
+
+                if (bannedPlayerNames != null) {
+                    tab = new ArrayList<>(Arrays.asList(bannedPlayerNames));
+                } else {
+                    tab = new ArrayList<>(List.of());
+                }
             }
             // TODO: Add more tab complete
         }
