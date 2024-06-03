@@ -11,8 +11,8 @@ public class PluginEventSender {
             Event joinEvent = new JoinEvent(false, player, message);
             Bukkit.getPluginManager().callEvent(joinEvent);
         } catch (java.lang.IllegalStateException e) {
-            Event joinEvent = new JoinEvent(true, player, message);
-            Bukkit.getPluginManager().callEvent(joinEvent);
+//            Event joinEvent = new JoinEvent(true, player, message);
+//            Bukkit.getPluginManager().callEvent(joinEvent);
         }
     }
 
@@ -21,8 +21,8 @@ public class PluginEventSender {
             Event kickEvent = new KickEvent(false, player, message);
             Bukkit.getPluginManager().callEvent(kickEvent);
         } catch (java.lang.IllegalStateException e) {
-            Event kickEvent = new KickEvent(true, player, message);
-            Bukkit.getPluginManager().callEvent(kickEvent);
+//            Event kickEvent = new KickEvent(true, player, message);
+//            Bukkit.getPluginManager().callEvent(kickEvent);
         }
     }
 }
