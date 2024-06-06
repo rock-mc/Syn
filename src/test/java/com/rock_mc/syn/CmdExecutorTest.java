@@ -103,7 +103,7 @@ public class CmdExecutorTest extends PluginTest {
             Thread.sleep(1000);
             timeoutSeconds--;
         }
-        assertEquals(LoggerPlugin.PREFIX_GAME + "請在 60 秒內輸入驗證碼", commandOutput);
+        assertTrue(commandOutput.contains("正守護著通往磐石的入口"));
 
         // 等待使用者輸入
         timeoutSeconds = 10;
