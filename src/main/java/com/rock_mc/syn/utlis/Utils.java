@@ -2,6 +2,8 @@ package com.rock_mc.syn.utlis;
 
 import com.rock_mc.syn.command.CmdManager;
 
+import java.util.Locale;
+
 public class Utils {
 
     public static String generateCode(String available_characters, int code_length) {
@@ -162,5 +164,99 @@ public class Utils {
 
         // starts with "syn" but not found in the command list
         return "";
+    }
+
+    // https://github.com/PlayPro/CoreProtect/blob/ca59ff25dfa5abf9b4f0537255a89ba8a3511db5/src/main/java/net/coreprotect/command/CommandHandler.java#L684
+    public static long[] parseTime(String[] inputArguments) {
+        String[] argumentArray = inputArguments.clone();
+        long timeStart = 0;
+        long timeEnd = 0;
+        int count = 0;
+        int next = 0;
+        boolean range = false;
+        double w = 0;
+        double d = 0;
+        double h = 0;
+        double m = 0;
+        double s = 0;
+        for (String argument : argumentArray) {
+            if (count > 0) {
+                argument = argument.trim().toLowerCase(Locale.ROOT);
+                argument = argument.replaceAll("\\\\", "");
+                argument = argument.replaceAll("'", "");
+
+                if (argument.equals("t:") || argument.equals("time:")) {
+                    next = 1;
+                } else if (next == 1 || argument.startsWith("t:") || argument.startsWith("time:")) {
+                    // time arguments
+                    argument = argument.replaceAll("time:", "");
+                    argument = argument.replaceAll("t:", "");
+                    argument = argument.replaceAll("y", "y:");
+                    argument = argument.replaceAll("m", "m:");
+                    argument = argument.replaceAll("w", "w:");
+                    argument = argument.replaceAll("d", "d:");
+                    argument = argument.replaceAll("h", "h:");
+                    argument = argument.replaceAll("s", "s:");
+                    range = argument.contains("-");
+
+                    int argCount = 0;
+                    String[] i2 = argument.split(":");
+                    for (String i3 : i2) {
+                        if (range && argCount > 0 && timeStart == 0 && i3.startsWith("-")) {
+                            timeStart = (long) (((w * 7 * 24 * 60 * 60) + (d * 24 * 60 * 60) + (h * 60 * 60) + (m * 60) + s));
+                            w = 0;
+                            d = 0;
+                            h = 0;
+                            m = 0;
+                            s = 0;
+                        }
+
+                        if (i3.endsWith("w") && w == 0) {
+                            String i4 = i3.replaceAll("[^0-9.]", "");
+                            if (i4.length() > 0 && i4.replaceAll("[^0-9]", "").length() > 0 && i4.indexOf('.') == i4.lastIndexOf('.')) {
+                                w = Double.parseDouble(i4);
+                            }
+                        } else if (i3.endsWith("d") && d == 0) {
+                            String i4 = i3.replaceAll("[^0-9.]", "");
+                            if (i4.length() > 0 && i4.replaceAll("[^0-9]", "").length() > 0 && i4.indexOf('.') == i4.lastIndexOf('.')) {
+                                d = Double.parseDouble(i4);
+                            }
+                        } else if (i3.endsWith("h") && h == 0) {
+                            String i4 = i3.replaceAll("[^0-9.]", "");
+                            if (i4.length() > 0 && i4.replaceAll("[^0-9]", "").length() > 0 && i4.indexOf('.') == i4.lastIndexOf('.')) {
+                                h = Double.parseDouble(i4);
+                            }
+                        } else if (i3.endsWith("m") && m == 0) {
+                            String i4 = i3.replaceAll("[^0-9.]", "");
+                            if (i4.length() > 0 && i4.replaceAll("[^0-9]", "").length() > 0 && i4.indexOf('.') == i4.lastIndexOf('.')) {
+                                m = Double.parseDouble(i4);
+                            }
+                        } else if (i3.endsWith("s") && s == 0) {
+                            String i4 = i3.replaceAll("[^0-9.]", "");
+                            if (i4.length() > 0 && i4.replaceAll("[^0-9]", "").length() > 0 && i4.indexOf('.') == i4.lastIndexOf('.')) {
+                                s = Double.parseDouble(i4);
+                            }
+                        }
+
+                        argCount++;
+                    }
+                    if (timeStart > 0) {
+                        timeEnd = (long) (((w * 7 * 24 * 60 * 60) + (d * 24 * 60 * 60) + (h * 60 * 60) + (m * 60) + s));
+                    } else {
+                        timeStart = (long) (((w * 7 * 24 * 60 * 60) + (d * 24 * 60 * 60) + (h * 60 * 60) + (m * 60) + s));
+                    }
+                    next = 0;
+                } else {
+                    next = 0;
+                }
+            }
+            count++;
+        }
+
+        if (timeEnd >= timeStart) {
+            return new long[]{timeEnd, timeStart};
+        } else {
+            return new long[]{timeStart, timeEnd};
+        }
     }
 }

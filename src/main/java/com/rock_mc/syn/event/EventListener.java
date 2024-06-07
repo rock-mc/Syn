@@ -101,6 +101,8 @@ public class EventListener implements Listener {
 
         List<String> welcome = plugin.configManager.getConfig().getStringList(Config.WELCOME);
 
+        plugin.dbManager.addLogEvent(uuid, "login");
+
         String opWelcomeMsg = "管理員 " + ChatColor.DARK_RED + "" + ChatColor.BOLD + name + ChatColor.RESET + " 取得女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 的允許進入伺服器並得到了女神祝福";
         if (plugin.dbManager.isPlayerInAllowList(uuid)) {
             if (player.isOp()) {

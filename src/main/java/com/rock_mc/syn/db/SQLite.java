@@ -1,5 +1,6 @@
 package com.rock_mc.syn.db;
 
+import com.google.common.collect.Lists;
 import com.rock_mc.syn.log.LoggerPlugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -135,6 +136,24 @@ public class SQLite extends Database {
             statement.execute("CREATE INDEX IF NOT EXISTS idx_failed_players_player_uuid ON failed_players (player_uuid)");
         } catch (SQLException e) {
             LOG_PLUGIN.logWarning("Could not create failed_players table or index: " + e.getMessage());
+        }
+
+        // Table: event_logs
+        // Create table if not exists
+        // id, Player uuid, event name, created time
+        // the event name: login, logout, ban, unban, etc.
+        // NULL in player uuid is server event
+
+        try (Statement statement = connection.createStatement()) {
+            statement.execute("CREATE TABLE IF NOT EXISTS event_logs (" +
+                    "id integer primary key autoincrement," +
+                    "player_uuid TEXT DEFAULT NULL," +
+                    "event_name TEXT DEFAULT NULL," +
+                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
+                    ")");
+
+        } catch (SQLException e) {
+            LOG_PLUGIN.logWarning("Could not create log table: " + e.getMessage());
         }
     }
 
@@ -450,6 +469,51 @@ public class SQLite extends Database {
             LOG_PLUGIN.logWarning("Could not get the list of banned players: " + e.getMessage());
         }
         return null;
+    }
+
+    @Override
+    public void addLogEvent(String playerUUID, String eventName) {
+        // Add baned player to the database
+        try (Connection connection = getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO event_logs (player_uuid, event_name) VALUES (?, ?)");
+
+            statement.setString(1, playerUUID);
+            statement.setString(2, eventName);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            LOG_PLUGIN.logWarning("Could not add event_logs to the database: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public List<EventLog> getLogEvents(String playerUUID, Timestamp start, Timestamp end) {
+        List<EventLog> eventLogs = Lists.newArrayList();
+        if (start == null) {
+            // default 3 months ago
+            start = new Timestamp(System.currentTimeMillis() - 3L * 30 * 24 * 60 * 60 * 1000);
+        }
+        if (end == null) {
+            end = new Timestamp(System.currentTimeMillis());
+        }
+
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(
+                     "SELECT * FROM event_logs WHERE (player_uuid = ? OR player_uuid IS NULL) AND created_at BETWEEN ? AND ?"
+             )) {
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                EventLog eventLog = new EventLog(
+                        resultSet.getLong("id"),
+                        resultSet.getString("player_uuid"),
+                        resultSet.getString("event_name"),
+                        resultSet.getTimestamp("created_at")
+                );
+                eventLogs.add(eventLog);
+            }
+        } catch (SQLException e) {
+            LOG_PLUGIN.logWarning("Could not get the list of banned players: " + e.getMessage());
+        }
+        return eventLogs;
     }
 
     @Override

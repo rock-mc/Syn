@@ -1,6 +1,9 @@
 package com.rock_mc.syn.db;
 
 
+import java.sql.Timestamp;
+import java.util.List;
+
 public abstract class Database {
 
     public abstract void load();
@@ -50,4 +53,8 @@ public abstract class Database {
     public abstract PluginPlayerInfo getPlayerByName(String playerName);
 
     public abstract String [] getBannedPlayerList();
+
+    public abstract void addLogEvent(String playerUUID, String eventName);
+
+    public abstract List<EventLog> getLogEvents(String playerUUID, Timestamp start, Timestamp end);
 }

@@ -230,4 +230,11 @@ public class DbManager {
             return this.database.getBannedPlayerList();
         }
     }
+
+
+    public void addLogEvent(String playerUUID, String eventName) {
+        synchronized (dbLock) {
+            this.database.addLogEvent(playerUUID, eventName);
+        }
+    }
 }
