@@ -45,12 +45,13 @@ public class SQLite extends Database {
         // created time is the time when the code is created
         // used is a boolean indicating whether the code has been used
         // the verification code, created time, and used are indexed
-        try (Statement statement = connection.createStatement()) {
-            statement.execute("CREATE TABLE IF NOT EXISTS verification_codes (" +
-                    "code TEXT PRIMARY KEY," +
-                    "player_used TEXT DEFAULT NULL," +
-                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
-                    ")");
+        try (Statement statement = connection.createStatement();) {
+			statement.execute("""
+					CREATE TABLE IF NOT EXISTS verification_codes (
+					    code TEXT PRIMARY KEY,
+					    player_used TEXT DEFAULT NULL,
+					    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP )
+					""");
 
             // Create indexes on code, created_at, and used columns
             statement.execute("CREATE INDEX IF NOT EXISTS idx_verification_codes_code ON verification_codes (code)");
@@ -66,13 +67,13 @@ public class SQLite extends Database {
         // created time is the time when the player is added
         // the player uuid is indexed
         try (Statement statement = connection.createStatement()) {
-            statement.execute("CREATE TABLE IF NOT EXISTS player_info (" +
-                    "player_uuid TEXT PRIMARY KEY," +
-                    "player_name TEXT NOT NULL," +
-                    "last_login TIMESTAMP," +
-                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
-                    ")");
-
+			statement.execute("""
+					CREATE TABLE IF NOT EXISTS player_info (
+					    player_uuid TEXT PRIMARY KEY,
+					    player_name TEXT NOT NULL,
+					    last_login TIMESTAMP,
+					    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP )
+					""");
             // Create index on player_uuid column
             statement.execute("CREATE INDEX IF NOT EXISTS idx_player_info_player_uuid ON player_info (player_uuid)");
         } catch (SQLException e) {
@@ -86,10 +87,11 @@ public class SQLite extends Database {
         // created time is the time when the player is added
         // the player uuid is indexed
         try (Statement statement = connection.createStatement()) {
-            statement.execute("CREATE TABLE IF NOT EXISTS allowed_players (" +
-                    "player_uuid TEXT PRIMARY KEY," +
-                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
-                    ")");
+			statement.execute("""
+					CREATE TABLE IF NOT EXISTS allowed_players (
+					    player_uuid TEXT PRIMARY KEY,
+					    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
+					""");
 
             // Create index on player_uuid column
             statement.execute("CREATE INDEX IF NOT EXISTS idx_allowed_players_player_uuid ON allowed_players (player_uuid)");
@@ -106,12 +108,13 @@ public class SQLite extends Database {
         // created time is the time when the player is added
         // the player uuid is indexed
         try (Statement statement = connection.createStatement()) {
-            statement.execute("CREATE TABLE IF NOT EXISTS baned_players (" +
-                    "player_uuid TEXT PRIMARY KEY," +
-                    "reason TEXT NOT NULL," +
-                    "expire_time INTEGER DEFAULT 0," +
-                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
-                    ")");
+			statement.execute("""
+					CREATE TABLE IF NOT EXISTS baned_players (
+					    player_uuid TEXT PRIMARY KEY,
+					    reason TEXT NOT NULL,
+					    expire_time INTEGER DEFAULT 0,
+					    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP )
+					""");
 
             // Create index on player_uuid column
             statement.execute("CREATE INDEX IF NOT EXISTS idx_baned_players_player_uuid ON baned_players (player_uuid)");
@@ -126,11 +129,12 @@ public class SQLite extends Database {
         // fail time is the time the player failed to verify
 
         try (Statement statement = connection.createStatement()) {
-            statement.execute("CREATE TABLE IF NOT EXISTS failed_players (" +
-                    "player_uuid TEXT PRIMARY KEY," +
-                    "fail_time INTEGER DEFAULT 0," +
-                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
-                    ")");
+			statement.execute("""
+					CREATE TABLE IF NOT EXISTS failed_players (
+					    player_uuid TEXT PRIMARY KEY,
+					    fail_time INTEGER DEFAULT 0,
+					    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP )
+					""");
 
             // Create index on player_uuid column
             statement.execute("CREATE INDEX IF NOT EXISTS idx_failed_players_player_uuid ON failed_players (player_uuid)");
@@ -145,12 +149,13 @@ public class SQLite extends Database {
         // NULL in player uuid is server event
 
         try (Statement statement = connection.createStatement()) {
-            statement.execute("CREATE TABLE IF NOT EXISTS event_logs (" +
-                    "id integer primary key autoincrement," +
-                    "player_uuid TEXT DEFAULT NULL," +
-                    "event_name TEXT DEFAULT NULL," +
-                    "created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
-                    ")");
+			statement.execute("""
+					CREATE TABLE IF NOT EXISTS event_logs (
+					    id integer primary key autoincrement
+					    player_uuid TEXT DEFAULT NULL
+					    event_name TEXT DEFAULT NULL
+					    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP )
+					""");
 
         } catch (SQLException e) {
             LOG_PLUGIN.logWarning("Could not create log table: " + e.getMessage());
