@@ -513,16 +513,14 @@ public class SQLite extends Database {
     @Override
     public List<EventLog> getLogEvents(String playerUUID, Timestamp start, Timestamp end) {
         List<EventLog> eventLogs = Lists.newArrayList();
-        if (start == null) {
-            // default 3 months ago
-            start = new Timestamp(System.currentTimeMillis() - 3L * 30 * 24 * 60 * 60 * 1000);
-        }
-        if (end == null) {
-            end = new Timestamp(System.currentTimeMillis());
-        }
+        // default 3 months ago
+        Timestamp startTimestamp = start == null ? new Timestamp(System.currentTimeMillis() - 3L * 30 * 24 * 60 * 60 * 1000) : start;
+        Timestamp endTimestamp = end == null ? new Timestamp(System.currentTimeMillis()) : end;
 
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement("SELECT * FROM event_logs WHERE (player_uuid = ? OR player_uuid IS NULL) AND created_at BETWEEN ? AND ?")) {
+        	statement.setTimestamp(1, startTimestamp);
+        	statement.setTimestamp(2, endTimestamp);
         	
 			try (ResultSet resultSet = statement.executeQuery();) {
 				while (resultSet.next()) {
