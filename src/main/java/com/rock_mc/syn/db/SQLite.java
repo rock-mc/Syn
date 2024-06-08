@@ -519,20 +519,21 @@ public class SQLite extends Database {
         Timestamp startTimestamp = start == null ? new Timestamp(System.currentTimeMillis() - 3L * 30 * 24 * 60 * 60 * 1000) : start;
         Timestamp endTimestamp = end == null ? new Timestamp(System.currentTimeMillis()) : end;
         StringBuilder sqlbuilder = new StringBuilder("SELECT * FROM event_logs WHERE 1=1 ");
-        if(!playerUUIDs.isEmpty())
-          sql.append("AND player_uuid in (?) ")
-        sqlbuilder.append("AND created_at BETWEEN ? AND ? ");
-        try (Connection connection = getConnection();
-             PreparedStatement statement = connection.prepareStatement(sqlbuilder.toString()) {
-               
-             if(!playerUUIDs.isEmpty()){
-        	       statement.setString(1, String.join(",", playerUUIDs));
-                 statement.setTimestamp(2, startTimestamp);
-                 statement.setTimestamp(3, endTimestamp);
-             } else{
-              statement.setTimestamp(1, startTimestamp);
-              statement.setTimestamp(2, endTimestamp); 
-             }
+        
+		sqlbuilder.append("AND created_at BETWEEN ? AND ? ");
+
+		if (!playerUUIDs.isEmpty())
+			sqlbuilder.append("AND player_uuid in (?) ");
+
+		try (Connection connection = getConnection();
+				PreparedStatement statement = connection.prepareStatement(sqlbuilder.toString())) {
+
+			statement.setTimestamp(1, startTimestamp);
+			statement.setTimestamp(2, endTimestamp);
+
+			if (!playerUUIDs.isEmpty())
+				statement.setString(3, String.join(",", playerUUIDs));
+
 			try (ResultSet resultSet = statement.executeQuery();) {
 				while (resultSet.next()) {
 					EventLog eventLog = new EventLog(resultSet.getLong("id"), resultSet.getString("player_uuid"),
