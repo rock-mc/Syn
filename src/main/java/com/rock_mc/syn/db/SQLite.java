@@ -525,10 +525,14 @@ public class SQLite extends Database {
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(sqlbuilder.toString()) {
                
-             if(!playerUUIDs.isEmpty())
+             if(!playerUUIDs.isEmpty()){
         	       statement.setString(1, String.join(",", playerUUIDs));
-             statement.setTimestamp(2, startTimestamp);
-             statement.setTimestamp(3, endTimestamp);
+                 statement.setTimestamp(2, startTimestamp);
+                 statement.setTimestamp(3, endTimestamp);
+             } else{
+              statement.setTimestamp(1, startTimestamp);
+              statement.setTimestamp(2, endTimestamp); 
+             }
 			try (ResultSet resultSet = statement.executeQuery();) {
 				while (resultSet.next()) {
 					EventLog eventLog = new EventLog(resultSet.getLong("id"), resultSet.getString("player_uuid"),
