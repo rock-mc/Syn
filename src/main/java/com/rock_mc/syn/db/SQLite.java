@@ -445,8 +445,8 @@ public class SQLite extends Database {
                        player_name,
                        last_login,
                        created_at
-                FROM player_info WHERE player_name = ?
-                """);) {
+                FROM player_info WHERE lower(player_name) = lower(?)
+                """)) {
             statement.setString(1, playerName);
             try (ResultSet resultSet = statement.executeQuery();) {
                 if (resultSet.next()) {
