@@ -1,7 +1,6 @@
 plugins {
     id 'java'
     id 'maven-publish'
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 group = 'com.rock_mc'
@@ -81,6 +80,6 @@ tasks.named('test', Test) {
 task testOnServer(type: Copy) {
     dependsOn('jar')
     from('build/libs/')
-    into('folia_server/plugins/')
+    into('../server/plugins/')
     include('*.jar')
 }
