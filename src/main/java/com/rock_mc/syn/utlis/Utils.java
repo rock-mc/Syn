@@ -2,6 +2,8 @@ package com.rock_mc.syn.utlis;
 
 import com.rock_mc.syn.command.CmdManager;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class Utils {
@@ -166,7 +168,7 @@ public class Utils {
         return "";
     }
 
-    // https://github.com/PlayPro/CoreProtect/blob/ca59ff25dfa5abf9b4f0537255a89ba8a3511db5/src/main/java/net/coreprotect/command/CommandHandler.java#L684
+    // 與 coreprotect 相同輸入時間方式 https://github.com/PlayPro/CoreProtect/blob/ca59ff25dfa5abf9b4f0537255a89ba8a3511db5/src/main/java/net/coreprotect/command/CommandHandler.java#L684
     public static long[] parseTime(String[] inputArguments) {
         String[] argumentArray = inputArguments.clone();
         long timeStart = 0;
@@ -257,6 +259,76 @@ public class Utils {
             return new long[]{timeEnd, timeStart};
         } else {
             return new long[]{timeStart, timeEnd};
+        }
+    }
+
+    // 與 coreprotect 相同輸入玩家方式
+    public static List<String> parseUsers(String[] inputArguments) {
+        String[] argumentArray = inputArguments.clone();
+        List<String> users = new ArrayList<>();
+        int count = 0;
+        int next = 0;
+        for (String argument : argumentArray) {
+            if (count > 0) {
+                argument = argument.trim().toLowerCase(Locale.ROOT);
+                argument = argument.replaceAll("\\\\", "");
+                argument = argument.replaceAll("'", "");
+
+                if (next == 2) {
+                    if (argument.endsWith(",")) {
+                        next = 2;
+                    }
+                    else {
+                        next = 0;
+                    }
+                }
+                else if (argument.equals("p:") || argument.equals("user:") || argument.equals("users:") || argument.equals("u:")) {
+                    next = 1;
+                }
+                else if (next == 1 || argument.startsWith("p:") || argument.startsWith("user:") || argument.startsWith("users:") || argument.startsWith("u:")) {
+                    argument = argument.replaceAll("user:", "");
+                    argument = argument.replaceAll("users:", "");
+                    argument = argument.replaceAll("p:", "");
+                    argument = argument.replaceAll("u:", "");
+                    if (argument.contains(",")) {
+                        String[] i2 = argument.split(",");
+                        for (String i3 : i2) {
+                            if (!users.contains(i3)) {
+                                users.add(i3);
+                            }
+                            parseUser(users, i3);
+                        }
+                        if (argument.endsWith(",")) {
+                            next = 1;
+                        }
+                        else {
+                            next = 0;
+                        }
+                    }
+                    else {
+                        parseUser(users, argument);
+                        next = 0;
+                    }
+                }
+                else if (argument.endsWith(",") || argument.endsWith(":")) {
+                    next = 2;
+                }
+                else if (argument.contains(":")) {
+                    next = 0;
+                }
+                else {
+                    parseUser(users, argument);
+                    next = 0;
+                }
+            }
+            count++;
+        }
+        return users;
+    }
+
+    private static void parseUser(List<String> users, String user) {
+        if (!users.contains(user)) {
+            users.add(user);
         }
     }
 }
