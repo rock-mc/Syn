@@ -12,6 +12,9 @@ import org.bukkit.util.StringUtil;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,32 +25,37 @@ public class Log {
 
     public static void exec(Syn plugin, Logger logger, Player player, String[] args) {
         synchronized (Syn.apiLock) {
-            // TODO: syn log t:[time] u:[player] p:[page]
-
             long[] times = Utils.parseTime(args);
             List<String> players = Utils.parseUsers(args);
 
             Timestamp start = null;
             Timestamp end = null;
 
+            LocalDateTime currentDateTime = LocalDateTime.now(ZoneId.of("UTC"));
+            Instant now = currentDateTime.atZone(ZoneId.of("Asia/Taipei")).toInstant();
+
             if (times.length == 2 && times[0] > 0) {
-                start = new Timestamp(System.currentTimeMillis() - (times[0] * 1000));
-                end = new Timestamp(System.currentTimeMillis() - (times[1] * 1000));
+                start = Timestamp.from(now.minusSeconds(times[0]));
+                end = Timestamp.from(now.minusSeconds(times[1]));
+            } else {
+                start = Timestamp.from(now.minusSeconds(3L * 30 * 24 * 60 * 60));
+                end = Timestamp.from(now);
             }
 
-            Map<String, String> playerNamesByUUID = new HashMap<>();
+            List<String> playerUUIDs = Lists.newArrayList();
 
             for (String playerName : players) {
                 PluginPlayerInfo pluginPlayerInfo = plugin.dbManager.getPlayerByName(playerName);
-                playerNamesByUUID.put(pluginPlayerInfo.getPlayer_uuid(), pluginPlayerInfo.getPlayer_name());
+                if (pluginPlayerInfo != null) {
+                    playerUUIDs.add(pluginPlayerInfo.getPlayer_uuid());
+                }
             }
 
-            List<EventLog> logEvents = plugin.dbManager.getLogEvents(playerNamesByUUID.values().stream().toList(), start, end);
+            List<EventLog> logEvents = plugin.dbManager.getLogEvents(playerUUIDs, start, end);
 
             for (EventLog logEvent : logEvents) {
                 String time = sdf.format(logEvent.getCreatedAt());
-                String playerName = playerNamesByUUID.get(logEvent.getPlayerUUID());
-                logger.sendMessage(player, String.format("時間: %s 事件: %-12s 玩家: %-12s", time, logEvent.getEventName(), playerName));
+                logger.sendMessage(player, String.format("時間: %s UTC 事件: %-12s 玩家: %-12s", time, logEvent.getEventName(), logEvent.getPlayerName()));
             }
             logger.sendMessage(player, "查詢:" + sdf.format(start) + " - " + sdf.format(end));
 

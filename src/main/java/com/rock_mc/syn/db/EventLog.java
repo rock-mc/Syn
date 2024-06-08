@@ -7,12 +7,14 @@ public class EventLog {
     private String playerUUID;
     private String eventName;
     private Timestamp createdAt;
+    private final String playerName;
 
-    public EventLog(long id, String playerUUID, String eventName, Timestamp createdAt) {
+    public EventLog(long id, String playerUUID, String eventName, Timestamp createdAt, String playerName) {
         this.id = id;
         this.playerUUID = playerUUID;
         this.eventName = eventName;
         this.createdAt = createdAt;
+        this.playerName = playerName;
     }
     public long getId() {
         return id;
@@ -40,5 +42,9 @@ public class EventLog {
 
     public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getPlayerName() {
+        return playerName;
     }
 }
