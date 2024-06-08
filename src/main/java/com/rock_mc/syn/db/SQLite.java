@@ -501,11 +501,13 @@ public class SQLite extends Database {
 
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(
-                     "SELECT * FROM event_logs WHERE player_uuid in (?) AND created_at BETWEEN ? AND ?"
+                     "SELECT * FROM event_logs WHERE (player_uuid in (?) or ? = '') AND created_at BETWEEN ? AND ?"
              )) {
-            statement.setString(1, String.join(",", playerUUIDs));
-            statement.setTimestamp(2, start);
-            statement.setTimestamp(3, end);
+            String uuids = String.join(",", playerUUIDs);
+            statement.setString(1, uuids);
+            statement.setString(2, uuids);
+            statement.setString(3, start.toInstant().toString());
+            statement.setString(4, end.toInstant().toString());
 
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {

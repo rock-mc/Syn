@@ -30,10 +30,11 @@ public class Log {
             Timestamp start = null;
             Timestamp end = null;
 
-            if (times.length == 2) {
+            if (times.length == 2 && times[0] > 0) {
                 start = new Timestamp(System.currentTimeMillis() - (times[0] * 1000));
                 end = new Timestamp(System.currentTimeMillis() - (times[1] * 1000));
             }
+
             Map<String, String> playerNamesByUUID = new HashMap<>();
 
             for (String playerName : players) {
@@ -41,12 +42,12 @@ public class Log {
                 playerNamesByUUID.put(pluginPlayerInfo.getPlayer_uuid(), pluginPlayerInfo.getPlayer_name());
             }
 
-            List<EventLog> logEvents = plugin.dbManager.getLogEvents((List<String>) playerNamesByUUID.values(), start, end);
+            List<EventLog> logEvents = plugin.dbManager.getLogEvents(playerNamesByUUID.values().stream().toList(), start, end);
 
             for (EventLog logEvent : logEvents) {
                 String time = sdf.format(logEvent.getCreatedAt());
                 String playerName = playerNamesByUUID.get(logEvent.getPlayerUUID());
-                logger.sendMessage(player, String.format("時間: %s 事件: %-12s 玩家: %-12s", time, playerName, logEvent.getEventName()));
+                logger.sendMessage(player, String.format("時間: %s 事件: %-12s 玩家: %-12s", time, logEvent.getEventName(), playerName));
             }
             logger.sendMessage(player, "查詢:" + sdf.format(start) + " - " + sdf.format(end));
 
