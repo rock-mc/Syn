@@ -159,4 +159,20 @@ public class CmdExecutorTest extends PluginTest {
         assertEquals("[verify]", tabList.toString());
 
     }
+
+
+    @Test
+    void logCmd() {
+        PlayerJoinEvent.getHandlerList().unregister(plugin);
+
+        PlayerMock opPlayer = server.addPlayer();
+        opPlayer.setOp(true);
+
+        opPlayer.performCommand("syn log t:2h");
+
+        String commandOutput = opPlayer.nextMessage();
+
+//        assertEquals(LoggerPlugin.PREFIX_GAME + ChatColor.RED + "", commandOutput);
+    }
+
 }

@@ -486,8 +486,11 @@ public class SQLite extends Database {
     }
 
     @Override
-    public List<EventLog> getLogEvents(String playerUUID, Timestamp start, Timestamp end) {
+    public List<EventLog> getLogEvents(List<String> playerUUIDs, Timestamp start, Timestamp end) {
         List<EventLog> eventLogs = Lists.newArrayList();
+        if (playerUUIDs == null) {
+            playerUUIDs = Lists.newArrayList();
+        }
         if (start == null) {
             // default 3 months ago
             start = new Timestamp(System.currentTimeMillis() - 3L * 30 * 24 * 60 * 60 * 1000);
@@ -498,8 +501,12 @@ public class SQLite extends Database {
 
         try (Connection connection = getConnection();
              PreparedStatement statement = connection.prepareStatement(
-                     "SELECT * FROM event_logs WHERE (player_uuid = ? OR player_uuid IS NULL) AND created_at BETWEEN ? AND ?"
+                     "SELECT * FROM event_logs WHERE player_uuid in (?) AND created_at BETWEEN ? AND ?"
              )) {
+            statement.setString(1, String.join(",", playerUUIDs));
+            statement.setTimestamp(2, start);
+            statement.setTimestamp(3, end);
+
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 EventLog eventLog = new EventLog(

@@ -3,7 +3,9 @@ package com.rock_mc.syn.db;
 import com.rock_mc.syn.Syn;
 import com.rock_mc.syn.config.Config;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DbManager {
@@ -231,10 +233,15 @@ public class DbManager {
         }
     }
 
-
     public void addLogEvent(String playerUUID, String eventName) {
         synchronized (dbLock) {
             this.database.addLogEvent(playerUUID, eventName);
+        }
+    }
+
+    public List<EventLog> getLogEvents(List<String> playerUUIDs, Timestamp start, Timestamp end) {
+        synchronized (dbLock) {
+            return this.database.getLogEvents(playerUUIDs, start, end);
         }
     }
 }

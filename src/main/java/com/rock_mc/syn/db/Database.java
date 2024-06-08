@@ -56,5 +56,5 @@ public abstract class Database {
 
     public abstract void addLogEvent(String playerUUID, String eventName);
 
-    public abstract List<EventLog> getLogEvents(String playerUUID, Timestamp start, Timestamp end);
+    public abstract List<EventLog> getLogEvents(List<String> playerUUIDs, Timestamp start, Timestamp end);
 }
