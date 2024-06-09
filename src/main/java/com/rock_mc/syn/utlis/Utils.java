@@ -1,5 +1,6 @@
 package com.rock_mc.syn.utlis;
 
+import com.google.common.primitives.Ints;
 import com.rock_mc.syn.command.CmdManager;
 
 import java.util.ArrayList;
@@ -330,5 +331,18 @@ public class Utils {
         if (!users.contains(user)) {
             users.add(user);
         }
+    }
+
+    public static Integer parsePage(String[] argumentArray) {
+        for (String argument : argumentArray) {
+            if(argument.startsWith("page:")){
+                argument = argument.replaceFirst("page:", "");
+            }
+
+            if(Ints.tryParse(argument)!=null){
+                return Ints.tryParse(argument);
+            }
+        }
+        return 1;
     }
 }

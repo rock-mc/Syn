@@ -16,10 +16,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -128,6 +125,13 @@ public class EventListener implements Listener {
 
             new WaitVerify(plugin, player).start();
         }
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        final Player player = event.getPlayer();
+        final String uuid = player.getUniqueId().toString();
+        plugin.dbManager.addLogEvent(uuid, "logout");
     }
 
     @EventHandler

@@ -6,9 +6,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.*;
 
 public class SQLite extends Database {
     private final JavaPlugin plugin;
@@ -47,12 +49,12 @@ public class SQLite extends Database {
         // used is a boolean indicating whether the code has been used
         // the verification code, created time, and used are indexed
         try (Statement statement = connection.createStatement();) {
-			statement.execute("""
-					CREATE TABLE IF NOT EXISTS verification_codes (
-					    code TEXT PRIMARY KEY,
-					    player_used TEXT DEFAULT NULL,
-					    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP )
-					""");
+            statement.execute("""
+                    CREATE TABLE IF NOT EXISTS verification_codes (
+                        code TEXT PRIMARY KEY,
+                        player_used TEXT DEFAULT NULL,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP )
+                    """);
 
             // Create indexes on code, created_at, and used columns
             statement.execute("CREATE INDEX IF NOT EXISTS idx_verification_codes_code ON verification_codes (code)");
@@ -68,13 +70,13 @@ public class SQLite extends Database {
         // created time is the time when the player is added
         // the player uuid is indexed
         try (Statement statement = connection.createStatement()) {
-			statement.execute("""
-					CREATE TABLE IF NOT EXISTS player_info (
-					    player_uuid TEXT PRIMARY KEY,
-					    player_name TEXT NOT NULL,
-					    last_login TIMESTAMP,
-					    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP )
-					""");
+            statement.execute("""
+                    CREATE TABLE IF NOT EXISTS player_info (
+                        player_uuid TEXT PRIMARY KEY,
+                        player_name TEXT NOT NULL,
+                        last_login TIMESTAMP,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP )
+                    """);
             // Create index on player_uuid column
             statement.execute("CREATE INDEX IF NOT EXISTS idx_player_info_player_uuid ON player_info (player_uuid)");
         } catch (SQLException e) {
@@ -88,11 +90,11 @@ public class SQLite extends Database {
         // created time is the time when the player is added
         // the player uuid is indexed
         try (Statement statement = connection.createStatement()) {
-			statement.execute("""
-					CREATE TABLE IF NOT EXISTS allowed_players (
-					    player_uuid TEXT PRIMARY KEY,
-					    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
-					""");
+            statement.execute("""
+                    CREATE TABLE IF NOT EXISTS allowed_players (
+                        player_uuid TEXT PRIMARY KEY,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
+                    """);
 
             // Create index on player_uuid column
             statement.execute("CREATE INDEX IF NOT EXISTS idx_allowed_players_player_uuid ON allowed_players (player_uuid)");
@@ -109,13 +111,13 @@ public class SQLite extends Database {
         // created time is the time when the player is added
         // the player uuid is indexed
         try (Statement statement = connection.createStatement()) {
-			statement.execute("""
-					CREATE TABLE IF NOT EXISTS baned_players (
-					    player_uuid TEXT PRIMARY KEY,
-					    reason TEXT NOT NULL,
-					    expire_time INTEGER DEFAULT 0,
-					    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP )
-					""");
+            statement.execute("""
+                    CREATE TABLE IF NOT EXISTS baned_players (
+                        player_uuid TEXT PRIMARY KEY,
+                        reason TEXT NOT NULL,
+                        expire_time INTEGER DEFAULT 0,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP )
+                    """);
 
             // Create index on player_uuid column
             statement.execute("CREATE INDEX IF NOT EXISTS idx_baned_players_player_uuid ON baned_players (player_uuid)");
@@ -130,12 +132,12 @@ public class SQLite extends Database {
         // fail time is the time the player failed to verify
 
         try (Statement statement = connection.createStatement()) {
-			statement.execute("""
-					CREATE TABLE IF NOT EXISTS failed_players (
-					    player_uuid TEXT PRIMARY KEY,
-					    fail_time INTEGER DEFAULT 0,
-					    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP )
-					""");
+            statement.execute("""
+                    CREATE TABLE IF NOT EXISTS failed_players (
+                        player_uuid TEXT PRIMARY KEY,
+                        fail_time INTEGER DEFAULT 0,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP )
+                    """);
 
             // Create index on player_uuid column
             statement.execute("CREATE INDEX IF NOT EXISTS idx_failed_players_player_uuid ON failed_players (player_uuid)");
@@ -150,24 +152,23 @@ public class SQLite extends Database {
         // NULL in player uuid is server event
 
         try (Statement statement = connection.createStatement()) {
-			statement.execute("""
-					CREATE TABLE IF NOT EXISTS event_logs (
-					    id integer primary key autoincrement
-					    player_uuid TEXT DEFAULT NULL
-					    event_name TEXT DEFAULT NULL
-					    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP )
-					""");
+            statement.execute("""
+                    CREATE TABLE IF NOT EXISTS event_logs (
+                        id integer primary key autoincrement,
+                        player_uuid TEXT DEFAULT NULL,
+                        event_name TEXT DEFAULT NULL,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP )
+                    """);
 
         } catch (SQLException e) {
-            LOG_PLUGIN.logWarning("Could not create log table: " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not create event_logs table: " + e.getMessage());
         }
     }
 
     @Override
     public void addCode(String code) {
         // Add code to the database
-        try (Connection connection = getConnection();
-        	 PreparedStatement statement = connection.prepareStatement("INSERT INTO verification_codes (code) VALUES (?)");) {
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("INSERT INTO verification_codes (code) VALUES (?)");) {
             statement.setString(1, code);
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -178,8 +179,7 @@ public class SQLite extends Database {
     @Override
     public void addBanedPlayer(String playerUUID, String reason, long time) {
         // Add baned player to the database
-        try (Connection connection = getConnection();
-        	 PreparedStatement statement = connection.prepareStatement("INSERT INTO baned_players (player_uuid, reason, expire_time) VALUES (?, ?, ?)");) {
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("INSERT INTO baned_players (player_uuid, reason, expire_time) VALUES (?, ?, ?)");) {
 
             statement.setString(1, playerUUID);
             statement.setString(2, reason);
@@ -193,15 +193,14 @@ public class SQLite extends Database {
     @Override
     public String getCodeCreateDate(String code) {
         // Get the created time of the code
-        try (Connection connection = getConnection();
-        	 PreparedStatement statement = connection.prepareStatement("SELECT created_at FROM verification_codes WHERE code = ?");) {
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("SELECT created_at FROM verification_codes WHERE code = ?");) {
 
             statement.setString(1, code);
-			try (ResultSet resultSet = statement.executeQuery();) {
-				if (resultSet.next()) {
-					return resultSet.getString("created_at");
-				}
-			}
+            try (ResultSet resultSet = statement.executeQuery();) {
+                if (resultSet.next()) {
+                    return resultSet.getString("created_at");
+                }
+            }
         } catch (SQLException e) {
             LOG_PLUGIN.logWarning("Could not get the created time of the code: " + e.getMessage());
         }
@@ -211,13 +210,12 @@ public class SQLite extends Database {
     @Override
     public boolean contains(String code) {
         // Check if the code exists in the database
-        try (Connection connection = getConnection();
-        	 PreparedStatement statement = connection.prepareStatement("SELECT code FROM verification_codes WHERE code = ? and player_used = null");) {
-        	
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("SELECT code FROM verification_codes WHERE code = ? and player_used = null");) {
+
             statement.setString(1, code);
-			try (ResultSet resultSet = statement.executeQuery();) {
-				return resultSet.next();
-			}
+            try (ResultSet resultSet = statement.executeQuery();) {
+                return resultSet.next();
+            }
         } catch (SQLException e) {
             LOG_PLUGIN.logWarning("Could not check if the code exists in the database: " + e.getMessage());
         }
@@ -227,9 +225,8 @@ public class SQLite extends Database {
     @Override
     public void markCode(String code, String playerUUID) {
         // Mark the code as used or not used
-        try (Connection connection = getConnection();
-        	 PreparedStatement statement = connection.prepareStatement("INSERT INTO verification_codes (code, player_used) VALUES (?, ?) ON CONFLICT(code) DO UPDATE SET player_used = ?");) {
-        	
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("INSERT INTO verification_codes (code, player_used) VALUES (?, ?) ON CONFLICT(code) DO UPDATE SET player_used = ?");) {
+
             statement.setString(1, code);
             statement.setString(2, playerUUID);
             statement.setString(3, playerUUID);
@@ -241,9 +238,8 @@ public class SQLite extends Database {
 
     @Override
     public void addAllowedPlayer(String playerUUID) {
-        try (Connection connection = getConnection();
-        	 PreparedStatement statement = connection.prepareStatement("INSERT INTO allowed_players (player_uuid) VALUES (?) ON CONFLICT(player_uuid) DO NOTHING");) {
-        	
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("INSERT INTO allowed_players (player_uuid) VALUES (?) ON CONFLICT(player_uuid) DO NOTHING");) {
+
             statement.setString(1, playerUUID);
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -254,9 +250,8 @@ public class SQLite extends Database {
     @Override
     public void removeAllowedPlayer(String playerUUID) {
         // Remove player from the database
-        try (Connection connection = getConnection();
-        	 PreparedStatement statement = connection.prepareStatement("DELETE FROM allowed_players WHERE player_uuid = ?");) {
-        	
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("DELETE FROM allowed_players WHERE player_uuid = ?");) {
+
             statement.setString(1, playerUUID);
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -267,13 +262,12 @@ public class SQLite extends Database {
     @Override
     public boolean isPlayerAllowed(String playerUUID) {
         // Check if the player is allowed
-        try (Connection connection = getConnection();
-        	 PreparedStatement statement = connection.prepareStatement("SELECT player_uuid FROM allowed_players WHERE player_uuid = ?");) {
-        	
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("SELECT player_uuid FROM allowed_players WHERE player_uuid = ?");) {
+
             statement.setString(1, playerUUID);
-			try (ResultSet resultSet = statement.executeQuery();) {
-				return resultSet.next();
-			}
+            try (ResultSet resultSet = statement.executeQuery();) {
+                return resultSet.next();
+            }
         } catch (SQLException e) {
             LOG_PLUGIN.logWarning("Could not check if the player is allowed: " + e.getMessage());
         }
@@ -283,13 +277,12 @@ public class SQLite extends Database {
     @Override
     public boolean isPlayerBanned(String playerUUID) {
         // Check if the player is banned
-        try (Connection connection = getConnection();
-        	 PreparedStatement statement = connection.prepareStatement("SELECT player_uuid FROM baned_players WHERE player_uuid = ?");) {
-        	
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("SELECT player_uuid FROM baned_players WHERE player_uuid = ?");) {
+
             statement.setString(1, playerUUID);
-			try (ResultSet resultSet = statement.executeQuery();) {
-				return resultSet.next();
-			}
+            try (ResultSet resultSet = statement.executeQuery();) {
+                return resultSet.next();
+            }
         } catch (SQLException e) {
             LOG_PLUGIN.logWarning("Could not check if the player is banned: " + e.getMessage());
         }
@@ -299,9 +292,8 @@ public class SQLite extends Database {
     @Override
     public void updateFailedAttempts(String playerUUID, int failedAttempts) {
         // Update the number of failed attempts of the player
-        try (Connection connection = getConnection();
-        	 PreparedStatement statement = connection.prepareStatement("INSERT INTO failed_plaers (player_uuid, fail_time) VALUES (?, ?) ON CONFLICT(player_uuid) DO UPDATE SET fail_time = ?");) {
-        	
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("INSERT INTO failed_plaers (player_uuid, fail_time) VALUES (?, ?) ON CONFLICT(player_uuid) DO UPDATE SET fail_time = ?");) {
+
             statement.setString(1, playerUUID);
             statement.setInt(2, failedAttempts);
             statement.setInt(3, failedAttempts);
@@ -314,9 +306,8 @@ public class SQLite extends Database {
     @Override
     public void removeCode(String code) {
         // Remove code from the database
-        try (Connection connection = getConnection();
-        	 PreparedStatement statement = connection.prepareStatement("DELETE FROM verification_codes WHERE code = ?");) {
-        	
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("DELETE FROM verification_codes WHERE code = ?");) {
+
             statement.setString(1, code);
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -327,15 +318,14 @@ public class SQLite extends Database {
     @Override
     public int getFailedAttempts(String playerUUID) {
         // Get the number of failed attempts of the player
-        try (Connection connection = getConnection();
-        	 PreparedStatement statement = connection.prepareStatement("SELECT fail_time FROM failed_players WHERE player_uuid = ?");) {
-        	
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("SELECT fail_time FROM failed_players WHERE player_uuid = ?");) {
+
             statement.setString(1, playerUUID);
-			try (ResultSet resultSet = statement.executeQuery();) {
-				if (resultSet.next()) {
-					return resultSet.getInt("fail_time");
-				}
-			}
+            try (ResultSet resultSet = statement.executeQuery();) {
+                if (resultSet.next()) {
+                    return resultSet.getInt("fail_time");
+                }
+            }
         } catch (SQLException e) {
             LOG_PLUGIN.logWarning("Could not get the fail time of the player: " + e.getMessage());
         }
@@ -345,14 +335,13 @@ public class SQLite extends Database {
     @Override
     public long getBannedExpireTime(String playerUUID) {
         // Get the expiry time of the player
-        try (Connection connection = getConnection();
-        	PreparedStatement statement = connection.prepareStatement("SELECT expire_time FROM baned_players WHERE player_uuid = ?");) {
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("SELECT expire_time FROM baned_players WHERE player_uuid = ?");) {
             statement.setString(1, playerUUID);
-			try (ResultSet resultSet = statement.executeQuery();) {
-				if (resultSet.next()) {
-					return resultSet.getLong("expire_time");
-				}
-			}
+            try (ResultSet resultSet = statement.executeQuery();) {
+                if (resultSet.next()) {
+                    return resultSet.getLong("expire_time");
+                }
+            }
         } catch (SQLException e) {
             LOG_PLUGIN.logWarning("Could not get the expire time of the player: " + e.getMessage());
         }
@@ -362,8 +351,7 @@ public class SQLite extends Database {
     @Override
     public void removeBanedPlayer(String playerUUID) {
         // Remove baned player from the database
-        try (Connection connection = getConnection();
-        	 PreparedStatement statement = connection.prepareStatement("DELETE FROM baned_players WHERE player_uuid = ?");) {
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("DELETE FROM baned_players WHERE player_uuid = ?");) {
             statement.setString(1, playerUUID);
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -374,9 +362,8 @@ public class SQLite extends Database {
     @Override
     public void removeFailedPlayer(String playerUUID) {
         // Remove baned player from the database
-        try (Connection connection = getConnection();
-        	 PreparedStatement statement = connection.prepareStatement("DELETE FROM failed_players WHERE player_uuid = ?");) {
-        	
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("DELETE FROM failed_players WHERE player_uuid = ?");) {
+
             statement.setString(1, playerUUID);
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -387,15 +374,14 @@ public class SQLite extends Database {
     @Override
     public String getBannedReason(String playerUUID) {
         // Get the reason of the player
-        try (Connection connection = getConnection();
-        	 PreparedStatement statement = connection.prepareStatement("SELECT reason FROM baned_players WHERE player_uuid = ?");) {
-        	
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("SELECT reason FROM baned_players WHERE player_uuid = ?");) {
+
             statement.setString(1, playerUUID);
-			try (ResultSet resultSet = statement.executeQuery();) {
-				if (resultSet.next()) {
-					return resultSet.getString("reason");
-				}
-			}
+            try (ResultSet resultSet = statement.executeQuery();) {
+                if (resultSet.next()) {
+                    return resultSet.getString("reason");
+                }
+            }
         } catch (SQLException e) {
             LOG_PLUGIN.logWarning("Could not get the reason of the player: " + e.getMessage());
         }
@@ -405,15 +391,14 @@ public class SQLite extends Database {
     @Override
     public String getBannedCreateAt(String playerUUID) {
         // Get the created time of the player
-        try (Connection connection = getConnection();
-        	 PreparedStatement statement = connection.prepareStatement("SELECT created_at FROM baned_players WHERE player_uuid = ?");) {
-        	
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("SELECT created_at FROM baned_players WHERE player_uuid = ?");) {
+
             statement.setString(1, playerUUID);
-			try (ResultSet resultSet = statement.executeQuery();) {
-				if (resultSet.next()) {
-					return resultSet.getString("created_at");
-				}
-			}
+            try (ResultSet resultSet = statement.executeQuery();) {
+                if (resultSet.next()) {
+                    return resultSet.getString("created_at");
+                }
+            }
         } catch (SQLException e) {
             LOG_PLUGIN.logWarning("Could not get the created time of the player: " + e.getMessage());
         }
@@ -423,9 +408,8 @@ public class SQLite extends Database {
     @Override
     public void addPlayerInfo(String playerUUID, String playerName) {
         // Add or update player info in the database
-        try (Connection connection = getConnection();
-        	 PreparedStatement statement = connection.prepareStatement("INSERT INTO player_info (player_uuid, player_name, last_login) VALUES (?, ?, CURRENT_TIMESTAMP) ON CONFLICT(player_uuid) DO UPDATE SET player_name = ?, last_login = CURRENT_TIMESTAMP");) {
-        	
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("INSERT INTO player_info (player_uuid, player_name, last_login) VALUES (?, ?, CURRENT_TIMESTAMP) ON CONFLICT(player_uuid) DO UPDATE SET player_name = ?, last_login = CURRENT_TIMESTAMP");) {
+
             statement.setString(1, playerUUID);
             statement.setString(2, playerName);
             statement.setString(3, playerName);
@@ -438,15 +422,14 @@ public class SQLite extends Database {
     @Override
     public boolean isCodeUsed(String code) {
         // Check if the code is used
-        try (Connection connection = getConnection();
-        	 PreparedStatement statement = connection.prepareStatement("SELECT player_used FROM verification_codes WHERE code = ?");) {
-        	
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("SELECT player_used FROM verification_codes WHERE code = ?");) {
+
             statement.setString(1, code);
-			try (ResultSet resultSet = statement.executeQuery();) {
-				if (resultSet.next()) {
-					return resultSet.getString("player_used") != null;
-				}
-			}
+            try (ResultSet resultSet = statement.executeQuery();) {
+                if (resultSet.next()) {
+                    return resultSet.getString("player_used") != null;
+                }
+            }
         } catch (SQLException e) {
             LOG_PLUGIN.logWarning("Could not check if the code is used: " + e.getMessage());
         }
@@ -457,21 +440,19 @@ public class SQLite extends Database {
     @Override
     public PluginPlayerInfo getPlayerByName(String playerName) {
         // Check if the code is used
-        try (Connection connection = getConnection();
-        	 PreparedStatement statement = connection.prepareStatement("""
-                        SELECT player_uuid,
-                               player_name,
-                               last_login,
-                               created_at
-                        FROM player_info WHERE player_name = ?
-                        """);) {
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("""
+                SELECT player_uuid,
+                       player_name,
+                       last_login,
+                       created_at
+                FROM player_info WHERE lower(player_name) = lower(?)
+                """)) {
             statement.setString(1, playerName);
-			try (ResultSet resultSet = statement.executeQuery();) {
-				if (resultSet.next()) {
-					return new PluginPlayerInfo(resultSet.getString("player_uuid"), resultSet.getString("player_name"),
-							resultSet.getTimestamp("last_login"), resultSet.getTimestamp("created_at"));
-				}
-			}
+            try (ResultSet resultSet = statement.executeQuery();) {
+                if (resultSet.next()) {
+                    return new PluginPlayerInfo(resultSet.getString("player_uuid"), resultSet.getString("player_name"), resultSet.getTimestamp("last_login"), resultSet.getTimestamp("created_at"));
+                }
+            }
         } catch (SQLException e) {
             LOG_PLUGIN.logWarning("Could not find the player: " + playerName + " " + e.getMessage());
         }
@@ -481,16 +462,15 @@ public class SQLite extends Database {
     @Override
     public String[] getBannedPlayerList() {
         // Get the name list of banned players
-        try (Connection connection = getConnection();
-             PreparedStatement statement = connection.prepareStatement("SELECT player_name FROM player_info WHERE player_uuid IN (SELECT player_uuid FROM baned_players)")) {
-        	
-			try (ResultSet resultSet = statement.executeQuery();) {
-				List<String> bannedPlayers = new ArrayList<>();
-				while (resultSet.next()) {
-					bannedPlayers.add(resultSet.getString("player_name"));
-				}
-				return bannedPlayers.toArray(new String[0]);
-			}
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("SELECT player_name FROM player_info WHERE player_uuid IN (SELECT player_uuid FROM baned_players)")) {
+
+            try (ResultSet resultSet = statement.executeQuery();) {
+                List<String> bannedPlayers = new ArrayList<>();
+                while (resultSet.next()) {
+                    bannedPlayers.add(resultSet.getString("player_name"));
+                }
+                return bannedPlayers.toArray(new String[0]);
+            }
         } catch (SQLException e) {
             LOG_PLUGIN.logWarning("Could not get the list of banned players: " + e.getMessage());
         }
@@ -500,8 +480,7 @@ public class SQLite extends Database {
     @Override
     public void addLogEvent(String playerUUID, String eventName) {
         // Add baned player to the database
-        try (Connection connection = getConnection();
-        	 PreparedStatement statement = connection.prepareStatement("INSERT INTO event_logs (player_uuid, event_name) VALUES (?, ?)");) {
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("INSERT INTO event_logs (player_uuid, event_name) VALUES (?, ?)");) {
 
             statement.setString(1, playerUUID);
             statement.setString(2, eventName);
@@ -512,37 +491,41 @@ public class SQLite extends Database {
     }
 
     @Override
-    public List<EventLog> getLogEvents(List<String> playerUUIDs, Timestamp start, Timestamp end) {
+    public List<EventLog> getLogEvents(List<String> playerUUIDs, Timestamp start, Timestamp end, Integer page) {
         List<EventLog> eventLogs = Lists.newArrayList();
         playerUUIDs = playerUUIDs == null ? Collections.emptyList() : playerUUIDs;
         // default 3 months ago
         Timestamp startTimestamp = start == null ? new Timestamp(System.currentTimeMillis() - 3L * 30 * 24 * 60 * 60 * 1000) : start;
         Timestamp endTimestamp = end == null ? new Timestamp(System.currentTimeMillis()) : end;
-        StringBuilder sqlbuilder = new StringBuilder("SELECT * FROM event_logs WHERE 1=1 ");
-        
-		sqlbuilder.append("AND created_at BETWEEN ? AND ? ");
+        StringBuilder sqlbuilder = new StringBuilder("SELECT e.*, p.player_name FROM event_logs e LEFT JOIN player_info p ON p.player_uuid = e.player_uuid WHERE 1=1 ");
+        if (!playerUUIDs.isEmpty()) sqlbuilder.append("AND e.player_uuid in (?) ");
+        sqlbuilder.append("AND e.created_at BETWEEN ? AND ? ");
+        sqlbuilder.append("LIMIT 100 OFFSET ? ");
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(sqlbuilder.toString())) {
+            int i = 0;
+            if (!playerUUIDs.isEmpty()) {
+                statement.setString(++i, String.join(",", playerUUIDs));
+            }
 
-		if (!playerUUIDs.isEmpty())
-			sqlbuilder.append("AND player_uuid in (?) ");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-		try (Connection connection = getConnection();
-				PreparedStatement statement = connection.prepareStatement(sqlbuilder.toString())) {
+            statement.setString(++i, sdf.format(startTimestamp));
+            statement.setString(++i, sdf.format(endTimestamp));
+            statement.setInt(++i, (page-1));
 
-			statement.setTimestamp(1, startTimestamp);
-			statement.setTimestamp(2, endTimestamp);
-
-			if (!playerUUIDs.isEmpty())
-				statement.setString(3, String.join(",", playerUUIDs));
-
-			try (ResultSet resultSet = statement.executeQuery();) {
-				while (resultSet.next()) {
-					EventLog eventLog = new EventLog(resultSet.getLong("id"), resultSet.getString("player_uuid"),
-							resultSet.getString("event_name"), resultSet.getTimestamp("created_at"));
-					eventLogs.add(eventLog);
-				}
-			}
+            try (ResultSet resultSet = statement.executeQuery();) {
+                while (resultSet.next()) {
+                    EventLog eventLog = new EventLog(
+                            resultSet.getLong("id"),
+                            resultSet.getString("player_uuid"),
+                            resultSet.getString("event_name"),
+                            resultSet.getTimestamp("created_at"),
+                            resultSet.getString("player_name"));
+                    eventLogs.add(eventLog);
+                }
+            }
         } catch (SQLException e) {
-            LOG_PLUGIN.logWarning("Could not get the list of banned players: " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not get the list of event logs: " + e.getMessage());
         }
         return eventLogs;
     }
