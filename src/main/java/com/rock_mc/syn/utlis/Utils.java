@@ -1,5 +1,6 @@
 package com.rock_mc.syn.utlis;
 
+import com.google.common.primitives.Ints;
 import com.rock_mc.syn.command.CmdManager;
 
 import java.util.ArrayList;
@@ -266,6 +267,11 @@ public class Utils {
     public static List<String> parseUsers(String[] inputArguments) {
         String[] argumentArray = inputArguments.clone();
         List<String> users = new ArrayList<>();
+        System.out.println("===============");
+        for (int i=0;i<inputArguments.length;i++){
+            System.out.println(i+" "+inputArguments[i]);
+        }
+        System.out.println("===============");
         int count = 0;
         int next = 0;
         for (String argument : argumentArray) {
@@ -282,7 +288,7 @@ public class Utils {
                         next = 0;
                     }
                 }
-                else if (argument.equals("p:") || argument.equals("user:") || argument.equals("users:") || argument.equals("u:")) {
+                else if (argument.equalsIgnoreCase("p:") || argument.equals("user:") || argument.equals("users:") || argument.equals("u:")) {
                     next = 1;
                 }
                 else if (next == 1 || argument.startsWith("p:") || argument.startsWith("user:") || argument.startsWith("users:") || argument.startsWith("u:")) {
@@ -324,6 +330,20 @@ public class Utils {
             count++;
         }
         return users;
+    }
+
+    public static Integer parsePage(String[] argumentArray) {
+
+        for (String argument : argumentArray) {
+            if(argument.startsWith("page:")){
+                argument = argument.replaceFirst("page:", "");
+            }
+
+            if(Ints.tryParse(argument)!=null){
+                return Ints.tryParse(argument);
+            }
+        }
+        return 1;
     }
 
     private static void parseUser(List<String> users, String user) {

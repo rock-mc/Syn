@@ -491,7 +491,7 @@ public class SQLite extends Database {
     }
 
     @Override
-    public List<EventLog> getLogEvents(List<String> playerUUIDs, Timestamp start, Timestamp end) {
+    public List<EventLog> getLogEvents(List<String> playerUUIDs, Timestamp start, Timestamp end, Integer page) {
         List<EventLog> eventLogs = Lists.newArrayList();
         playerUUIDs = playerUUIDs == null ? Collections.emptyList() : playerUUIDs;
         // default 3 months ago
@@ -500,6 +500,7 @@ public class SQLite extends Database {
         StringBuilder sqlbuilder = new StringBuilder("SELECT e.*, p.player_name FROM event_logs e LEFT JOIN player_info p ON p.player_uuid = e.player_uuid WHERE 1=1 ");
         if (!playerUUIDs.isEmpty()) sqlbuilder.append("AND e.player_uuid in (?) ");
         sqlbuilder.append("AND e.created_at BETWEEN ? AND ? ");
+        sqlbuilder.append("LIMIT 100 OFFSET ? ");
         try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(sqlbuilder.toString())) {
             int i = 0;
             if (!playerUUIDs.isEmpty()) {
@@ -510,6 +511,7 @@ public class SQLite extends Database {
 
             statement.setString(++i, sdf.format(startTimestamp));
             statement.setString(++i, sdf.format(endTimestamp));
+            statement.setInt(++i, (page-1));
 
             try (ResultSet resultSet = statement.executeQuery();) {
                 while (resultSet.next()) {

@@ -239,9 +239,9 @@ public class DbManager {
         }
     }
 
-    public List<EventLog> getLogEvents(List<String> playerUUIDs, Timestamp start, Timestamp end) {
+    public List<EventLog> getLogEvents(List<String> playerUUIDs, Timestamp start, Timestamp end, Integer page) {
         synchronized (dbLock) {
-            return this.database.getLogEvents(playerUUIDs, start, end);
+            return this.database.getLogEvents(playerUUIDs, start, end, page);
         }
     }
 }
