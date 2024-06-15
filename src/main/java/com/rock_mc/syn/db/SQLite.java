@@ -7,9 +7,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.sql.*;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.*;
 
 public class SQLite extends Database {
@@ -491,7 +488,7 @@ public class SQLite extends Database {
     }
 
     @Override
-    public List<EventLog> getLogEvents(List<String> playerUUIDs, Timestamp start, Timestamp end, Integer page) {
+    public List<EventLog> getLogEvents(List<String> playerUUIDs, Timestamp start, Timestamp end, Integer page, Integer rows) {
         List<EventLog> eventLogs = Lists.newArrayList();
         playerUUIDs = playerUUIDs == null ? Collections.emptyList() : playerUUIDs;
         // default 3 months ago
@@ -500,7 +497,7 @@ public class SQLite extends Database {
         StringBuilder sqlbuilder = new StringBuilder("SELECT e.*, p.player_name FROM event_logs e LEFT JOIN player_info p ON p.player_uuid = e.player_uuid WHERE 1=1 ");
         if (!playerUUIDs.isEmpty()) sqlbuilder.append("AND e.player_uuid in (?) ");
         sqlbuilder.append("AND e.created_at BETWEEN ? AND ? ");
-        sqlbuilder.append("LIMIT 100 OFFSET ? ");
+        sqlbuilder.append("LIMIT ? OFFSET ? ");
         try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(sqlbuilder.toString())) {
             int i = 0;
             if (!playerUUIDs.isEmpty()) {
@@ -511,7 +508,8 @@ public class SQLite extends Database {
 
             statement.setString(++i, sdf.format(startTimestamp));
             statement.setString(++i, sdf.format(endTimestamp));
-            statement.setInt(++i, (page-1));
+            statement.setInt(++i, rows);
+            statement.setInt(++i, (page-1)*rows);
 
             try (ResultSet resultSet = statement.executeQuery();) {
                 while (resultSet.next()) {
@@ -528,6 +526,35 @@ public class SQLite extends Database {
             LOG_PLUGIN.logWarning("Could not get the list of event logs: " + e.getMessage());
         }
         return eventLogs;
+    }
+
+    @Override
+    public Long countLogEvent(List<String> playerUUIDs, Timestamp start, Timestamp end) {
+        playerUUIDs = playerUUIDs == null ? Collections.emptyList() : playerUUIDs;
+        // default 3 months ago
+        Timestamp startTimestamp = start == null ? new Timestamp(System.currentTimeMillis() - 3L * 30 * 24 * 60 * 60 * 1000) : start;
+        Timestamp endTimestamp = end == null ? new Timestamp(System.currentTimeMillis()) : end;
+        StringBuilder sqlbuilder = new StringBuilder("SELECT COUNT(0) AS count FROM event_logs e WHERE 1=1 ");
+        if (!playerUUIDs.isEmpty()) sqlbuilder.append("AND e.player_uuid in (?) ");
+        sqlbuilder.append("AND e.created_at BETWEEN ? AND ? ");
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(sqlbuilder.toString())) {
+            int i = 0;
+            if (!playerUUIDs.isEmpty()) {
+                statement.setString(++i, String.join(",", playerUUIDs));
+            }
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+            statement.setString(++i, sdf.format(startTimestamp));
+            statement.setString(++i, sdf.format(endTimestamp));
+
+            try (ResultSet resultSet = statement.executeQuery();) {
+                return resultSet.getLong("count");
+            }
+        } catch (SQLException e) {
+            LOG_PLUGIN.logWarning("Could not get the count of event logs: " + e.getMessage());
+        }
+        return 0L;
     }
 
     @Override

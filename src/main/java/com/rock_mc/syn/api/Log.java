@@ -31,6 +31,7 @@ public class Log {
             Timestamp start = null;
             Timestamp end = null;
             Integer page = null;
+            Integer rows = null;
 
             LocalDateTime currentDateTime = LocalDateTime.now(ZoneId.of("UTC"));
             Instant now = currentDateTime.atZone(ZoneId.of("Asia/Taipei")).toInstant();
@@ -42,8 +43,14 @@ public class Log {
                 start = Timestamp.from(now.minusSeconds(3L * 30 * 24 * 60 * 60));
                 end = Timestamp.from(now);
             }
-            page = Utils.parsePage(args);
-
+            Integer[] pageAndRows = Utils.parsePageAndRows(args);
+            if(pageAndRows!=null){
+                page = pageAndRows[0];
+                rows = pageAndRows[1];
+            }else {
+                page = Utils.parsePage(args);
+                rows = Utils.parseRows(args);
+            }
             List<String> playerUUIDs = Lists.newArrayList();
 
             for (String playerName : players) {
@@ -52,15 +59,17 @@ public class Log {
                     playerUUIDs.add(pluginPlayerInfo.getPlayer_uuid());
                 }
             }
-
-            List<EventLog> logEvents = plugin.dbManager.getLogEvents(playerUUIDs, start, end, page);
+            
+            Long totalNumber = plugin.dbManager.countLogEvent(playerUUIDs, start, end);
+            Long totalPage = totalNumber%rows == 0 ? totalNumber/rows : (totalNumber/rows+1);
+            List<EventLog> logEvents = plugin.dbManager.getLogEvents(playerUUIDs, start, end, page, rows);
 
             for (EventLog logEvent : logEvents) {
                 String time = sdf.format(logEvent.getCreatedAt());
                 logger.sendMessage(player, String.format("時間: %s UTC 事件: %-12s 玩家: %-12s", time, logEvent.getEventName(), logEvent.getPlayerName()));
             }
-            logger.sendMessage(player, "查詢:" + sdf.format(start) + " - " + sdf.format(end)+" 第"+page+"頁");
-
+            logger.sendMessage(player, "查詢:" + sdf.format(start) + " - " + sdf.format(end));
+            logger.sendMessage(player, "總共"+totalNumber+"筆、一頁"+rows+"筆、共"+totalPage+"頁 當前第"+page+"頁");
         }
     }
 }

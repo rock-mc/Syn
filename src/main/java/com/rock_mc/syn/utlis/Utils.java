@@ -2,6 +2,7 @@ package com.rock_mc.syn.utlis;
 
 import com.google.common.primitives.Ints;
 import com.rock_mc.syn.command.CmdManager;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -335,14 +336,64 @@ public class Utils {
 
     public static Integer parsePage(String[] argumentArray) {
         for (String argument : argumentArray) {
-            if(argument.startsWith("page:")){
+            if (argument.startsWith("page:")) {
                 argument = argument.replaceFirst("page:", "");
             }
 
-            if(Ints.tryParse(argument)!=null){
-                return Ints.tryParse(argument);
+            if (Ints.tryParse(argument) != null) {
+                return Math.max(1, Ints.tryParse(argument));
             }
         }
         return 1;
+    }
+
+    public static int parseRows(String[] inputArguments) {
+        String[] argumentArray = inputArguments.clone();
+        // default return 100 rows
+        int rows = 100;
+        int count = 0;
+        int next = 0;
+
+        for (String argument : argumentArray) {
+            if (count > 0) {
+                argument = argument.trim().toLowerCase(Locale.ROOT);
+                argument = argument.replace("\\\\", "");
+                argument = argument.replace("'", "");
+
+                if ("rows:".equals(argument)) {
+                    next = 1;
+                } else if (next == 1 || argument.startsWith("rows:")) {
+                    argument = argument.replace("rows:", "").trim();
+                    if (!argument.startsWith("-")) {
+                        String i2 = argument.replaceAll("[^0-9]", "");
+                        if (!i2.isEmpty() && i2.length() < 10) {
+                            rows = Integer.parseInt(i2);
+                        }
+                    }
+
+                    next = 0;
+                } else {
+                    next = 0;
+                }
+            }
+            count++;
+        }
+        return Math.min(rows, 100);
+    }
+
+    // ex: 1:10 first page ten rows
+    @Nullable
+    public static Integer[] parsePageAndRows(String[] inputArguments) {
+        String[] argumentArray = inputArguments.clone();
+        String pattern = "\\d+:\\d+";
+        for (String argument : argumentArray) {
+            argument = argument.trim().toLowerCase(Locale.ROOT).replace("\\\\", "").replace("'", "");
+            if (argument.matches(pattern)) {
+                String[] strings = argument.split(":");
+                return new Integer[]{ Math.max(1,Integer.parseInt(strings[0])) , Math.min(Integer.parseInt(strings[1]),100)};
+            }
+        }
+
+        return null;
     }
 }
