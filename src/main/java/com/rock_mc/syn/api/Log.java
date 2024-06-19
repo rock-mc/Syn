@@ -8,20 +8,16 @@ import com.rock_mc.syn.db.PluginPlayerInfo;
 import com.rock_mc.syn.log.Logger;
 import com.rock_mc.syn.utlis.Utils;
 import org.bukkit.entity.Player;
-import org.bukkit.util.StringUtil;
 
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.HashMap;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
+import java.util.TimeZone;
 
 public class Log {
     private final static String commandName = CmdManager.LOG;
-    private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+    private final static DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
 
     public static void exec(Syn plugin, Logger logger, Player player, String[] args) {
         synchronized (Syn.apiLock) {
@@ -33,8 +29,7 @@ public class Log {
             Integer page = null;
             Integer rows = null;
 
-            LocalDateTime currentDateTime = LocalDateTime.now(ZoneId.of("UTC"));
-            Instant now = currentDateTime.atZone(ZoneId.of("Asia/Taipei")).toInstant();
+            Instant now = Instant.now();
 
             if (times.length == 2 && times[0] > 0) {
                 start = Timestamp.from(now.minusSeconds(times[0]));
@@ -65,11 +60,16 @@ public class Log {
             List<EventLog> logEvents = plugin.dbManager.getLogEvents(playerUUIDs, start, end, page, rows);
 
             for (EventLog logEvent : logEvents) {
-                String time = sdf.format(logEvent.getCreatedAt());
-                logger.sendMessage(player, String.format("時間: %s UTC 事件: %-12s 玩家: %-12s", time, logEvent.getEventName(), logEvent.getPlayerName()));
+                String time = timeString(logEvent.getCreatedAt().toInstant());
+
+                logger.sendMessage(player, String.format("%s 事件: %-12s 玩家: %-12s", time, logEvent.getEventName(), logEvent.getPlayerName()));
             }
-            logger.sendMessage(player, "查詢:" + sdf.format(start) + " - " + sdf.format(end));
+            logger.sendMessage(player, "查詢:" + timeString(start.toInstant()) + " - " + timeString(end.toInstant()));
             logger.sendMessage(player, "總共"+totalNumber+"筆、一頁"+rows+"筆、共"+totalPage+"頁 當前第"+page+"頁");
         }
+    }
+
+    public static String timeString(Instant instant){
+        return instant.atZone(TimeZone.getDefault().toZoneId()).format(df);
     }
 }
