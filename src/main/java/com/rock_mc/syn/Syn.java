@@ -1,5 +1,6 @@
 package com.rock_mc.syn;
 
+import com.rock_mc.syn.bstats.Metrics;
 import com.rock_mc.syn.command.CmdManager;
 import com.rock_mc.syn.config.ConfigManager;
 import com.rock_mc.syn.db.DbManager;
@@ -85,6 +86,8 @@ public class Syn extends JavaPlugin {
 
         Objects.requireNonNull(getCommand(CmdManager.SYN))
                 .setExecutor(new CmdExecutor(this));
+
+        Metrics metrics = new Metrics(this, 22307);
 
         for (String line : ANSI_ART.split("\n")) {
             Bukkit.getLogger().info(line);

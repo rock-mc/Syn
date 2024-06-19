@@ -99,7 +99,7 @@ public class SQLite extends Database {
             LOG_PLUGIN.logWarning("Could not create allowed_players table or index: " + e.getMessage());
         }
 
-        // Table: baned_players
+        // Table: banned_players
         // Create table if not exists
         // Player uuid, reason, expire_time, created time
         // the player uuid is unique
@@ -109,7 +109,7 @@ public class SQLite extends Database {
         // the player uuid is indexed
         try (Statement statement = connection.createStatement()) {
             statement.execute("""
-                    CREATE TABLE IF NOT EXISTS baned_players (
+                    CREATE TABLE IF NOT EXISTS banned_players (
                         player_uuid TEXT PRIMARY KEY,
                         reason TEXT NOT NULL,
                         expire_time INTEGER DEFAULT 0,
@@ -117,9 +117,9 @@ public class SQLite extends Database {
                     """);
 
             // Create index on player_uuid column
-            statement.execute("CREATE INDEX IF NOT EXISTS idx_baned_players_player_uuid ON baned_players (player_uuid)");
+            statement.execute("CREATE INDEX IF NOT EXISTS idx_banned_players_player_uuid ON banned_players (player_uuid)");
         } catch (SQLException e) {
-            LOG_PLUGIN.logWarning("Could not create baned_players table or index: " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not create banned_players table or index: " + e.getMessage());
         }
 
         // Table: failed_players
@@ -174,16 +174,17 @@ public class SQLite extends Database {
     }
 
     @Override
-    public void addBanedPlayer(String playerUUID, String reason, long time) {
-        // Add baned player to the database
-        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("INSERT INTO baned_players (player_uuid, reason, expire_time) VALUES (?, ?, ?)");) {
+    public void addBannedPlayer(String playerUUID, String reason, long time) {
+        // Add banned player to the database
+        try (Connection connection = getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO banned_players (player_uuid, reason, expire_time) VALUES (?, ?, ?)");
 
             statement.setString(1, playerUUID);
             statement.setString(2, reason);
             statement.setLong(3, time);
             statement.executeUpdate();
         } catch (SQLException e) {
-            LOG_PLUGIN.logWarning("Could not add baned player to the database: " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not add banned player to the database: " + e.getMessage());
         }
     }
 
@@ -274,7 +275,7 @@ public class SQLite extends Database {
     @Override
     public boolean isPlayerBanned(String playerUUID) {
         // Check if the player is banned
-        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("SELECT player_uuid FROM baned_players WHERE player_uuid = ?");) {
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("SELECT player_uuid FROM banned_players WHERE player_uuid = ?");) {
 
             statement.setString(1, playerUUID);
             try (ResultSet resultSet = statement.executeQuery();) {
@@ -332,7 +333,7 @@ public class SQLite extends Database {
     @Override
     public long getBannedExpireTime(String playerUUID) {
         // Get the expiry time of the player
-        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("SELECT expire_time FROM baned_players WHERE player_uuid = ?");) {
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("SELECT expire_time FROM banned_players WHERE player_uuid = ?");) {
             statement.setString(1, playerUUID);
             try (ResultSet resultSet = statement.executeQuery();) {
                 if (resultSet.next()) {
@@ -346,19 +347,19 @@ public class SQLite extends Database {
     }
 
     @Override
-    public void removeBanedPlayer(String playerUUID) {
-        // Remove baned player from the database
-        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("DELETE FROM baned_players WHERE player_uuid = ?");) {
+    public void removeBannedPlayer(String playerUUID) {
+        // Remove banned player from the database
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("DELETE FROM banned_players WHERE player_uuid = ?");) {
             statement.setString(1, playerUUID);
             statement.executeUpdate();
         } catch (SQLException e) {
-            LOG_PLUGIN.logWarning("Could not remove baned player from the database: " + e.getMessage());
+            LOG_PLUGIN.logWarning("Could not remove banned player from the database: " + e.getMessage());
         }
     }
 
     @Override
     public void removeFailedPlayer(String playerUUID) {
-        // Remove baned player from the database
+        // Remove failed player from the database
         try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("DELETE FROM failed_players WHERE player_uuid = ?");) {
 
             statement.setString(1, playerUUID);
@@ -371,7 +372,7 @@ public class SQLite extends Database {
     @Override
     public String getBannedReason(String playerUUID) {
         // Get the reason of the player
-        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("SELECT reason FROM baned_players WHERE player_uuid = ?");) {
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("SELECT reason FROM banned_players WHERE player_uuid = ?");) {
 
             statement.setString(1, playerUUID);
             try (ResultSet resultSet = statement.executeQuery();) {
@@ -388,7 +389,7 @@ public class SQLite extends Database {
     @Override
     public String getBannedCreateAt(String playerUUID) {
         // Get the created time of the player
-        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("SELECT created_at FROM baned_players WHERE player_uuid = ?");) {
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("SELECT created_at FROM banned_players WHERE player_uuid = ?");) {
 
             statement.setString(1, playerUUID);
             try (ResultSet resultSet = statement.executeQuery();) {
@@ -459,7 +460,7 @@ public class SQLite extends Database {
     @Override
     public String[] getBannedPlayerList() {
         // Get the name list of banned players
-        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("SELECT player_name FROM player_info WHERE player_uuid IN (SELECT player_uuid FROM baned_players)")) {
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("SELECT player_name FROM player_info WHERE player_uuid IN (SELECT player_uuid FROM banned_players)")) {
 
             try (ResultSet resultSet = statement.executeQuery();) {
                 List<String> bannedPlayers = new ArrayList<>();

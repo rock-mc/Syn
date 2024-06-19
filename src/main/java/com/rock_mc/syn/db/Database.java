@@ -8,7 +8,7 @@ public abstract class Database {
 
     public abstract void load();
 
-    public abstract void addBanedPlayer(String playerUUID, String reason, long expireTime);
+    public abstract void addBannedPlayer(String playerUUID, String reason, long expireTime);
 
     public abstract String getCodeCreateDate(String code);
 
@@ -30,7 +30,7 @@ public abstract class Database {
 
     public abstract long getBannedExpireTime(String playerUUID);
 
-    public abstract void removeBanedPlayer(String playerUUID);
+    public abstract void removeBannedPlayer(String playerUUID);
 
     public abstract void removeFailedPlayer(String playerUUID);
 

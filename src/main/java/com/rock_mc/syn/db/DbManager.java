@@ -178,7 +178,7 @@ public class DbManager {
 
     public void addPlayerToBannedList(String playerUUID, String reason, long time) {
         synchronized (dbLock) {
-            this.database.addBanedPlayer(playerUUID, reason, time);
+            this.database.addBannedPlayer(playerUUID, reason, time);
             bannedExpireTimeCache.put(playerUUID, time);
             playerBannedCache.put(playerUUID, true);
         }
@@ -186,7 +186,7 @@ public class DbManager {
 
     public void removePlayerBannedList(String playerUUID) {
         synchronized (dbLock) {
-            this.database.removeBanedPlayer(playerUUID);
+            this.database.removeBannedPlayer(playerUUID);
             bannedExpireTimeCache.remove(playerUUID);
             playerBannedCache.remove(playerUUID);
         }
