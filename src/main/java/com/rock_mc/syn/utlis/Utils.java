@@ -1,6 +1,12 @@
 package com.rock_mc.syn.utlis;
 
+import com.google.common.primitives.Ints;
 import com.rock_mc.syn.command.CmdManager;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class Utils {
 
@@ -162,5 +168,232 @@ public class Utils {
 
         // starts with "syn" but not found in the command list
         return "";
+    }
+
+    // 與 coreprotect 相同輸入時間方式 https://github.com/PlayPro/CoreProtect/blob/ca59ff25dfa5abf9b4f0537255a89ba8a3511db5/src/main/java/net/coreprotect/command/CommandHandler.java#L684
+    public static long[] parseTime(String[] inputArguments) {
+        String[] argumentArray = inputArguments.clone();
+        long timeStart = 0;
+        long timeEnd = 0;
+        int count = 0;
+        int next = 0;
+        boolean range = false;
+        double w = 0;
+        double d = 0;
+        double h = 0;
+        double m = 0;
+        double s = 0;
+        for (String argument : argumentArray) {
+            if (count > 0) {
+                argument = argument.trim().toLowerCase(Locale.ROOT);
+                argument = argument.replaceAll("\\\\", "");
+                argument = argument.replaceAll("'", "");
+
+                if (argument.equals("t:") || argument.equals("time:")) {
+                    next = 1;
+                } else if (next == 1 || argument.startsWith("t:") || argument.startsWith("time:")) {
+                    // time arguments
+                    argument = argument.replaceAll("time:", "");
+                    argument = argument.replaceAll("t:", "");
+                    argument = argument.replaceAll("y", "y:");
+                    argument = argument.replaceAll("m", "m:");
+                    argument = argument.replaceAll("w", "w:");
+                    argument = argument.replaceAll("d", "d:");
+                    argument = argument.replaceAll("h", "h:");
+                    argument = argument.replaceAll("s", "s:");
+                    range = argument.contains("-");
+
+                    int argCount = 0;
+                    String[] i2 = argument.split(":");
+                    for (String i3 : i2) {
+                        if (range && argCount > 0 && timeStart == 0 && i3.startsWith("-")) {
+                            timeStart = (long) (((w * 7 * 24 * 60 * 60) + (d * 24 * 60 * 60) + (h * 60 * 60) + (m * 60) + s));
+                            w = 0;
+                            d = 0;
+                            h = 0;
+                            m = 0;
+                            s = 0;
+                        }
+
+                        if (i3.endsWith("w") && w == 0) {
+                            String i4 = i3.replaceAll("[^0-9.]", "");
+                            if (i4.length() > 0 && i4.replaceAll("[^0-9]", "").length() > 0 && i4.indexOf('.') == i4.lastIndexOf('.')) {
+                                w = Double.parseDouble(i4);
+                            }
+                        } else if (i3.endsWith("d") && d == 0) {
+                            String i4 = i3.replaceAll("[^0-9.]", "");
+                            if (i4.length() > 0 && i4.replaceAll("[^0-9]", "").length() > 0 && i4.indexOf('.') == i4.lastIndexOf('.')) {
+                                d = Double.parseDouble(i4);
+                            }
+                        } else if (i3.endsWith("h") && h == 0) {
+                            String i4 = i3.replaceAll("[^0-9.]", "");
+                            if (i4.length() > 0 && i4.replaceAll("[^0-9]", "").length() > 0 && i4.indexOf('.') == i4.lastIndexOf('.')) {
+                                h = Double.parseDouble(i4);
+                            }
+                        } else if (i3.endsWith("m") && m == 0) {
+                            String i4 = i3.replaceAll("[^0-9.]", "");
+                            if (i4.length() > 0 && i4.replaceAll("[^0-9]", "").length() > 0 && i4.indexOf('.') == i4.lastIndexOf('.')) {
+                                m = Double.parseDouble(i4);
+                            }
+                        } else if (i3.endsWith("s") && s == 0) {
+                            String i4 = i3.replaceAll("[^0-9.]", "");
+                            if (i4.length() > 0 && i4.replaceAll("[^0-9]", "").length() > 0 && i4.indexOf('.') == i4.lastIndexOf('.')) {
+                                s = Double.parseDouble(i4);
+                            }
+                        }
+
+                        argCount++;
+                    }
+                    if (timeStart > 0) {
+                        timeEnd = (long) (((w * 7 * 24 * 60 * 60) + (d * 24 * 60 * 60) + (h * 60 * 60) + (m * 60) + s));
+                    } else {
+                        timeStart = (long) (((w * 7 * 24 * 60 * 60) + (d * 24 * 60 * 60) + (h * 60 * 60) + (m * 60) + s));
+                    }
+                    next = 0;
+                } else {
+                    next = 0;
+                }
+            }
+            count++;
+        }
+
+        if (timeEnd >= timeStart) {
+            return new long[]{timeEnd, timeStart};
+        } else {
+            return new long[]{timeStart, timeEnd};
+        }
+    }
+
+    // 與 coreprotect 相同輸入玩家方式
+    public static List<String> parseUsers(String[] inputArguments) {
+        String[] argumentArray = inputArguments.clone();
+        List<String> users = new ArrayList<>();
+        int count = 0;
+        int next = 0;
+        for (String argument : argumentArray) {
+            if (count > 0) {
+                argument = argument.trim().toLowerCase(Locale.ROOT);
+                argument = argument.replaceAll("\\\\", "");
+                argument = argument.replaceAll("'", "");
+
+                if (next == 2) {
+                    if (argument.endsWith(",")) {
+                        next = 2;
+                    }
+                    else {
+                        next = 0;
+                    }
+                }
+                else if (argument.equals("p:") || argument.equals("user:") || argument.equals("users:") || argument.equals("u:")) {
+                    next = 1;
+                }
+                else if (next == 1 || argument.startsWith("p:") || argument.startsWith("user:") || argument.startsWith("users:") || argument.startsWith("u:")) {
+                    argument = argument.replaceAll("user:", "");
+                    argument = argument.replaceAll("users:", "");
+                    argument = argument.replaceAll("p:", "");
+                    argument = argument.replaceAll("u:", "");
+                    if (argument.contains(",")) {
+                        String[] i2 = argument.split(",");
+                        for (String i3 : i2) {
+                            if (!users.contains(i3)) {
+                                users.add(i3);
+                            }
+                            parseUser(users, i3);
+                        }
+                        if (argument.endsWith(",")) {
+                            next = 1;
+                        }
+                        else {
+                            next = 0;
+                        }
+                    }
+                    else {
+                        parseUser(users, argument);
+                        next = 0;
+                    }
+                }
+                else if (argument.endsWith(",") || argument.endsWith(":")) {
+                    next = 2;
+                }
+                else if (argument.contains(":")) {
+                    next = 0;
+                }
+                else {
+                    parseUser(users, argument);
+                    next = 0;
+                }
+            }
+            count++;
+        }
+        return users;
+    }
+
+    private static void parseUser(List<String> users, String user) {
+        if (!users.contains(user)) {
+            users.add(user);
+        }
+    }
+
+    public static Integer parsePage(String[] argumentArray) {
+        for (String argument : argumentArray) {
+            if (argument.startsWith("page:")) {
+                argument = argument.replaceFirst("page:", "");
+            }
+
+            if (Ints.tryParse(argument) != null) {
+                return Math.max(1, Ints.tryParse(argument));
+            }
+        }
+        return 1;
+    }
+
+    public static int parseRows(String[] inputArguments) {
+        String[] argumentArray = inputArguments.clone();
+        // default return 100 rows
+        int rows = 100;
+        int count = 0;
+        int next = 0;
+
+        for (String argument : argumentArray) {
+            if (count > 0) {
+                argument = argument.trim().toLowerCase(Locale.ROOT);
+                argument = argument.replace("\\\\", "");
+                argument = argument.replace("'", "");
+
+                if ("rows:".equals(argument)) {
+                    next = 1;
+                } else if (next == 1 || argument.startsWith("rows:")) {
+                    argument = argument.replace("rows:", "").trim();
+                    if (!argument.startsWith("-")) {
+                        String i2 = argument.replaceAll("[^0-9]", "");
+                        if (!i2.isEmpty() && i2.length() < 10) {
+                            rows = Integer.parseInt(i2);
+                        }
+                    }
+
+                    next = 0;
+                } else {
+                    next = 0;
+                }
+            }
+            count++;
+        }
+        return Math.min(rows, 100);
+    }
+
+    // ex: 1:10 first page ten rows
+    @Nullable
+    public static Integer[] parsePageAndRows(String[] inputArguments) {
+        String[] argumentArray = inputArguments.clone();
+        String pattern = "\\d+:\\d+";
+        for (String argument : argumentArray) {
+            argument = argument.trim().toLowerCase(Locale.ROOT).replace("\\\\", "").replace("'", "");
+            if (argument.matches(pattern)) {
+                String[] strings = argument.split(":");
+                return new Integer[]{ Math.max(1,Integer.parseInt(strings[0])) , Math.min(Integer.parseInt(strings[1]),100)};
+            }
+        }
+
+        return null;
     }
 }

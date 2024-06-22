@@ -16,10 +16,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -101,6 +98,8 @@ public class EventListener implements Listener {
 
         List<String> welcome = plugin.configManager.getConfig().getStringList(Config.WELCOME);
 
+        plugin.dbManager.addLogEvent(uuid, "login");
+
         String opWelcomeMsg = "管理員 " + ChatColor.DARK_RED + "" + ChatColor.BOLD + name + ChatColor.RESET + " 取得女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 的允許進入伺服器並得到了女神祝福";
         if (plugin.dbManager.isPlayerInAllowList(uuid)) {
             if (player.isOp()) {
@@ -126,6 +125,13 @@ public class EventListener implements Listener {
 
             new WaitVerify(plugin, player).start();
         }
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        final Player player = event.getPlayer();
+        final String uuid = player.getUniqueId().toString();
+        plugin.dbManager.addLogEvent(uuid, "logout");
     }
 
     @EventHandler

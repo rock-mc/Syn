@@ -88,6 +88,9 @@ public class DiscordListener implements Listener {
             case CmdManager.INFO:
                 Info.exec(plugin, logger, null, args);
                 break;
+            case CmdManager.LOG:
+                Log.exec(plugin, logger, null, args);
+                break;
             default:
                 logger.sendMessage(null, "Invalid command.");
                 break;

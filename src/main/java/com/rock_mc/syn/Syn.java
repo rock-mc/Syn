@@ -92,6 +92,8 @@ public class Syn extends JavaPlugin {
         for (String line : ANSI_ART.split("\n")) {
             Bukkit.getLogger().info(line);
         }
+
+        this.dbManager.addLogEvent("server", "start");
     }
 
     @Override
@@ -105,5 +107,7 @@ public class Syn extends JavaPlugin {
         }
         // show plugin version
         Bukkit.getLogger().info("Plugin " + APP_NAME + " v" + getDescription().getVersion() + " is disabled.");
+
+        this.dbManager.addLogEvent("server", "stop");
     }
 }

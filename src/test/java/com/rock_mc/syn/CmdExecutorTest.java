@@ -9,8 +9,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.junit.jupiter.api.Test;
 
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TimeZone;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -158,5 +163,59 @@ public class CmdExecutorTest extends PluginTest {
         tabList = server.getCommandTabComplete(player, "syn ");
         assertEquals("[verify]", tabList.toString());
 
+    }
+
+
+    @Test
+    void logCmd() {
+
+        PlayerJoinEvent.getHandlerList().unregister(plugin);
+
+        PlayerMock opPlayer = server.addPlayer();
+        opPlayer.setOp(true);
+
+        opPlayer.performCommand("syn log t:2h");
+        assertEquals(expect(2, ChronoUnit.HOURS), actual(opPlayer));
+
+        opPlayer.performCommand("syn log t:1d");
+        assertEquals(expect(1, ChronoUnit.DAYS), actual(opPlayer));
+
+        opPlayer.performCommand("syn log t:5m");
+        assertEquals(expect(5, ChronoUnit.MINUTES), actual(opPlayer));
+
+    }
+
+    private String expect(long amountToSubtract, TemporalUnit unit) {
+
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+
+        Instant end = Instant.now();
+        Instant start = end.minus(amountToSubtract, unit);
+
+        String startUtc = start.atZone(TimeZone.getDefault().toZoneId()).format(df);
+        String endUtc = end.atZone(TimeZone.getDefault().toZoneId()).format(df);
+
+        return "查詢:" + startUtc + " - " + endUtc;
+    }
+
+
+    private String actual(PlayerMock player) {
+
+        String commandOutput = null;
+        String actual = null;
+
+        while ((commandOutput = player.nextMessage()) != null) {
+            if (commandOutput.contains("查詢:")) {
+                actual = commandOutput;
+            }
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return actual;
     }
 }

@@ -80,6 +80,9 @@ public class CmdExecutor implements CommandExecutor, TabCompleter {
             case CmdManager.INFO:
                 Info.exec(plugin, logger, player, args);
                 break;
+            case CmdManager.LOG:
+                Log.exec(plugin, logger, player, args);
+                break;
             default:
                 logger.sendMessage(player, "Invalid command.");
                 break;
