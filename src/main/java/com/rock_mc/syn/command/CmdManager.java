@@ -15,6 +15,7 @@ public class CmdManager {
     public static final String UNBAN = "unban";
     public static final String GUEST = "guest";
     public static final String LOG = "log";
+    public static final String RELOAD = "reload";
 
     public CmdManager() {
         cmdMap = new HashMap<>();
@@ -27,6 +28,7 @@ public class CmdManager {
         cmdMap.put("unban", new Command("unban", "Unban the player", "/syn unban player", Permission.UNBAN));
         cmdMap.put("guest", new Command("guest", "Allow the player in the allowlist to come into the server.", "/syn guest", Permission.GUEST));
         cmdMap.put("log", new Command("log", "Show the log of the player", "/syn log [time] [player] [page]", Permission.LOG));
+        cmdMap.put("reload", new Command("reload", "Reload config", "/syn reload", Permission.RELOAD));
 
     }
 

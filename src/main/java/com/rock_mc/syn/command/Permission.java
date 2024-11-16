@@ -8,4 +8,5 @@ public class Permission {
     public static String GUEST = "syn.guest";
     public static String INFO = "syn.info";
     public static String LOG = "syn.log";
+    public static String RELOAD = "syn.reload";
 }
