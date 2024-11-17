@@ -30,6 +30,9 @@ commands:
   syn log:
     description: Show the log since the time or the last time the server was opened
     usage: /syn log [time] [player] [page]
+  syn reload:
+    description: Reload config
+    usage: /syn reload
 
 permissions:
   syn.*:
@@ -42,6 +45,7 @@ permissions:
       syn.info: true
       syn.log: true
       syn.verify: true
+      syn.reload: true
   syn.verify:
     description: Allows you to verify the player
     default: true
@@ -62,6 +66,9 @@ permissions:
     default: op
   syn.log:
     description: Allows you to check the log of the player
+    default: op
+  syn.reload:
+    description: Allows you to reload config
     default: op
 
 softdepend: [ DiscordSRV ]
