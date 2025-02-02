@@ -17,6 +17,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.io.IOException;
 import java.util.List;
@@ -123,6 +125,11 @@ public class EventListener implements Listener {
             Location location = player.getLocation();
             plugin.freezePlayerMap.put(player.getUniqueId(), location);
 
+            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 0));
+
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 255));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 200));
+
             new WaitVerify(plugin, player).start();
         }
     }
@@ -144,18 +151,6 @@ public class EventListener implements Listener {
     public void onPluginKick(KickEvent event) {
         Player player = event.getPlayer();
         player.kickPlayer(event.getMessage());
-    }
-
-    @EventHandler
-    public void onPlayerMove(PlayerMoveEvent event) {
-        Player player = event.getPlayer();
-        if (!plugin.freezePlayerMap.containsKey(player.getUniqueId())) {
-            return;
-        }
-        if (!((LivingEntity) player).isOnGround()) {
-            return;
-        }
-        event.setCancelled(true);
     }
 
     @EventHandler
