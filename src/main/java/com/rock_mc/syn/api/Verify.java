@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.potion.PotionEffectType;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -104,6 +105,10 @@ public class Verify {
             plugin.dbManager.removePlayerFailedList(player.getUniqueId().toString());
 
             PluginEventSender.sendJoinEvent(player, "歡迎 " + ChatColor.YELLOW + player.getDisplayName() + ChatColor.RESET + " 全新加入!");
+
+            player.removePotionEffect(PotionEffectType.BLINDNESS);
+            player.removePotionEffect(PotionEffectType.SLOW);
+            player.removePotionEffect(PotionEffectType.JUMP);
 
             return true;
         }

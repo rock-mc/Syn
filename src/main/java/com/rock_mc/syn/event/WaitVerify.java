@@ -7,7 +7,7 @@ import com.rock_mc.syn.event.pluginevent.PluginEventSender;
 import com.rock_mc.syn.log.LoggerPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
+import org.bukkit.potion.PotionEffectType;
 
 public class WaitVerify extends Thread {
 
@@ -28,11 +28,16 @@ public class WaitVerify extends Thread {
 
     @Override
     public void run() {
-        LOG_PLUGIN.sendMessage(player, "女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 正守護著通往磐石的入口。她雙目炯炯有神，手持大斧，氣宇軒昂。世人若想進入磐石，就必須通過她的考驗與允許。");
-        LOG_PLUGIN.sendMessage(player, "女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 問道：「你是誰？你有創世神給你的 " + ChatColor.BOLD + "" + ChatColor.GOLD + "驗證碼" + ChatColor.RESET + " 嗎？」");
+//        LOG_PLUGIN.sendMessage(player, "女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 正守護著通往磐石的入口。她雙目炯炯有神，手持大斧，氣宇軒昂。世人若想進入磐石，就必須通過她的考驗與允許。");
+//        LOG_PLUGIN.sendMessage(player, "女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 問道：「你是誰？你有創世神給你的 " + ChatColor.BOLD + "" + ChatColor.GOLD + "驗證碼" + ChatColor.RESET + " 嗎？」");
 
         int failTime = plugin.dbManager.getFailedAttempts(player.getUniqueId().toString());
-        LOG_PLUGIN.sendMessage(player, "女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + "：「最好趕快回答，你有 " + (MAX_INPUT_CODE_TIMES - (failTime - 1)) + " 次機會。」");
+//        LOG_PLUGIN.sendMessage(player, "女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + "：「最好趕快回答，你有 " + (MAX_INPUT_CODE_TIMES - (failTime - 1)) + " 次機會。」");
+
+        player.sendTitle("", "女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 正守護著通往磐石的入口。她雙目炯炯有神，手持大斧，氣宇軒昂。\n世人若想進入磐石，就必須通過她的考驗與允許。",
+                10, 100, 20);
+        player.sendTitle("", "女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 問道：「你是誰？你有創世神給你的 " + ChatColor.BOLD + "" + ChatColor.GOLD + "驗證碼" + ChatColor.RESET + " 嗎？」",
+                10, 100, 20);
 
         long sleepTime = (long) (1000 * CHECK_TIME);
         for (int i = 0; i * CHECK_TIME < MAX_WAIT_INPUT_CODE_SECONDS; i++) {
@@ -43,6 +48,7 @@ public class WaitVerify extends Thread {
             }
 
             if (!plugin.freezePlayerMap.containsKey(player.getUniqueId())) {
+
                 break;
             }
 
