@@ -92,6 +92,18 @@ public class EventListener implements Listener {
         event.disallow(PlayerLoginEvent.Result.KICK_BANNED, kickMsg);
     }
 
+    private void removePlayerEffect(Player player) {
+        player.removePotionEffect(PotionEffectType.BLINDNESS);
+        player.removePotionEffect(PotionEffectType.SLOW);
+        player.removePotionEffect(PotionEffectType.JUMP);
+    }
+
+    private void addPlayerEffect(Player player) {
+        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 0));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 255));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 200));
+    }
+
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) throws IOException {
         final Player player = event.getPlayer();
@@ -110,14 +122,23 @@ public class EventListener implements Listener {
                 event.setJoinMessage(LoggerPlugin.PREFIX_GAME + "玩家 " + ChatColor.GREEN + "" + ChatColor.BOLD + name + ChatColor.RESET + " 取得女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 的允許進入伺服器。");
             }
 
+            removePlayerEffect(player);
+
             LOG_PLUGIN.sendMessage(player, "女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 輕輕地在你耳邊說：\n" + welcome.get((int) (Math.random() * welcome.size())));
+
         } else if (player.isOp()) {
             plugin.dbManager.addPlayerToAllowList(uuid);
+
+            removePlayerEffect(player);
 
             event.setJoinMessage(LoggerPlugin.PREFIX_GAME + opWelcomeMsg);
             LOG_PLUGIN.sendMessage(player, "女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 輕輕地在你耳邊說：\n" + welcome.get((int) (Math.random() * welcome.size())));
         } else if (plugin.configManager.getConfig().getBoolean(Config.GUEST)) {
+
             LOG_PLUGIN.logInfo("Guest mode is enabled");
+
+            removePlayerEffect(player);
+
             event.setJoinMessage(LoggerPlugin.PREFIX_GAME + "訪客玩家 " + ChatColor.BOLD + name + ChatColor.RESET + " 取得女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 的暫時允許進入伺服器。");
         } else {
             LOG_PLUGIN.logInfo("Player " + name + " is not verified, freeze player.");
@@ -125,10 +146,7 @@ public class EventListener implements Listener {
             Location location = player.getLocation();
             plugin.freezePlayerMap.put(player.getUniqueId(), location);
 
-            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 0));
-
-            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 255));
-            player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, Integer.MAX_VALUE, 200));
+            addPlayerEffect(player);
 
             new WaitVerify(plugin, player).start();
         }

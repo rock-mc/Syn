@@ -7,6 +7,7 @@ import com.rock_mc.syn.event.pluginevent.PluginEventSender;
 import com.rock_mc.syn.log.LoggerPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 
 public class WaitVerify extends Thread {
 
@@ -47,6 +48,7 @@ public class WaitVerify extends Thread {
             }
 
             if (!plugin.freezePlayerMap.containsKey(player.getUniqueId())) {
+
                 break;
             }
 
