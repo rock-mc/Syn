@@ -36,7 +36,7 @@ public class EventListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerLogin(PlayerLoginEvent event) throws IOException {
         final Player player = event.getPlayer();
-        final String name = player.getDisplayName();
+        final String name = player.getName();
         final String uuid = player.getUniqueId().toString();
 
         // 進來就建立玩家資料
@@ -52,11 +52,9 @@ public class EventListener implements Listener {
         // check ban time is expired or not
         long banedSecs = plugin.dbManager.getBannedExpireTime(uuid);
         if (banedSecs == -1) {
-            // Player is not banned
-            // Guest
-            event.allow();
-
-            LOG_PLUGIN.logWarning("Player " + name + " is in banned list but expire time is not set.");
+            // DB error or inconsistent state — treat as permanent ban
+            event.disallow(PlayerLoginEvent.Result.KICK_BANNED, "抱歉！你是永久禁止名單。");
+            LOG_PLUGIN.logWarning("Player " + name + " is in banned list but expire time query failed.");
             return;
         }
 

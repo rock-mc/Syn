@@ -12,9 +12,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Syn extends JavaPlugin {
 
@@ -23,7 +23,7 @@ public class Syn extends JavaPlugin {
     public ConfigManager configManager;
     public DbManager dbManager;
 
-    public HashMap<UUID, Location> freezePlayerMap;
+    public ConcurrentHashMap<UUID, Location> freezePlayerMap;
 
     public CmdManager cmdManager;
     public LogManager logManager;
@@ -63,7 +63,7 @@ public class Syn extends JavaPlugin {
             return;
         }
 
-        freezePlayerMap = new HashMap<>();
+        freezePlayerMap = new ConcurrentHashMap<>();
         cmdManager = new CmdManager();
         logManager = new LogManager();
 
@@ -99,6 +99,7 @@ public class Syn extends JavaPlugin {
     @Override
     public void onDisable() {
         saveConfig();
+        this.dbManager.addLogEvent("server", "stop");
         dbManager.save();
         dbManager.close();
 
@@ -107,7 +108,5 @@ public class Syn extends JavaPlugin {
         }
         // show plugin version
         Bukkit.getLogger().info("Plugin " + APP_NAME + " v" + getDescription().getVersion() + " is disabled.");
-
-        this.dbManager.addLogEvent("server", "stop");
     }
 }

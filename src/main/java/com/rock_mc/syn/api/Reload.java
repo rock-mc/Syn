@@ -20,6 +20,7 @@ public class Reload {
         	plugin.dbManager.close();
         	plugin.configManager.load();
         	plugin.dbManager.load();
+        	plugin.dbManager.clearCaches();
         }
         logger.sendMessage(player, "You have reload config!");
     }

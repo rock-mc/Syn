@@ -32,7 +32,7 @@ public class WaitVerify extends Thread {
         LOG_PLUGIN.sendMessage(player, "女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 問道：「你是誰？你有創世神給你的 " + ChatColor.BOLD + "" + ChatColor.GOLD + "驗證碼" + ChatColor.RESET + " 嗎？」");
 
         int failTime = plugin.dbManager.getFailedAttempts(player.getUniqueId().toString());
-        LOG_PLUGIN.sendMessage(player, "女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + "：「最好趕快回答，你有 " + (MAX_INPUT_CODE_TIMES - (failTime - 1)) + " 次機會。」");
+        LOG_PLUGIN.sendMessage(player, "女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + "：「最好趕快回答，你有 " + (MAX_INPUT_CODE_TIMES - failTime) + " 次機會。」");
 
         long sleepTime = (long) (1000 * CHECK_TIME);
         for (int i = 0; i * CHECK_TIME < MAX_WAIT_INPUT_CODE_SECONDS; i++) {

@@ -76,9 +76,6 @@ public class Verify {
                 return false;
             }
 
-            // The verification code is exited and not expired
-            // Add the player to the allow list
-            plugin.dbManager.addPlayerToAllowList(player.getUniqueId().toString());
             // check if the code is expired or not
             long expireSecs = Utils.strToTime(plugin.getConfig().getString(Config.EXPIRE_TIME));
 
@@ -91,6 +88,7 @@ public class Verify {
 
             if (secondsBetween > expireSecs) {
                 // The verification code is expired
+                plugin.freezePlayerMap.remove(player.getUniqueId());
                 logger.sendMessage(player, ChatColor.RED + "驗證碼過期。");
                 return false;
             }

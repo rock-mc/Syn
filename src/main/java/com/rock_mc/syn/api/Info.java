@@ -36,7 +36,7 @@ public class Info {
 
     public static void exec(Syn plugin, Logger logger, Player player, String[] args) {
 
-        if (args.length > 2) {
+        if (args.length != 2) {
             logger.sendMessage(player, "Invalid number of arguments.");
             logger.sendMessage(player, plugin.cmdManager.getCmd(commandName).usage);
             return;

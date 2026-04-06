@@ -48,6 +48,17 @@ public class DbManager {
         }
     }
 
+    public void clearCaches() {
+        synchronized (dbLock) {
+            codeCache.clear();
+            playerAllowCache.clear();
+            playerBannedCache.clear();
+            bannedExpireTimeCache.clear();
+            playerAddCache.clear();
+            playerInfoCache.clear();
+        }
+    }
+
     public void addCode(String code) {
         synchronized (dbLock) {
             this.database.addCode(code);

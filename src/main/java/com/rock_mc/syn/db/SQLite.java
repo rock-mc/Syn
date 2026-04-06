@@ -176,9 +176,7 @@ public class SQLite extends Database {
     @Override
     public void addBannedPlayer(String playerUUID, String reason, long time) {
         // Add banned player to the database
-        try (Connection connection = getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO banned_players (player_uuid, reason, expire_time) VALUES (?, ?, ?)");
-
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("INSERT INTO banned_players (player_uuid, reason, expire_time) VALUES (?, ?, ?)")) {
             statement.setString(1, playerUUID);
             statement.setString(2, reason);
             statement.setLong(3, time);
@@ -208,7 +206,7 @@ public class SQLite extends Database {
     @Override
     public boolean contains(String code) {
         // Check if the code exists in the database
-        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("SELECT code FROM verification_codes WHERE code = ? and player_used = null");) {
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("SELECT code FROM verification_codes WHERE code = ? AND player_used IS NULL");) {
 
             statement.setString(1, code);
             try (ResultSet resultSet = statement.executeQuery();) {
@@ -290,7 +288,7 @@ public class SQLite extends Database {
     @Override
     public void updateFailedAttempts(String playerUUID, int failedAttempts) {
         // Update the number of failed attempts of the player
-        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("INSERT INTO failed_plaers (player_uuid, fail_time) VALUES (?, ?) ON CONFLICT(player_uuid) DO UPDATE SET fail_time = ?");) {
+        try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement("INSERT INTO failed_players (player_uuid, fail_time) VALUES (?, ?) ON CONFLICT(player_uuid) DO UPDATE SET fail_time = ?");) {
 
             statement.setString(1, playerUUID);
             statement.setInt(2, failedAttempts);
@@ -327,7 +325,7 @@ public class SQLite extends Database {
         } catch (SQLException e) {
             LOG_PLUGIN.logWarning("Could not get the fail time of the player: " + e.getMessage());
         }
-        return 1;
+        return 0;
     }
 
     @Override
@@ -496,13 +494,16 @@ public class SQLite extends Database {
         Timestamp startTimestamp = start == null ? new Timestamp(System.currentTimeMillis() - 3L * 30 * 24 * 60 * 60 * 1000) : start;
         Timestamp endTimestamp = end == null ? new Timestamp(System.currentTimeMillis()) : end;
         StringBuilder sqlbuilder = new StringBuilder("SELECT e.*, p.player_name FROM event_logs e LEFT JOIN player_info p ON p.player_uuid = e.player_uuid WHERE 1=1 ");
-        if (!playerUUIDs.isEmpty()) sqlbuilder.append("AND e.player_uuid in (?) ");
+        if (!playerUUIDs.isEmpty()) {
+            String placeholders = String.join(",", Collections.nCopies(playerUUIDs.size(), "?"));
+            sqlbuilder.append("AND e.player_uuid IN (").append(placeholders).append(") ");
+        }
         sqlbuilder.append("AND e.created_at BETWEEN ? AND ? ");
         sqlbuilder.append("LIMIT ? OFFSET ? ");
         try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(sqlbuilder.toString())) {
             int i = 0;
-            if (!playerUUIDs.isEmpty()) {
-                statement.setString(++i, String.join(",", playerUUIDs));
+            for (String uuid : playerUUIDs) {
+                statement.setString(++i, uuid);
             }
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -536,12 +537,15 @@ public class SQLite extends Database {
         Timestamp startTimestamp = start == null ? new Timestamp(System.currentTimeMillis() - 3L * 30 * 24 * 60 * 60 * 1000) : start;
         Timestamp endTimestamp = end == null ? new Timestamp(System.currentTimeMillis()) : end;
         StringBuilder sqlbuilder = new StringBuilder("SELECT COUNT(0) AS count FROM event_logs e WHERE 1=1 ");
-        if (!playerUUIDs.isEmpty()) sqlbuilder.append("AND e.player_uuid in (?) ");
+        if (!playerUUIDs.isEmpty()) {
+            String placeholders = String.join(",", Collections.nCopies(playerUUIDs.size(), "?"));
+            sqlbuilder.append("AND e.player_uuid IN (").append(placeholders).append(") ");
+        }
         sqlbuilder.append("AND e.created_at BETWEEN ? AND ? ");
         try (Connection connection = getConnection(); PreparedStatement statement = connection.prepareStatement(sqlbuilder.toString())) {
             int i = 0;
-            if (!playerUUIDs.isEmpty()) {
-                statement.setString(++i, String.join(",", playerUUIDs));
+            for (String uuid : playerUUIDs) {
+                statement.setString(++i, uuid);
             }
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -550,7 +554,9 @@ public class SQLite extends Database {
             statement.setString(++i, sdf.format(endTimestamp));
 
             try (ResultSet resultSet = statement.executeQuery();) {
-                return resultSet.getLong("count");
+                if (resultSet.next()) {
+                    return resultSet.getLong("count");
+                }
             }
         } catch (SQLException e) {
             LOG_PLUGIN.logWarning("Could not get the count of event logs: " + e.getMessage());
