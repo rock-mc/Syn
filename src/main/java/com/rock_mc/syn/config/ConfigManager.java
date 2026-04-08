@@ -7,6 +7,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,135 +35,102 @@ public class ConfigManager {
 
         config = YamlConfiguration.loadConfiguration(configFile);
 
-        // Check if the configuration is valid
-        boolean valid = true;
-        if (config.get(Config.GUEST) == null) {
-            valid = false;
-        } else {
-            if (!(config.get(Config.GUEST) instanceof Boolean)) {
-                valid = false;
+        // Load default config from resource
+        InputStream defaultStream = plugin.getResource("config.yml");
+        if (defaultStream == null) {
+            LOG_PLUGIN.logInfo("Default config.yml resource not found.");
+            return;
+        }
+        YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(new InputStreamReader(defaultStream));
+
+        // Validate each key; if invalid or missing, reset to default
+        boolean changed = false;
+
+        if (!(config.get(Config.GUEST) instanceof Boolean)) {
+            resetKey(Config.GUEST, defaultConfig);
+            changed = true;
+        }
+
+        if (!(config.get(Config.AVAILABLE_CHARS) instanceof String)
+                || Objects.requireNonNull(config.getString(Config.AVAILABLE_CHARS)).length() < 10) {
+            resetKey(Config.AVAILABLE_CHARS, defaultConfig);
+            changed = true;
+        }
+
+        if (!(config.get(Config.CODE_LENGTH) instanceof Integer)
+                || config.getInt(Config.CODE_LENGTH) < 6
+                || config.getInt(Config.CODE_LENGTH) > 32) {
+            resetKey(Config.CODE_LENGTH, defaultConfig);
+            changed = true;
+        }
+
+        if (!(config.get(Config.EXPIRE_TIME) instanceof String temp)
+                || !Utils.isValidCode("0123456789ydhms", temp.length(), temp)) {
+            resetKey(Config.EXPIRE_TIME, defaultConfig);
+            changed = true;
+        }
+
+        if (!(config.get(Config.MAX_WAIT_INPUT_CODE_SECONDS) instanceof Integer)
+                || config.getInt(Config.MAX_WAIT_INPUT_CODE_SECONDS) < 0) {
+            resetKey(Config.MAX_WAIT_INPUT_CODE_SECONDS, defaultConfig);
+            changed = true;
+        }
+
+        if (!(config.get(Config.INPUT_CODE_BAN_TIME) instanceof String temp)
+                || !Utils.isValidCode("0123456789ydhms", temp.length(), temp)) {
+            resetKey(Config.INPUT_CODE_BAN_TIME, defaultConfig);
+            changed = true;
+        }
+
+        if (!(config.get(Config.CLEAR_DAYS) instanceof Integer)
+                || config.getInt(Config.CLEAR_DAYS) < 0) {
+            resetKey(Config.CLEAR_DAYS, defaultConfig);
+            changed = true;
+        }
+
+        if (!(config.get(Config.SHOW_CODE_URL) instanceof String)
+                || Objects.requireNonNull(config.getString(Config.SHOW_CODE_URL)).isEmpty()
+                || (!config.getString(Config.SHOW_CODE_URL).startsWith("http://")
+                    && !config.getString(Config.SHOW_CODE_URL).startsWith("https://"))) {
+            resetKey(Config.SHOW_CODE_URL, defaultConfig);
+            changed = true;
+        }
+
+        if (!(config.get(Config.MAX_INPUT_CODE_TIMES) instanceof Integer)
+                || config.getInt(Config.MAX_INPUT_CODE_TIMES) < 1) {
+            resetKey(Config.MAX_INPUT_CODE_TIMES, defaultConfig);
+            changed = true;
+        }
+
+        if (!(config.get(Config.WELCOME) instanceof List)) {
+            resetKey(Config.WELCOME, defaultConfig);
+            changed = true;
+        }
+
+        if (!(config.get(Config.CHANNEL_NAME) instanceof String)) {
+            resetKey(Config.CHANNEL_NAME, defaultConfig);
+            changed = true;
+        }
+
+        if (!(config.get(Config.DATABASE_TYPE) instanceof String)
+                || !"sqlite".equalsIgnoreCase(config.getString(Config.DATABASE_TYPE))) {
+            resetKey(Config.DATABASE_TYPE, defaultConfig);
+            changed = true;
+        }
+
+        if (changed) {
+            try {
+                config.save(configFile);
+            } catch (Exception e) {
+                LOG_PLUGIN.logInfo("Failed to save config.yml: " + e.getMessage());
             }
+            LOG_PLUGIN.logInfo("Some configuration values were invalid or missing. Default values have been applied.");
         }
+    }
 
-        if (config.get(Config.AVAILABLE_CHARS) == null) {
-            valid = false;
-        } else {
-            if (!(config.get(Config.AVAILABLE_CHARS) instanceof String)) {
-                valid = false;
-            } else if (Objects.requireNonNull(config.getString(Config.AVAILABLE_CHARS)).length() < 10) {
-                valid = false;
-            }
-        }
-
-        if (config.get(Config.CODE_LENGTH) == null) {
-            valid = false;
-        } else {
-            if (!(config.get(Config.CODE_LENGTH) instanceof Integer)) {
-                valid = false;
-            } else if (config.getInt(Config.CODE_LENGTH) < 6) {
-                valid = false;
-            } else if (config.getInt(Config.CODE_LENGTH) > 32) {
-                valid = false;
-            }
-        }
-
-        if (config.get(Config.EXPIRE_TIME) == null) {
-            valid = false;
-        } else {
-            if (!(config.get(Config.EXPIRE_TIME) instanceof String temp)) {
-                valid = false;
-            } else if (!Utils.isValidCode("0123456789ydhms", temp.length(), temp)) {
-                valid = false;
-            }
-        }
-
-        if (config.get(Config.MAX_WAIT_INPUT_CODE_SECONDS) == null) {
-            valid = false;
-        } else {
-            if (!(config.get(Config.MAX_WAIT_INPUT_CODE_SECONDS) instanceof Integer)) {
-                valid = false;
-            } else if (config.getInt(Config.MAX_WAIT_INPUT_CODE_SECONDS) < 0) {
-                valid = false;
-            }
-        }
-
-        if (config.get(Config.INPUT_CODE_BAN_TIME) == null) {
-            valid = false;
-        } else {
-            if (!(config.get(Config.INPUT_CODE_BAN_TIME) instanceof String temp)) {
-                valid = false;
-            } else if (!Utils.isValidCode("0123456789ydhms", temp.length(), temp)) {
-                valid = false;
-            }
-        }
-
-        if (config.get(Config.CLEAR_DAYS) == null) {
-            valid = false;
-        } else {
-            if (!(config.get(Config.CLEAR_DAYS) instanceof Integer)) {
-                valid = false;
-            } else if (config.getInt(Config.CLEAR_DAYS) < 0) {
-                valid = false;
-            }
-        }
-
-        if (config.get(Config.SHOW_CODE_URL) == null) {
-            valid = false;
-        } else {
-            if (!(config.get(Config.SHOW_CODE_URL) instanceof String)) {
-                valid = false;
-            } else if (Objects.requireNonNull(config.getString(Config.SHOW_CODE_URL)).isEmpty()) {
-                valid = false;
-            } else {
-                // Check if the URL is valid
-                String url = config.getString(Config.SHOW_CODE_URL);
-                if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                    valid = false;
-                }
-            }
-        }
-
-        if (config.get(Config.MAX_INPUT_CODE_TIMES) == null) {
-            valid = false;
-        } else {
-            if (!(config.get(Config.MAX_INPUT_CODE_TIMES) instanceof Integer)) {
-                valid = false;
-            } else if (config.getInt(Config.MAX_INPUT_CODE_TIMES) < 1) {
-                valid = false;
-            }
-        }
-
-        if (config.get(Config.WELCOME) == null) {
-            valid = false;
-        } else {
-            if (!(config.get(Config.WELCOME) instanceof List)) {
-                valid = false;
-            }
-        }
-
-        if (config.get(Config.CHANNEL_NAME) == null) {
-            valid = false;
-        } else {
-            if (!(config.get(Config.CHANNEL_NAME) instanceof String)) {
-                valid = false;
-            }
-        }
-
-        if (config.get(Config.DATABASE_TYPE) == null) {
-            valid = false;
-        } else {
-            if (!(config.get(Config.DATABASE_TYPE) instanceof String)) {
-                valid = false;
-            } else if (!"sqlite".equalsIgnoreCase(config.getString(Config.DATABASE_TYPE))) {
-                valid = false;
-            }
-        }
-
-        if (!valid) {
-            plugin.saveResource("config.yml", true);
-            config = YamlConfiguration.loadConfiguration(configFile);
-
-            LOG_PLUGIN.logInfo("The configuration is not set correctly. The default configuration has been restored.");
-        }
+    private void resetKey(String key, YamlConfiguration defaultConfig) {
+        Object defaultValue = defaultConfig.get(key);
+        config.set(key, defaultValue);
+        LOG_PLUGIN.logInfo("Config key '" + key + "' was invalid or missing. Reset to default.");
     }
 }

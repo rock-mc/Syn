@@ -1,6 +1,7 @@
 package com.rock_mc.syn.config;
 
 public class Config {
+    public static final String GODDESS_NAME = "syn.goddess_name";
     public static final String GUEST = "syn.guest";
     public static final String AVAILABLE_CHARS = "syn.available_characters";
     public static final String SHOW_CODE_URL = "syn.show_code_url";

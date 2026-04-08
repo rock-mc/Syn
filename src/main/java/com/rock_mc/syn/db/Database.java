@@ -46,6 +46,8 @@ public abstract class Database {
 
     public abstract void addCode(String code);
 
+    public abstract void addCodes(java.util.List<String> codes);
+
     public abstract void addPlayerInfo(String playerUUID, String playerName);
 
     public abstract void updateFailedAttempts(String playerUUID, int failedAttempts);

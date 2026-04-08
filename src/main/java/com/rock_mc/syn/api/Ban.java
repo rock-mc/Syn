@@ -19,43 +19,38 @@ public class Ban {
 
     public static boolean exec(Syn plugin, Logger logger, Player player, String banPlayerName, String reason, String banTime) {
 
-        synchronized (Syn.apiLock) {
-
-            if (plugin.cmdManager.lacksPermission(player, commandName)) {
-                logger.sendMessage(player, "You don't have permission to use this command.");
-                return false;
-            }
-
-            PluginPlayerInfo pluginPlayerInfo = plugin.dbManager.getPlayerByName(banPlayerName);
-            if (pluginPlayerInfo == null) {
-                logger.sendMessage(player, "查無此玩家: " + banPlayerName);
-                logger.sendMessage(player, plugin.cmdManager.getCmd(commandName).usage);
-                return false;
-            }
-
-            long banSecs = Utils.strToTime(banTime);
-
-            plugin.dbManager.addPlayerToBannedList(pluginPlayerInfo.getPlayer_uuid(), reason, banSecs);
-            plugin.dbManager.removePlayerFailedList(pluginPlayerInfo.getPlayer_uuid());
-
-            if (Bukkit.getOfflinePlayer(pluginPlayerInfo.getUUID()).isOnline()) {
-                // 如果在線上踢掉
-                // 順便告訴他刑期，很棒吧
-                String banMsg;
-                if (banSecs == 0) {
-                    banMsg = (reason == null ? "你被永久加入禁止名單" : reason);
-                } else {
-                    banMsg = (reason == null ? "你被加入禁止名單" : reason) + "，刑期 " + Utils.timeToStr(banSecs);
-                }
-
-                Player banPlayer = Bukkit.getPlayer(pluginPlayerInfo.getUUID());
-
-                PluginEventSender.sendKickEvent(banPlayer, banMsg);
-            }
-
-            logger.sendMessage(player, "將使用者加入禁止名單: " + ChatColor.RED + banPlayerName);
-            return true;
+        if (plugin.cmdManager.lacksPermission(player, commandName)) {
+            logger.sendMessage(player, "You don't have permission to use this command.");
+            return false;
         }
+
+        PluginPlayerInfo pluginPlayerInfo = plugin.dbManager.getPlayerByName(banPlayerName);
+        if (pluginPlayerInfo == null) {
+            logger.sendMessage(player, "查無此玩家: " + banPlayerName);
+            logger.sendMessage(player, plugin.cmdManager.getCmd(commandName).usage);
+            return false;
+        }
+
+        long banSecs = Utils.strToTime(banTime);
+
+        plugin.dbManager.addPlayerToBannedList(pluginPlayerInfo.getPlayer_uuid(), reason, banSecs);
+        plugin.dbManager.removePlayerFailedList(pluginPlayerInfo.getPlayer_uuid());
+
+        if (Bukkit.getOfflinePlayer(pluginPlayerInfo.getUUID()).isOnline()) {
+            String banMsg;
+            if (banSecs == 0) {
+                banMsg = (reason == null ? "你被永久加入禁止名單" : reason);
+            } else {
+                banMsg = (reason == null ? "你被加入禁止名單" : reason) + "，刑期 " + Utils.timeToStr(banSecs);
+            }
+
+            Player banPlayer = Bukkit.getPlayer(pluginPlayerInfo.getUUID());
+
+            PluginEventSender.sendKickEvent(banPlayer, banMsg);
+        }
+
+        logger.sendMessage(player, "將使用者加入禁止名單: " + ChatColor.RED + banPlayerName);
+        return true;
     }
 
     public static boolean exec(Syn plugin, Logger logger, Player player, String[] args) {

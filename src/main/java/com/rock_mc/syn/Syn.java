@@ -28,6 +28,7 @@ public class Syn extends JavaPlugin {
     public CmdManager cmdManager;
     public LogManager logManager;
 
+    @Deprecated // No longer used - DB operations are protected by DbManager.dbLock
     public static final Object apiLock = new Object();
     public boolean isFolia;
 

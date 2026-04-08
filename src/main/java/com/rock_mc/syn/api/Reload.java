@@ -15,13 +15,11 @@ public class Reload {
             logger.sendMessage(player, "You don't have permission to use Reload command.");
             return;
         }
-        synchronized (Syn.apiLock) {
-        	plugin.dbManager.save();
-        	plugin.dbManager.close();
-        	plugin.configManager.load();
-        	plugin.dbManager.load();
-        	plugin.dbManager.clearCaches();
-        }
+        plugin.dbManager.save();
+        plugin.dbManager.close();
+        plugin.configManager.load();
+        plugin.dbManager.load();
+        plugin.dbManager.clearCaches();
         logger.sendMessage(player, "You have reload config!");
     }
 	

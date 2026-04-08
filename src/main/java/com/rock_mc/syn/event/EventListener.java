@@ -9,14 +9,17 @@ import com.rock_mc.syn.log.LoggerPlugin;
 import com.rock_mc.syn.utlis.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.*;
+
+import org.bukkit.Bukkit;
 
 import java.io.IOException;
 import java.util.List;
@@ -39,8 +42,8 @@ public class EventListener implements Listener {
         final String name = player.getName();
         final String uuid = player.getUniqueId().toString();
 
-        // 進來就建立玩家資料
-        plugin.dbManager.addPlayerInfo(uuid, name);
+        // 進來就建立玩家資料（非同步，不阻塞主執行緒）
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> plugin.dbManager.addPlayerInfo(uuid, name));
 
         if (!plugin.dbManager.isPlayerInBannedList(uuid)) {
             // Player is not banned
@@ -95,31 +98,36 @@ public class EventListener implements Listener {
         final String uuid = player.getUniqueId().toString();
 
         List<String> welcome = plugin.configManager.getConfig().getStringList(Config.WELCOME);
+        String goddessName = plugin.configManager.getConfig().getString(Config.GODDESS_NAME);
 
-        plugin.dbManager.addLogEvent(uuid, "login");
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> plugin.dbManager.addLogEvent(uuid, "login"));
 
-        String opWelcomeMsg = "管理員 " + ChatColor.DARK_RED + "" + ChatColor.BOLD + name + ChatColor.RESET + " 取得女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 的允許進入伺服器並得到了女神祝福";
+        String opWelcomeMsg = "管理員 " + ChatColor.DARK_RED + "" + ChatColor.BOLD + name + ChatColor.RESET + " 取得" + goddessName + " " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 的允許進入伺服器並得到了" + goddessName + "祝福";
         if (plugin.dbManager.isPlayerInAllowList(uuid)) {
             if (player.isOp()) {
                 event.setJoinMessage(LoggerPlugin.PREFIX_GAME + opWelcomeMsg);
             } else {
-                event.setJoinMessage(LoggerPlugin.PREFIX_GAME + "玩家 " + ChatColor.GREEN + "" + ChatColor.BOLD + name + ChatColor.RESET + " 取得女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 的允許進入伺服器。");
+                event.setJoinMessage(LoggerPlugin.PREFIX_GAME + "玩家 " + ChatColor.GREEN + "" + ChatColor.BOLD + name + ChatColor.RESET + " 取得" + goddessName + " " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 的允許進入伺服器。");
             }
 
-            LOG_PLUGIN.sendMessage(player, "女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 輕輕地在你耳邊說：\n" + welcome.get((int) (Math.random() * welcome.size())));
+            LOG_PLUGIN.sendMessage(player, goddessName + " " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 輕輕地在你耳邊說：\n" + welcome.get((int) (Math.random() * welcome.size())));
         } else if (player.isOp()) {
             plugin.dbManager.addPlayerToAllowList(uuid);
 
             event.setJoinMessage(LoggerPlugin.PREFIX_GAME + opWelcomeMsg);
-            LOG_PLUGIN.sendMessage(player, "女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 輕輕地在你耳邊說：\n" + welcome.get((int) (Math.random() * welcome.size())));
+            LOG_PLUGIN.sendMessage(player, goddessName + " " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 輕輕地在你耳邊說：\n" + welcome.get((int) (Math.random() * welcome.size())));
         } else if (plugin.configManager.getConfig().getBoolean(Config.GUEST)) {
             LOG_PLUGIN.logInfo("Guest mode is enabled");
-            event.setJoinMessage(LoggerPlugin.PREFIX_GAME + "訪客玩家 " + ChatColor.BOLD + name + ChatColor.RESET + " 取得女神 " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 的暫時允許進入伺服器。");
+            event.setJoinMessage(LoggerPlugin.PREFIX_GAME + "訪客玩家 " + ChatColor.BOLD + name + ChatColor.RESET + " 取得" + goddessName + " " + ChatColor.GOLD + Syn.APP_NAME + ChatColor.RESET + " 的暫時允許進入伺服器。");
         } else {
             LOG_PLUGIN.logInfo("Player " + name + " is not verified, freeze player.");
 
             Location location = player.getLocation();
             plugin.freezePlayerMap.put(player.getUniqueId(), location);
+
+            // 失明 + 緩速，讓未驗證玩家無法正常遊玩
+            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 0, false, false));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 255, false, false));
 
             new WaitVerify(plugin, player).start();
         }
@@ -129,13 +137,16 @@ public class EventListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         final Player player = event.getPlayer();
         final String uuid = player.getUniqueId().toString();
-        plugin.dbManager.addLogEvent(uuid, "logout");
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> plugin.dbManager.addLogEvent(uuid, "logout"));
     }
 
     @EventHandler
     public void onPluginJoin(JoinEvent event) {
         LOG_PLUGIN.broadcast(event.getMessage());
-        plugin.freezePlayerMap.remove(event.getPlayer().getUniqueId());
+        Player player = event.getPlayer();
+        plugin.freezePlayerMap.remove(player.getUniqueId());
+        player.removePotionEffect(PotionEffectType.BLINDNESS);
+        player.removePotionEffect(PotionEffectType.SLOW);
     }
 
     @EventHandler
@@ -147,13 +158,18 @@ public class EventListener implements Listener {
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
-        if (!plugin.freezePlayerMap.containsKey(player.getUniqueId())) {
+        Location frozenLoc = plugin.freezePlayerMap.get(player.getUniqueId());
+        if (frozenLoc == null) {
             return;
         }
-        if (!((LivingEntity) player).isOnGround()) {
-            return;
+        // 只允許轉頭（yaw/pitch），阻止位移和跳躍
+        Location to = event.getTo();
+        if (to != null) {
+            to.setX(frozenLoc.getX());
+            to.setY(frozenLoc.getY());
+            to.setZ(frozenLoc.getZ());
+            event.setTo(to);
         }
-        event.setCancelled(true);
     }
 
     @EventHandler

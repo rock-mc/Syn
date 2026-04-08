@@ -12,29 +12,27 @@ public class Unban {
 
     public static boolean exec(Syn plugin, Logger logger, Player player, String bannedPlayerName) {
 
-        synchronized (Syn.apiLock) {
-            if (plugin.cmdManager.lacksPermission(player, commandName)) {
-                logger.sendMessage(player, "You don't have permission to use this command.");
-                return false;
-            }
-
-            PluginPlayerInfo unbanPlayer = plugin.dbManager.getPlayerByName(bannedPlayerName);
-            if (unbanPlayer == null) {
-                logger.sendMessage(player, "查無此玩家: " + bannedPlayerName);
-                return false;
-            }
-
-            if (!plugin.dbManager.isPlayerInBannedList(unbanPlayer.getPlayer_uuid())) {
-                logger.sendMessage(player, "使用者不在禁止名單中: " + ChatColor.RED + bannedPlayerName);
-                return false;
-            }
-
-            plugin.dbManager.removePlayerBannedList(unbanPlayer.getPlayer_uuid());
-            plugin.dbManager.removePlayerFailedList(unbanPlayer.getPlayer_uuid());
-
-            logger.sendMessage(player, "將使用者移出禁止名單: " + ChatColor.GREEN + bannedPlayerName);
-            return true;
+        if (plugin.cmdManager.lacksPermission(player, commandName)) {
+            logger.sendMessage(player, "You don't have permission to use this command.");
+            return false;
         }
+
+        PluginPlayerInfo unbanPlayer = plugin.dbManager.getPlayerByName(bannedPlayerName);
+        if (unbanPlayer == null) {
+            logger.sendMessage(player, "查無此玩家: " + bannedPlayerName);
+            return false;
+        }
+
+        if (!plugin.dbManager.isPlayerInBannedList(unbanPlayer.getPlayer_uuid())) {
+            logger.sendMessage(player, "使用者不在禁止名單中: " + ChatColor.RED + bannedPlayerName);
+            return false;
+        }
+
+        plugin.dbManager.removePlayerBannedList(unbanPlayer.getPlayer_uuid());
+        plugin.dbManager.removePlayerFailedList(unbanPlayer.getPlayer_uuid());
+
+        logger.sendMessage(player, "將使用者移出禁止名單: " + ChatColor.GREEN + bannedPlayerName);
+        return true;
     }
 
     public static boolean exec(Syn plugin, Logger logger, Player player, String[] args) {

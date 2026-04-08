@@ -13,43 +13,40 @@ public class GenCode {
 
     public static String[] exec(Syn plugin, Logger logger, Player player, int codeNum) {
 
-        synchronized (Syn.apiLock) {
-
-            if (plugin.cmdManager.lacksPermission(player, commandName)) {
-                logger.sendMessage(player, "You don't have permission to use this command.");
-                return null;
-            }
-
-            if (codeNum <= 0) {
-                logger.sendMessage(player, "Invalid number of codes.");
-                logger.sendMessage(player, plugin.cmdManager.getCmd(commandName).usage);
-                return null;
-            }
-            if (codeNum > 1000) {
-                logger.sendMessage(player, "The number of codes is too large.");
-                logger.sendMessage(player, plugin.cmdManager.getCmd(commandName).usage);
-                return null;
-            }
-
-            String available_characters = plugin.getConfig().getString(Config.AVAILABLE_CHARS);
-            int code_length = plugin.getConfig().getInt(Config.CODE_LENGTH);
-
-            // Generate a verification code
-            // Check the code is unique
-            String[] codes = new String[codeNum];
-
-            for (int i = 0; i < codeNum; i++) {
-
-                String code = Utils.generateCode(available_characters, code_length);
-                while (plugin.dbManager.containsCode(code)) {
-                    code = Utils.generateCode(available_characters, code_length);
-                }
-                plugin.dbManager.addCode(code);
-
-                codes[i] = code;
-            }
-            return codes;
+        if (plugin.cmdManager.lacksPermission(player, commandName)) {
+            logger.sendMessage(player, "You don't have permission to use this command.");
+            return null;
         }
+
+        if (codeNum <= 0) {
+            logger.sendMessage(player, "Invalid number of codes.");
+            logger.sendMessage(player, plugin.cmdManager.getCmd(commandName).usage);
+            return null;
+        }
+        if (codeNum > 1000) {
+            logger.sendMessage(player, "The number of codes is too large.");
+            logger.sendMessage(player, plugin.cmdManager.getCmd(commandName).usage);
+            return null;
+        }
+
+        String available_characters = plugin.getConfig().getString(Config.AVAILABLE_CHARS);
+        int code_length = plugin.getConfig().getInt(Config.CODE_LENGTH);
+
+        // Generate verification codes and batch insert
+        String[] codes = new String[codeNum];
+        java.util.List<String> codeList = new java.util.ArrayList<>(codeNum);
+
+        for (int i = 0; i < codeNum; i++) {
+            String code = Utils.generateCode(available_characters, code_length);
+            while (plugin.dbManager.containsCode(code)) {
+                code = Utils.generateCode(available_characters, code_length);
+            }
+            codeList.add(code);
+            codes[i] = code;
+        }
+        plugin.dbManager.addCodes(codeList);
+
+        return codes;
     }
 
     public static String[] exec(Syn plugin, Logger logger, Player player, String[] args) {
