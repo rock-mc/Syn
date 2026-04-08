@@ -53,10 +53,10 @@ public class DiscordListener implements Listener {
         if (!cmdLine.startsWith(CmdManager.SYN)) {
             return;
         }
-        cmdLine = cmdLine.substring(CmdManager.SYN.length()).trim();
 
         String commandName = Utils.extractCommand(plugin.cmdManager.getCmdList(), cmdLine);
-        String[] args = cmdLine.split(" ");
+        String argLine = cmdLine.substring(CmdManager.SYN.length()).trim();
+        String[] args = argLine.split(" ");
 
         switch (commandName) {
             case "help", "":
